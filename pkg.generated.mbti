@@ -22,8 +22,6 @@ pub fn next_up(Double) -> Double
 
 pub fn parse_polynomial(String, Array[String]) -> Expr raise RootError
 
-pub fn result_json(Request, SolveResult) -> Json
-
 pub fn solve(System, Array[Interval], Options) -> SolveResult raise RootError
 
 pub fn solve_json(String) -> String raise RootError

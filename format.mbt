@@ -144,7 +144,7 @@ fn box_json(box : Array[Interval]) -> Json {
 
 ///|
 /// Serialize finite result bounds and the actual certificate inputs.
-pub fn result_json(request : Request, result : SolveResult) -> Json {
+fn result_json(request : Request, result : SolveResult) -> Json {
   let roots = result.roots.map(root => {
     let c = root.certificate
     let v : Json = {
