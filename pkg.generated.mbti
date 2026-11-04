@@ -1,0 +1,130 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "LMK-ai-nb/rootcover"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn assess(System, Array[Interval]) -> Assessment raise RootError
+
+pub fn decode_request(String) -> Request raise RootError
+
+pub fn default_options() -> Options
+
+pub fn enclose(System, Array[Interval]) -> Evaluation raise RootError
+
+pub fn interval(Double, Double) -> Interval raise RootError
+
+pub fn next_down(Double) -> Double
+
+pub fn next_up(Double) -> Double
+
+pub fn parse_polynomial(String, Array[String]) -> Expr raise RootError
+
+pub fn result_json(Request, SolveResult) -> Json
+
+pub fn solve(System, Array[Interval], Options) -> SolveResult raise RootError
+
+pub fn solve_json(String) -> String raise RootError
+
+pub fn validate_system(System) -> Unit raise RootError
+
+// Errors
+pub suberror RootError {
+  Invalid(String)
+} derive(@debug.Debug)
+pub fn RootError::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+pub(all) enum Assessment {
+  Excluded(String)
+  Unique(Certificate)
+  Contracted(Array[Interval])
+  Undecided(String)
+}
+
+pub(all) struct Certificate {
+  domain : Array[Interval]
+  center : Array[Double]
+  preconditioner : Array[Array[Double]]
+  image : Array[Interval]
+  enclosure : Array[Interval]
+  q : Double
+}
+
+pub(all) struct Evaluation {
+  ranges : Array[Interval]
+  jacobian : Array[Array[Interval]]
+}
+
+pub(all) enum Expr {
+  Const(Double)
+  Variable(Int32)
+  Add(Expr, Expr)
+  Sub(Expr, Expr)
+  Mul(Expr, Expr)
+  Pow(Expr, Int32)
+} derive(@debug.Debug)
+pub fn Expr::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Interval {
+  lo : Double
+  hi : Double
+} derive(Eq, @debug.Debug)
+pub fn Interval::add(Self, Self) -> Self
+pub fn Interval::contains(Self, Double) -> Bool
+pub fn Interval::equal(Self, Self) -> Bool
+pub fn Interval::finite(Self) -> Bool
+pub fn Interval::intersection(Self, Self) -> Self?
+pub fn Interval::magnitude(Self) -> Double
+pub fn Interval::midpoint(Self) -> Double
+pub fn Interval::mul(Self, Self) -> Self
+pub fn Interval::neg(Self) -> Self
+pub fn Interval::not_equal(Self, Self) -> Bool
+pub fn Interval::power(Self, Int32) -> Self raise RootError
+pub fn Interval::sub(Self, Self) -> Self
+pub fn Interval::to_repr(Self) -> @debug.Repr
+pub fn Interval::width(Self) -> Double
+
+pub(all) struct Options {
+  tolerance : Double
+  max_assessments : Int32
+  max_depth : Int32
+}
+
+pub(all) struct Request {
+  system : System
+  box : Array[Interval]
+  options : Options
+}
+
+pub(all) struct RootBox {
+  enclosure : Array[Interval]
+  certificate : Certificate
+}
+
+pub(all) struct SolveResult {
+  roots : Array[RootBox]
+  unresolved : Array[UnresolvedBox]
+  complete : Bool
+  tolerance_met : Bool
+  assessments : Int32
+  excluded : Int32
+  contractions : Int32
+  splits : Int32
+}
+
+pub(all) struct System {
+  names : Array[String]
+  equations : Array[Expr]
+}
+
+pub(all) struct UnresolvedBox {
+  box : Array[Interval]
+  reason : String
+}
+
+// Type aliases
+
+// Traits

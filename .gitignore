@@ -6,4 +6,6 @@ work/
 deliverables/
 __pycache__/
 web/engine.js
+web/data/
+web/licenses/
 dist/
