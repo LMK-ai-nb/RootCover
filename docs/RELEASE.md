@@ -1,4 +1,23 @@
-# RootCover 0.1.0 实际发布记录
+# RootCover 实际发布记录
+
+## 当前版本0.2.0（2026-11-04）
+
+本轮补充带容差观测的连续可行域求解、非方约束、整盒可行证据与未决外包围，保留原有区域求根。三场景已实际覆盖几何交点、非单调标定/观测容差和有界误差定位；不把可行盒数量当作根数。
+
+- [源码提交fbd9c7c](https://github.com/LMK-ai-nb/RootCover/commit/fbd9c7c11845d416dec10ad151e295d0d7dc7439) 的[CI 41842581871](https://github.com/LMK-ai-nb/RootCover/actions/runs/41842581871) 已成功。Windows、macOS、Linux逐一运行wasm、wasm-gc、js、native的严格check/test/build；每个目标33项MoonBit测试全部通过。13项CLI集成、两套独立数值核对与真实打包检查在三平台成功，Linux真实Chromium成功。
+- 实际下载三平台的CI artifacts核对：2800组区间运算、182个已知系统、513份唯一性证据重放；新增37个观测带系统、1310份整盒可行证据重放、4413个有理数网格点检查。有限测试不是形式化证明。
+- 同一源码的[Pages部署41842581927](https://github.com/LMK-ai-nb/RootCover/actions/runs/41842581927) 已成功；在线工作台入口仍为 https://lmk-ai-nb.github.io/RootCover/ 。实际通过公开URL的Chromium核对：页面版本0.2.0、几何两根和定位19个可行盒/40个未决盒。
+- 核实 `moon whoami` 为LMK-ai-nb后，实际 `moon publish` 返回 **200 OK**、退出0；[Mooncakes 0.2.0](https://mooncakes.io/docs/LMK-ai-nb/rootcover@0.2.0) 已发布，未覆盖0.1.0。
+- 独立消费工程从公开注册表实际下载0.2.0，无本地路径替代。严格全目标check与Wasm-GC、JS运行成功，断言求根、预算覆盖、整盒可行证据及不修改输入。八个核心MoonBit文件与本地源码逐字节匹配。
+- 发布前扫描真实Moon包（72文件）通过，私人报名材料、联系方式、凭据与缓存不在包内。0.2.0包文档是发布时快照，事后验证以GitHub本文和evidence/release-0.2.0.json为准。
+
+```text
+moon add LMK-ai-nb/rootcover@0.2.0
+```
+
+这证明工程已经运行、发布和被独立下载；不代表报名成功、初审通过或获奖。完整旧版发布记录保留如下。
+
+## 历史版本0.1.0
 
 维护者、参赛者及发布账户：**李明坤 / LMK-ai-nb**。核对时间：2026-11-04，北京时间。
 

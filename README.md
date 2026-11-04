@@ -12,7 +12,7 @@
 
 ## 五分钟运行
 
-已验证本地moonc 0.10.17 / moon 0.1.20261021；0.1版远程另验证moonc 0.10.19。当前版本0.2.0，远程/发布状态以RELEASE.md为准。Node22+运行CLI和网页，Python3.12+仅用于验证，无第三方npm或Python运行时依赖。
+当前版本0.2.0：本地moonc 0.10.17 / moon 0.1.20261021已验证；远程moonc 0.10.19在Windows、macOS、Linux的四个目标全部通过。Mooncakes发布和独立下载运行已成功，证据见RELEASE.md。Node22+运行CLI和网页，Python3.12+仅用于验证，无第三方npm或Python运行时依赖。
 
 ```text
 moon run cmd/demo

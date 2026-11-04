@@ -1,0 +1,41 @@
+{
+  "owner": "LMK-ai-nb",
+  "version": "0.2.0",
+  "core_commit": "fbd9c7c11845d416dec10ad151e295d0d7dc7439",
+  "ci": "https://github.com/LMK-ai-nb/RootCover/actions/runs/41842581871",
+  "pages_deployment": "https://github.com/LMK-ai-nb/RootCover/actions/runs/41842581927",
+  "ci_platforms": [
+    "Windows",
+    "macOS",
+    "Linux"
+  ],
+  "targets": [
+    "wasm",
+    "wasm-gc",
+    "js",
+    "native"
+  ],
+  "moonbit_tests_per_target": 33,
+  "node_tests": 13,
+  "interval_cases": 2800,
+  "root_oracle_systems": 182,
+  "exact_uniqueness_certificate_replays": 513,
+  "paving_oracle_systems": 37,
+  "exact_inner_box_replays": 1310,
+  "rational_grid_points": 4413,
+  "mooncakes_publish_http": 200,
+  "isolated_public_consumer_targets": [
+    "wasm-gc",
+    "js"
+  ],
+  "core_file_sha256": {
+    "interval.mbt": "24fcb0daf2b9d4a960093c7a2ac2984ec9c5bd8a75d4730ca8c7dbc551616cc9",
+    "polynomial.mbt": "af1e5d7cec598b2c8db17289d9b946a1be2815893e560024735c4d5b4e0369b4",
+    "krawczyk.mbt": "4ba5f6837a614e94a999f5f58bfff38c1b050ef981de3d538bfa65d65c544848",
+    "solver.mbt": "fb8e04cdb5687dbe0ff6225cb807a217331a55fa97102979d6b5eec7f863f195",
+    "parser.mbt": "6953b0826649a5622741fc5358730ab4615c9cee8cdc03698bf042620a84061b",
+    "format.mbt": "361a576bd255f45f7549e5eee03d56c62e44143176f7bde075a4056d08a351bc",
+    "paving.mbt": "663f1bb41ee123be653e130329fbcb171734abadf682669b92fde04dfd9f03a3",
+    "paving_format.mbt": "41adea3c5b9a86f2357d960dfdaa99fe1c905ecdf518d2ad77383a4a37db8658"
+  }
+}

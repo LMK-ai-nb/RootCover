@@ -1,5 +1,7 @@
 # 实际验证
 
+## 历史0.1基线
+
 本地Windows，moonc 0.10.17+093cb8f9c / moon 0.1.20261021，Node22+、Python3.13。真实命令记录在本地artifacts/validation.json，独立核对在artifacts/oracle.json。
 
 执行 `python scripts/verify.py --browser`，覆盖全目标静态检查、wasm/wasm-gc/js三目标的测试和构建、格式、公开接口、typed demo、JS桥接、CLI、精确有理数oracle、真实发布归档和Chromium。24项MoonBit测试（含API文档）、9项Node集成、2800组区间运算、182个解析已知模型、513份唯一性证据重放通过。浏览器检查三场景、分支、预算、下载、原始重复JSON键、注入文本与390px布局。
@@ -18,4 +20,4 @@ Fraction/AST oracle是独立后端：从输出域和预条件器重算精确有�
 
 本轮增加观测带可行域：33项MoonBit（含3项公开文档）、13项CLI；原根域核对2800/182/513保留。新独立核对37模型、1310个内包围盒、4413个有理数网格点，通过整盒证据、域内包含、正体积不重叠、叶数守恒和可行样本覆盖检查。两套参考使用独立Fraction/AST，不调用工程求解实现来生成预期结果。
 
-真实Chromium新增测距观测带、标定容差、可行/未决分色、导出、迟到响应和加载取消。0.2的三平台/发布证明以RELEASE.md后续实际记录为准，不能把0.1的CI当作新增算法已运行的证据。
+真实Chromium新增测距观测带、标定容差、可行/未决分色、导出、迟到响应和加载取消。0.2的[CI 41842581871](https://github.com/LMK-ai-nb/RootCover/actions/runs/41842581871) 已成功，三平台实际运行四目标，每目标33项测试；三平台CI artifacts均已下载核对。Mooncakes0.2.0发布200，独立消费工程真实下载并运行Wasm-GC/JS，八个核心文件字节匹配。具体证据见RELEASE.md与evidence/release-0.2.0.json。
