@@ -1,0 +1,8 @@
+import {
+  "LMK-ai-nb/rootcover" @root,
+  "moonbitlang/core/json",
+}
+
+options(
+  link: { "js": { "exports": [ "probe" ], "format": "esm" } },
+)
