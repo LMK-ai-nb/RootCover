@@ -10,6 +10,8 @@ pub fn assess(System, Array[Interval]) -> Assessment raise RootError
 
 pub fn classify_constraints(ConstraintModel, Array[Interval]) -> FeasibilityAssessment raise RootError
 
+pub fn decode_feasibility_request(String) -> FeasibilityRequest raise RootError
+
 pub fn decode_request(String) -> Request raise RootError
 
 pub fn default_options() -> Options
@@ -88,6 +90,12 @@ pub(all) enum FeasibilityAssessment {
   Inside(Array[Interval])
   Outside(String)
   Indeterminate
+}
+
+pub(all) struct FeasibilityRequest {
+  model : ConstraintModel
+  box : Array[Interval]
+  options : Options
 }
 
 pub(all) struct FeasibleBox {

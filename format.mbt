@@ -72,7 +72,7 @@ fn j_only(o : Map[String, Json], keys : Array[String]) -> Unit raise RootError {
 
 ///|
 /// Duplicate decoded keys, nonfinite numbers, unknown fields and oversized inputs are rejected.
-pub fn decode_request(source : String) -> Request raise RootError {
+fn j_document(source : String) -> Map[String, Json] raise RootError {
   guard source.length() <= 262144 else {
     raise Invalid("request exceeds 256 Ki UTF-16 units")
   }
@@ -87,8 +87,18 @@ pub fn decode_request(source : String) -> Request raise RootError {
         "invalid JSON, duplicate object key or nesting limit exceeded",
       )
   }
-  let o = j_object(value)
-  j_only(o, ["version", "variables", "equations", "box", "options"])
+  j_object(value)
+}
+
+///|
+pub fn decode_request(source : String) -> Request raise RootError {
+  decode_root_object(j_document(source))
+}
+
+///|
+fn decode_root_object(o : Map[String, Json]) -> Request raise RootError {
+  j_only(o, ["version", "mode", "variables", "equations", "box", "options"])
+  guard request_mode(o) == "roots" else { raise Invalid("expected roots mode") }
   guard j_integer(j_required(o, "version"), 1) == 1 else {
     raise Invalid("unsupported request version")
   }
@@ -111,6 +121,11 @@ pub fn decode_request(source : String) -> Request raise RootError {
     interval(j_number(a[0]), j_number(a[1]))
   })
   check_box(box, names.length())
+  { system, box, options: request_options(o), }
+}
+
+///|
+fn request_options(o : Map[String, Json]) -> Options raise RootError {
   let defaults = default_options()
   let opt = match o.get("options") {
     Some(x) => j_object(x)
@@ -132,7 +147,7 @@ pub fn decode_request(source : String) -> Request raise RootError {
     },
   }
   validate_options(options)
-  { system, box, options, }
+  options
 }
 
 ///|
@@ -168,6 +183,7 @@ fn result_json(request : Request, result : SolveResult) -> Json {
   })
   {
     "version": 1,
+    "mode": "roots",
     "variables": Json::array(request.system.names.map(x => Json::string(x))),
     "initial_box": box_json(request.box),
     "complete": Json::boolean(result.complete),
@@ -187,6 +203,24 @@ fn result_json(request : Request, result : SolveResult) -> Json {
 ///|
 /// Transport-neutral request/response entry point. Errors remain typed.
 pub fn solve_json(source : String) -> String raise RootError {
-  let request = decode_request(source)
-  result_json(request, solve(request.system, request.box, request.options)).stringify()
+  let o = j_document(source)
+  match request_mode(o) {
+    "roots" => {
+      let request = decode_root_object(o)
+      result_json(request, solve(request.system, request.box, request.options)).stringify()
+    }
+    "feasibility" => {
+      let request = decode_feasibility_object(o)
+      paving_json(request, pave(request.model, request.box, request.options)).stringify()
+    }
+    _ => raise Invalid("unsupported mode; use roots or feasibility")
+  }
+}
+
+///|
+fn request_mode(o : Map[String, Json]) -> String raise RootError {
+  match o.get("mode") {
+    None => "roots"
+    Some(x) => j_text(x)
+  }
 }

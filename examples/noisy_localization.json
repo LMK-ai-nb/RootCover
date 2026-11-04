@@ -1,0 +1,12 @@
+{
+  "version":1,
+  "mode":"feasibility",
+  "variables":["x","y"],
+  "constraints":[
+    {"expression":"x^2+y^2","range":[1.75,2.25]},
+    {"expression":"(x-4)^2+y^2","range":[9.75,10.25]},
+    {"expression":"x^2+(y-4)^2","range":[9.75,10.25]}
+  ],
+  "box":[[0,2],[0,2]],
+  "options":{"tolerance":0.015625,"max_assessments":4096}
+}
