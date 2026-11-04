@@ -4,7 +4,7 @@ Add `LMK-ai-nb/rootcover@0.1.0` to your module, and import `LMK-ai-nb/rootcover`
 in the consuming package's `moon.pkg`. Its default alias is `@rootcover`.
 The following examples are compiled and executed by `moon test`.
 
-```moonbit nocheck
+```mbt check nocheck
 ///|
 test "public typed API finds both roots" {
   let x = @rootcover.Expr::Variable(0)

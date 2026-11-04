@@ -1,6 +1,6 @@
 # 选题调查、已有项目与独立价值
 
-调查时间：2026-11-03/04。覆盖Mooncakes本地registry的3556个模块元数据、GitHub公开README/仓库元数据/部分源码、MoonBit社区站点检索及成熟外语项目。`moon update`本次曾因网络失败，不能把本地快照当作整个生态在提交时刻的完整清单；私有工程、未发布代码和所有历史版本未全面查证。原始快照保存在独立本地调研目录，不随本库分发。
+调查时间：2026-11-03/04。覆盖Mooncakes本地registry的3556个模块元数据、GitHub公开README/仓库元数据/部分源码、MoonBit社区站点检索及成熟外语项目。`moon update`本次曾因网络失败，不能把本地快照当作整个生态在提交时刻的完整清单；私有工程、未发布代码和所有历史版本未全面查证。原始快照保存在独立本地调研目录，不随本库分发。提交前另定向扫描mbmath的122份、floating的433份源码/文档，检索并阅读相关求根接口；关键词未命中不能充当不存在功能的证明。
 
 ## 首轮三个候选，均因核心重合放弃
 
@@ -21,8 +21,8 @@ RootCover是方形多元多项式方程组的**根区域求解器**。从用户�
 | 最接近的项目 | 已查证能力 | 本项目已实现贡献 | 调查/能力边界 |
 | --- | --- | --- | --- |
 | [Luna-Flow/floating](https://github.com/Luna-Flow/floating)，Apache-2.0 | 任意精度二进制/十进制、向外舍入区间、明确状态和数值语义 | 在独立binary64实现之上交付多元方程根域搜索、严格唯一性、显式未决和应用接口 | 底层区间四则存在实质能力交集，不把它们重新发明当作创新；本库不提供其任意精度和完整数值规范能力 |
-| [CAIMEOX/mbmath](https://github.com/CAIMEOX/mbmath)，Apache-2.0 | README明确包含区间算术和数值求根等，不能隐瞒 | 本版实际具备初始区域覆盖、Krawczyk证据和预算耗尽的未决输出；通过独立Fraction/AST核对 | 未声称它所有求根接口都不可能做类似事情。源码定向检索证据保存在本地，未逐一运行其全部接口 |
-| [numsolve](https://github.com/noweizongqing/numsolve)，registry Apache-2.0 | Mooncakes元数据与缓存README说明数值求根、ODE、线性系统、插值 | 关注给定区域的可确认根数与不能判定的剩余区域，实际接口与场景公开 | GitHub API/源码读取返回404，最新源码尚未查证；不基于缓存断言绝无重合 |
+| [CAIMEOX/mbmath](https://github.com/CAIMEOX/mbmath)，Apache-2.0 | README明确包含区间算术和数值求根等，不能隐瞒 | 本版实际具备初始区域覆盖、Krawczyk证据和预算耗尽的未决输出；通过独立Fraction/AST核对 | 未声称它所有求根接口都不可能做类似事情。已定向读取findroot_interval：要求端点包根的一维二分，返回单个RawMpf近似值；findroot2为有限差分Jacobian的二维Newton。未逐一运行全部接口，不宣称完全无重叠 |
+| [numsolve](https://github.com/noweizongqing/numsolve)，registry Apache-2.0 | Mooncakes元数据与缓存README说明数值求根、ODE、线性系统、插值 | 关注给定区域的可确认根数与不能判定的剩余区域，实际接口与场景公开 | 初次API读取404，随后成功读取当前源码包（25份源码/文档），roots.mbt有bisection和newton等数值接口。未全面运行其全部API，不断言绝无重合 |
 | [IntervalRootFinding.jl](https://juliaintervals.github.io/IntervalRootFinding.jl/latest/)，Julia | 多维区间求根、保证/未决状态，已存在完整成熟的同类方法 | 独立MoonBit实现、无外部数值运行时、typed/CLI/浏览器共享内核，精确有理数测试证据 | 不是方法首创或功能领先；GitHub许可元数据NOASSERTION，未逐文件核对，不复制代码 |
 | [IBEX](https://ibex-lib.readthedocs.io/en/latest/)，LGPL-3.0 | 工业级区间约束、收缩器、系统求解与全局优化 | 聚焦有界多项式根域的独立小内核与跨目标集成 | 不具备其通用表达式、超越函数、全局优化与成熟工业规模能力 |
 
