@@ -3,12 +3,12 @@
 pub(all) struct Interval {
   lo : Double
   hi : Double
-} derive(Eq, Debug)
+}
 
 ///|
 pub suberror RootError {
   Invalid(String)
-} derive(Debug)
+}
 
 ///|
 /// Adjacent IEEE-754 binary64 value, with gradual underflow.
@@ -161,3 +161,21 @@ pub extend Interval with @moonbitlang/core/debug.Debug::{to_repr}
 
 ///|
 pub extend RootError with @moonbitlang/core/debug.Debug::{to_repr}
+
+///|
+/// Explicit trait implementations work on both the October and November toolchains.
+pub impl Eq for Interval with fn equal(self, other) {
+  self.lo == other.lo && self.hi == other.hi
+}
+
+///|
+pub impl @debug.Debug for Interval with fn to_repr(self) {
+  @debug.Repr((self.lo, self.hi))
+}
+
+///|
+pub impl @debug.Debug for RootError with fn to_repr(self) {
+  match self {
+    Invalid(message) => @debug.Repr(("Invalid", message))
+  }
+}

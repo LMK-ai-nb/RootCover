@@ -7,7 +7,7 @@ pub(all) enum Expr {
   Sub(Expr, Expr)
   Mul(Expr, Expr)
   Pow(Expr, Int32)
-} derive(Debug)
+}
 
 ///|
 pub extend Expr with @debug.Debug::{to_repr}
@@ -173,4 +173,16 @@ pub fn enclose(
   validate_system(system)
   check_box(box, system.names.length())
   evaluate_unchecked(system, box)
+}
+
+///|
+pub impl @debug.Debug for Expr with fn to_repr(self) {
+  match self {
+    Const(x) => @debug.Repr(("Const", x))
+    Variable(i) => @debug.Repr(("Variable", i))
+    Add(a, b) => @debug.Repr(("Add", a, b))
+    Sub(a, b) => @debug.Repr(("Sub", a, b))
+    Mul(a, b) => @debug.Repr(("Mul", a, b))
+    Pow(a, k) => @debug.Repr(("Pow", a, k))
+  }
 }

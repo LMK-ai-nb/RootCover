@@ -1,6 +1,7 @@
 """Record actual commands and outputs; never convert a failed check to success."""
 from pathlib import Path
 import argparse,json,os,socket,subprocess,sys,time,urllib.request
+sys.stdout.reconfigure(encoding="utf-8",errors="replace")
 ROOT=Path(__file__).resolve().parents[1]
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--native',action='store_true');parser.add_argument('--browser',action='store_true');args=parser.parse_args()

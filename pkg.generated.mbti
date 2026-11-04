@@ -33,8 +33,9 @@ pub fn validate_system(System) -> Unit raise RootError
 // Errors
 pub suberror RootError {
   Invalid(String)
-} derive(@debug.Debug)
+}
 pub fn RootError::to_repr(Self) -> @debug.Repr
+pub impl @debug.Debug for RootError
 
 // Types and methods
 pub(all) enum Assessment {
@@ -65,13 +66,14 @@ pub(all) enum Expr {
   Sub(Expr, Expr)
   Mul(Expr, Expr)
   Pow(Expr, Int32)
-} derive(@debug.Debug)
+}
 pub fn Expr::to_repr(Self) -> @debug.Repr
+pub impl @debug.Debug for Expr
 
 pub(all) struct Interval {
   lo : Double
   hi : Double
-} derive(Eq, @debug.Debug)
+}
 pub fn Interval::add(Self, Self) -> Self
 pub fn Interval::contains(Self, Double) -> Bool
 pub fn Interval::equal(Self, Self) -> Bool
@@ -86,6 +88,8 @@ pub fn Interval::power(Self, Int32) -> Self raise RootError
 pub fn Interval::sub(Self, Self) -> Self
 pub fn Interval::to_repr(Self) -> @debug.Repr
 pub fn Interval::width(Self) -> Double
+pub impl Eq for Interval
+pub impl @debug.Debug for Interval
 
 pub(all) struct Options {
   tolerance : Double
