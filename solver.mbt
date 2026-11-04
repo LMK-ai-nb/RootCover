@@ -129,7 +129,9 @@ pub fn solve(
             axis = i
           }
         }
-        let mid = box[axis].midpoint()
+        // An asymmetric partition avoids repeatedly placing symmetric simple
+        // roots on a dyadic interface. Coverage does not depend on the ratio.
+        let mid = box[axis].lo * 0.47 + box[axis].hi * 0.53
         if !(mid > box[axis].lo && mid < box[axis].hi) {
           unresolved.push({
             box,

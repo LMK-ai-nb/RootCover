@@ -76,3 +76,24 @@ test "geometric intersection solves a coupled two dimensional system" {
     )
   }
 }
+
+///|
+test "asymmetric partition avoids artificial boundary roots in three dimensions" {
+  let pairs = [(-2.5, 3.25), (-3.25, 3.75), (-1.5, 0.5)]
+  let system = {
+    names: ["a", "b", "c"],
+    equations: Array::makei(3, i => {
+      Mul(
+        Sub(Variable(i), Const(pairs[i].0)),
+        Sub(Variable(i), Const(pairs[i].1)),
+      )
+    }),
+  }
+  let r = solve(
+    system,
+    [interval(-3.5, 4.25), interval(-4.25, 4.75), interval(-2.5, 1.5)],
+    default_options(),
+  )
+  assert_true(r.complete)
+  assert_eq(r.roots.length(), 8)
+}
