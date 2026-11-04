@@ -1,0 +1,9 @@
+_build/
+.mooncakes/
+.moon-lock
+artifacts/
+work/
+deliverables/
+__pycache__/
+web/engine.js
+dist/
