@@ -79,7 +79,7 @@ python scripts/verify.py --native --browser
 
 脚本记录每个真实命令、退出码和输出到 `artifacts/validation.json`。当前有24项 MoonBit 测试（含可执行 API 文档）、9项 Node 集成；独立 Python Fraction/AST oracle 覆盖2800组区间算术、182个解析可知的方程组，重新计算513份唯一解证据。Chromium 验证三场景、分支选择、预算、报告、错误输入及390px布局。有限测试不是对任意方程和后端的形式化证明。
 
-本机未配置 MSVC/Windows SDK，不能将本地的全目标静态检查写成 native 实际运行。远程 CI 的真实状态见 [发布记录](docs/RELEASE.md)，配置文件本身不是成功证据。
+本机未配置 MSVC/Windows SDK，不能将本地的全目标静态检查写成 native 实际运行。远程 Windows/macOS/Linux 四目标 CI 已实际通过，另验证 moonc 0.10.19。Mooncakes 0.1.0 已发布并从独立消费项目下载、在 Wasm-GC/JS 运行成功；证据见 [发布记录](docs/RELEASE.md)。
 
 ## 数值范围与后续工作
 

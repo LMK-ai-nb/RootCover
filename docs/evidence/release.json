@@ -1,0 +1,35 @@
+{
+  "owner": "LMK-ai-nb",
+  "version": "0.1.0",
+  "core_commit": "7198efa341951469b9c75ad23ce93daafd6a7572",
+  "ci": "https://github.com/LMK-ai-nb/RootCover/actions/runs/41817088280",
+  "ci_platforms": [
+    "Windows",
+    "macOS",
+    "Linux"
+  ],
+  "targets": [
+    "wasm",
+    "wasm-gc",
+    "js",
+    "native"
+  ],
+  "moonbit_tests": 24,
+  "node_tests": 9,
+  "interval_cases": 2800,
+  "oracle_systems": 182,
+  "exact_certificate_replays": 513,
+  "mooncakes_publish_http": 200,
+  "isolated_consumer_targets": [
+    "wasm-gc",
+    "js"
+  ],
+  "core_file_sha256": {
+    "interval.mbt": "24fcb0daf2b9d4a960093c7a2ac2984ec9c5bd8a75d4730ca8c7dbc551616cc9",
+    "polynomial.mbt": "c1d8b9de20c4f6838d6ceb5ff0679a23b27b60009b8471d6d5e376764b6e0bf1",
+    "krawczyk.mbt": "4ba5f6837a614e94a999f5f58bfff38c1b050ef981de3d538bfa65d65c544848",
+    "solver.mbt": "ffebd252f65f354d5d7ee5e1281bf09ee135a24ea2d1ccf8501add016be71862",
+    "parser.mbt": "6953b0826649a5622741fc5358730ab4615c9cee8cdc03698bf042620a84061b",
+    "format.mbt": "b6b009108d9084a7bd782359016fd7180b0bd0d32837714433f3079a86614de9"
+  }
+}
