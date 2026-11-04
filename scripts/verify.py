@@ -20,6 +20,7 @@ def main():
         run('moon','fmt','--check');run('moon','info');run('moon','run','cmd/demo')
         run('node','scripts/build.mjs');run('node','--test','tests/cli.test.mjs')
         run('moon','build','tests/probe','--target','js','--release','--deny-warn');run(sys.executable,'tests/oracle.py')
+        run(sys.executable,'tests/paving_oracle.py')
         run(sys.executable,'scripts/package_check.py')
         if args.browser:
             with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]

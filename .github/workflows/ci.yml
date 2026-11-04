@@ -56,4 +56,5 @@ jobs:
           path: |
             artifacts/validation.json
             artifacts/oracle.json
+            artifacts/paving-oracle.json
             artifacts/package-check.json

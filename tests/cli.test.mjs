@@ -49,3 +49,29 @@ test('six coupled polynomial equations return all 64 analytic combinations',()=>
   const r=run(load('coupled6'));assert.equal(r.complete,true);assert.equal(r.root_count,64);
   for(let mask=0;mask<64;mask++)assert(r.roots.some(b=>b.enclosure.every((a,i)=>contains(a,mask>>i&1?1:-1))));
 });
+test('bounded noisy localization certifies whole feasible boxes and preserves uncertain cells',()=>{
+  const r=run(load('noisy_localization'));assert.equal(r.mode,'feasibility');assert.equal(r.complete,false);
+  assert.equal(r.resolution_met,true);assert(r.inside.length>0);assert(r.unresolved.length>0);
+  assert(!Object.hasOwn(r,'root_count'));
+  assert(r.inside.some(b=>b.box.every(a=>contains(a,1))));
+  for(const b of r.inside)for(let i=0;i<3;i++){
+    const allowed=load('noisy_localization').constraints[i].range;
+    assert(b.ranges[i][0]>=allowed[0]&&b.ranges[i][1]<=allowed[1]);
+  }
+});
+test('calibration tolerance bands preserve all three feasible branches',()=>{
+  const q=load('calibration_band'),r=run(q);assert.equal(r.mode,'feasibility');assert.equal(r.resolution_met,true);
+  for(const x of [-1.8793852415718169,0.3472963553338607,1.532088886237956]){
+    assert([...r.inside,...r.unresolved].some(b=>contains(b.box[0],x)));
+  }
+});
+test('feasibility budget exhaustion remains unresolved and CLI exits one',()=>{
+  const q=load('noisy_localization');q.options.max_assessments=1;
+  const r=run(q);assert.equal(r.complete,false);assert.equal(r.resolution_met,false);assert.equal(r.unresolved.length,2);
+  const p=spawnSync(process.execPath,['bin/rootcover.mjs','-'],{input:JSON.stringify(q),encoding:'utf8'});
+  assert.equal(p.status,1);assert.equal(JSON.parse(p.stdout).mode,'feasibility');
+});
+test('inconsistent measurement bands can be proven empty without claiming a root count',()=>{
+  const q=load('calibration_band');q.constraints=[{expression:'x',range:[0.5,1]},{expression:'x',range:[-1,-0.5]}];
+  const r=run(q);assert.equal(r.complete,true);assert.equal(r.definitely_empty,true);assert.equal(r.inside.length,0);
+});
