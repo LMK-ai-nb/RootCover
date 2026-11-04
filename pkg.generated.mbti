@@ -8,6 +8,8 @@ import {
 // Values
 pub fn assess(System, Array[Interval]) -> Assessment raise RootError
 
+pub fn classify_constraints(ConstraintModel, Array[Interval]) -> FeasibilityAssessment raise RootError
+
 pub fn decode_request(String) -> Request raise RootError
 
 pub fn default_options() -> Options
@@ -22,9 +24,13 @@ pub fn next_up(Double) -> Double
 
 pub fn parse_polynomial(String, Array[String]) -> Expr raise RootError
 
+pub fn pave(ConstraintModel, Array[Interval], Options) -> PavingResult raise RootError
+
 pub fn solve(System, Array[Interval], Options) -> SolveResult raise RootError
 
 pub fn solve_json(String) -> String raise RootError
+
+pub fn validate_constraints(ConstraintModel) -> Unit raise RootError
 
 pub fn validate_system(System) -> Unit raise RootError
 
@@ -52,6 +58,16 @@ pub(all) struct Certificate {
   q : Double
 }
 
+pub(all) struct Constraint {
+  polynomial : Expr
+  allowed : Interval
+}
+
+pub(all) struct ConstraintModel {
+  names : Array[String]
+  constraints : Array[Constraint]
+}
+
 pub(all) struct Evaluation {
   ranges : Array[Interval]
   jacobian : Array[Array[Interval]]
@@ -67,6 +83,17 @@ pub(all) enum Expr {
 }
 pub fn Expr::to_repr(Self) -> @debug.Repr
 pub impl @debug.Debug for Expr
+
+pub(all) enum FeasibilityAssessment {
+  Inside(Array[Interval])
+  Outside(String)
+  Indeterminate
+}
+
+pub(all) struct FeasibleBox {
+  box : Array[Interval]
+  ranges : Array[Interval]
+}
 
 pub(all) struct Interval {
   lo : Double
@@ -93,6 +120,16 @@ pub(all) struct Options {
   tolerance : Double
   max_assessments : Int32
   max_depth : Int32
+}
+
+pub(all) struct PavingResult {
+  inside : Array[FeasibleBox]
+  unresolved : Array[UnresolvedBox]
+  complete : Bool
+  resolution_met : Bool
+  assessments : Int32
+  excluded : Int32
+  splits : Int32
 }
 
 pub(all) struct Request {

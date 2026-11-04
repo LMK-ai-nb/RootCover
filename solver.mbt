@@ -123,26 +123,16 @@ pub fn solve(
           unresolved.push({ box, reason: "depth limit reached: " + reason, })
           continue
         }
-        let mut axis = 0
-        for i = 1; i < box.length(); i = i + 1 {
-          if box[i].width() > box[axis].width() {
-            axis = i
+        let (left, right) = match bisect_box(box) {
+          Some(pair) => pair
+          None => {
+            unresolved.push({
+              box,
+              reason: "no representable interior split point",
+            })
+            continue
           }
         }
-        // An asymmetric partition avoids repeatedly placing symmetric simple
-        // roots on a dyadic interface. Coverage does not depend on the ratio.
-        let mid = box[axis].lo * 0.47 + box[axis].hi * 0.53
-        if !(mid > box[axis].lo && mid < box[axis].hi) {
-          unresolved.push({
-            box,
-            reason: "no representable interior split point",
-          })
-          continue
-        }
-        let left = box.map(x => x)
-        let right = box.map(x => x)
-        left[axis] = { lo: box[axis].lo, hi: mid, }
-        right[axis] = { lo: mid, hi: box[axis].hi, }
         stack.push((right, depth + 1))
         stack.push((left, depth + 1))
         splits = splits + 1
@@ -159,4 +149,24 @@ pub fn solve(
     contractions,
     splits,
   }
+}
+
+///|
+/// Closed children cover the parent, meeting only at their shared interface.
+fn bisect_box(box : Array[Interval]) -> (Array[Interval], Array[Interval])? {
+  let mut axis = 0
+  for i = 1; i < box.length(); i = i + 1 {
+    if box[i].width() > box[axis].width() {
+      axis = i
+    }
+  }
+  let mid = box[axis].lo * 0.47 + box[axis].hi * 0.53
+  if !(mid > box[axis].lo && mid < box[axis].hi) {
+    return None
+  }
+  let left = box.map(x => x)
+  let right = box.map(x => x)
+  left[axis] = { lo: box[axis].lo, hi: mid, }
+  right[axis] = { lo: mid, hi: box[axis].hi, }
+  Some((left, right))
 }

@@ -81,22 +81,36 @@ fn check_expr(
 
 ///|
 pub fn validate_system(system : System) -> Unit raise RootError {
-  let n = system.names.length()
-  guard n >= 1 && n <= 6 && system.equations.length() == n else {
-    raise Invalid("require 1..6 variables and equally many equations")
+  guard system.equations.length() == system.names.length() else {
+    raise Invalid("equation count must equal variable count")
+  }
+  validate_polynomials(system.names, system.equations)
+}
+
+///|
+fn validate_polynomials(
+  names : Array[String],
+  expressions : Array[Expr],
+) -> Unit raise RootError {
+  let n = names.length()
+  guard n >= 1 &&
+    n <= 6 &&
+    expressions.length() >= 1 &&
+    expressions.length() <= 32 else {
+    raise Invalid("require 1..6 variables and 1..32 polynomials")
   }
   for i = 0; i < n; i = i + 1 {
-    guard valid_name(system.names[i]) else {
+    guard valid_name(names[i]) else {
       raise Invalid("variable names must be ASCII identifiers of length 1..32")
     }
     for j = 0; j < i; j = j + 1 {
-      guard system.names[i] != system.names[j] else {
+      guard names[i] != names[j] else {
         raise Invalid("duplicate variable name")
       }
     }
   }
   let count = Ref(0)
-  for e in system.equations {
+  for e in expressions {
     let _ = check_expr(e, n, 0, count)
   }
 }
