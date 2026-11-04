@@ -48,3 +48,12 @@ jobs:
           PREVIEW_PID=$!
           trap 'kill "$PREVIEW_PID"' EXIT
           python tests/browser.py
+      - name: Upload reproducible validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-${{ matrix.os }}
+          path: |
+            artifacts/validation.json
+            artifacts/oracle.json
+            artifacts/package-check.json

@@ -21,6 +21,13 @@ with sync_playwright() as p:
     q=json.loads(page.locator('#request').input_value());q['variables'][0]='<img src=x onerror=alert(1)>'
     page.locator('#request').fill(json.dumps(q));page.locator('#run').click();expect(page.locator('#status')).to_have_text('输入无效');assert page.locator('img').count()==0
     page.locator('[data-case="geometry"]').click();expect(page.locator('#root-count')).to_have_text('2')
+    # Hold one sample fetch, then release it after a newer sample completed.
+    # This checks real out-of-order delivery without relying on arbitrary sleeps.
+    page.evaluate("""()=>{window.__originalFetch=window.fetch;window.fetch=(input,...args)=>String(input).includes('calibration.json')?new Promise(resolve=>{window.__releaseSample=()=>window.__originalFetch(input,...args).then(resolve)}):window.__originalFetch(input,...args);document.querySelector('[data-case="calibration"]').click();document.querySelector('[data-case="geometry"]').click();}""")
+    expect(page.locator('#status')).to_have_text('区域已解析');expect(page.locator('#root-count')).to_have_text('2')
+    page.evaluate('async()=>{await window.__releaseSample();window.fetch=window.__originalFetch;await Promise.resolve();}')
+    assert json.loads(page.locator('#request').input_value())['variables']==['x','y']
+    expect(page.locator('#root-count')).to_have_text('2')
     (ROOT/'docs/assets').mkdir(parents=True,exist_ok=True)
     page.screenshot(path=str(ROOT/'docs/assets/workbench.png'),full_page=True)
     page.set_viewport_size({'width':390,'height':844})

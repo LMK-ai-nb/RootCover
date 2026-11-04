@@ -10,6 +10,7 @@ def main():
         start=time.perf_counter();p=subprocess.run(cmd,cwd=ROOT,text=True,encoding='utf-8',errors='replace',capture_output=True)
         steps.append({'command':list(cmd),'exit':p.returncode,'seconds':round(time.perf_counter()-start,4),'stdout':p.stdout,'stderr':p.stderr})
         print(' '.join(cmd),'=>',p.returncode,flush=True)
+        if p.returncode==0 and (cmd[:2]==('moon','test') or cmd[:2]==('moon','version') or cmd[-1]=='tests/oracle.py'):print(p.stdout.strip(),flush=True)
         if p.returncode:print(p.stdout+p.stderr);raise RuntimeError('check failed')
     try:
         run('moon','version','--all');run('moon','check','--target','all','--deny-warn')
