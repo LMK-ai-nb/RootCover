@@ -1,0 +1,7 @@
+{
+  "version":1,
+  "variables":["x","y"],
+  "equations":["1-4*x+x^2*y","3*x-x^2*y"],
+  "box":[[0.1,2],[0.1,6]],
+  "options":{"max_assessments":12000,"tolerance":0.00000001}
+}

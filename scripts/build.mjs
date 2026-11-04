@@ -1,0 +1,10 @@
+import {spawnSync} from 'node:child_process';
+import {mkdirSync,copyFileSync,readdirSync} from 'node:fs';
+import {resolve} from 'node:path';
+const root=resolve(import.meta.dirname,'..');
+const result=spawnSync(process.platform==='win32'?'moon.exe':'moon',['build','bridge','--target','js','--release','--deny-warn'],{cwd:root,stdio:'inherit'});
+if(result.error||result.status!==0)process.exit(2);
+for(const dir of ['dist','web/data','web/licenses','dist/licenses'])mkdirSync(resolve(root,dir),{recursive:true});
+for(const file of ['dist/engine.js','web/engine.js'])copyFileSync(resolve(root,'_build/js/release/build/bridge/bridge.js'),resolve(root,file));
+for(const name of readdirSync(resolve(root,'examples')).filter(x=>x.endsWith('.json')))copyFileSync(resolve(root,'examples',name),resolve(root,'web/data',name));
+console.log('Built shared MoonBit polynomial solver.');

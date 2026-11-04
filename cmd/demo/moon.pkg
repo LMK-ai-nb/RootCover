@@ -1,0 +1,5 @@
+import {
+  "LMK-ai-nb/rootcover" @root,
+}
+
+pkgtype(kind: "executable")

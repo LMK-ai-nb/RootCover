@@ -1,0 +1,7 @@
+{
+  "version":1,
+  "variables":["x"],
+  "equations":["x^2"],
+  "box":[[-1,1]],
+  "options":{"tolerance":0.00001,"max_assessments":1000}
+}
