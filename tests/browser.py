@@ -16,6 +16,18 @@ with sync_playwright() as p:
     download=event.value;dest=ROOT/'artifacts/browser-report.json';download.save_as(dest)
     report=json.loads(dest.read_text(encoding='utf-8'));assert report['request']['box']==[[0,1]];assert report['result']['root_count']==1
     page.locator('[data-case="equilibrium"]').click();expect(page.locator('#status')).to_have_text('区域已解析');expect(page.locator('#root-count')).to_have_text('1')
+    page.locator('[data-case="noisy_localization"]').click()
+    expect(page.locator('#primary-label')).to_have_text('已确认可行盒')
+    expect(page.locator('#root-count')).to_have_text('19');expect(page.locator('#unknown-count')).to_have_text('40')
+    expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
+    with page.expect_download() as event:page.locator('#download').click()
+    event.value.save_as(ROOT/'artifacts/paving-browser-report.json')
+    report=json.loads((ROOT/'artifacts/paving-browser-report.json').read_text())
+    assert report['result']['mode']=='feasibility' and report['result']['complete'] is False
+    assert len(report['request']['constraints'])==3 and 'root_count' not in report['result']
+    page.locator('[data-case="calibration"]').click();expect(page.locator('#primary-label')).to_have_text('已确认唯一解')
+    page.locator('#tolerance-band').click();expect(page.locator('#primary-label')).to_have_text('已确认可行盒')
+    expect(page.locator('#root-count')).to_have_text('29');expect(page.locator('#unknown-count')).to_have_text('12')
     page.locator('#request').fill('{"version":1,"version":1}');page.locator('#run').click();expect(page.locator('#status')).to_have_text('输入无效')
     page.locator('[data-case="geometry"]').click();expect(page.locator('#root-count')).to_have_text('2')
     q=json.loads(page.locator('#request').input_value());q['variables'][0]='<img src=x onerror=alert(1)>'
@@ -28,6 +40,14 @@ with sync_playwright() as p:
     page.evaluate('async()=>{await window.__releaseSample();window.fetch=window.__originalFetch;await Promise.resolve();}')
     assert json.loads(page.locator('#request').input_value())['variables']==['x','y']
     expect(page.locator('#root-count')).to_have_text('2')
+    # Cancellation invalidates the in-flight sample before its response arrives.
+    before=page.locator('#request').input_value()
+    page.evaluate("""()=>{window.__originalFetch=window.fetch;window.fetch=(input,...args)=>new Promise(resolve=>{window.__releaseSample=()=>window.__originalFetch(input,...args).then(resolve)});document.querySelector('[data-case="calibration"]').click();}""")
+    page.locator('#cancel').click();expect(page.locator('#status')).to_have_text('已停止')
+    page.evaluate('async()=>{await window.__releaseSample();window.fetch=window.__originalFetch;await Promise.resolve();}')
+    assert page.locator('#request').input_value()==before
+    expect(page.locator('#status')).to_have_text('已停止')
+    page.locator('[data-case="geometry"]').click();expect(page.locator('#status')).to_have_text('区域已解析')
     (ROOT/'docs/assets').mkdir(parents=True,exist_ok=True)
     page.screenshot(path=str(ROOT/'docs/assets/workbench.png'),full_page=True)
     page.set_viewport_size({'width':390,'height':844})
@@ -35,4 +55,4 @@ with sync_playwright() as p:
     page.screenshot(path=str(ROOT/'artifacts/mobile.png'),full_page=True)
     assert not errors,errors
     browser.close()
-print('Chromium: geometry, budget, branches, equilibrium, export, duplicate JSON, injection and 390px layout passed.')
+print('Chromium including observation bands, out-of-order loads and cancellation: geometry, budget, branches, equilibrium, export, duplicate JSON, injection and 390px layout passed.')
