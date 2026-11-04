@@ -1,0 +1,7 @@
+import {
+  "LMK-ai-nb/rootcover" @root,
+}
+
+options(
+  link: { "js": { "exports": [ "run_request" ], "format": "esm" } },
+)
