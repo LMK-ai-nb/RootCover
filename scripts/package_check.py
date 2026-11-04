@@ -3,7 +3,8 @@ from pathlib import Path
 import json,re,subprocess,zipfile
 ROOT=Path(__file__).resolve().parents[1]
 subprocess.run(['moon','package','--list'],cwd=ROOT,check=True,capture_output=True)
-p=ROOT/'_build/publish/LMK-ai-nb-rootcover-0.1.0.zip'
+version=re.search(r'^version\s*=\s*"([^"]+)"',(ROOT/'moon.mod').read_text(encoding='utf-8'),re.M)[1]
+p=ROOT/'_build/publish'/f'LMK-ai-nb-rootcover-{version}.zip'
 private_contact = re.compile(rb'(?<![0-9])1[3-9][0-9]{9}(?![0-9])|[A-Za-z0-9_.+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
 with zipfile.ZipFile(p) as z:
     assert z.testzip() is None
@@ -14,7 +15,7 @@ with zipfile.ZipFile(p) as z:
         if 'third_party' not in parts:
             assert not private_contact.search(data),entry.filename
     names=[x.replace('\\','/') for x in z.namelist()]
-    for name in ['interval.mbt','polynomial.mbt','krawczyk.mbt','solver.mbt','parser.mbt','format.mbt','LICENSE']:
+    for name in ['interval.mbt','polynomial.mbt','krawczyk.mbt','solver.mbt','parser.mbt','format.mbt','paving.mbt','paving_format.mbt','LICENSE']:
         assert any(x==name or x.endswith('/'+name) for x in names),name
 report={'archive':p.name,'files':len(names),'bytes':p.stat().st_size,'privacy_scan':'passed'}
 (ROOT/'artifacts').mkdir(exist_ok=True)

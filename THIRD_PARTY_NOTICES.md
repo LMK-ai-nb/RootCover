@@ -28,3 +28,5 @@ three application examples are synthetic; no operator, laboratory, customer or
 production adoption is claimed. Native HTML/CSS/SVG assets are created in this
 repository. Generic engineering conventions do not import old project business
 implementations; see `docs/ORIGIN.md` for the relationship to earlier work.
+
+Version 0.2 adds independently implemented interval set inversion (SIVIA), following established concepts documented in IBEX and the 2016 paper linked in docs/PAVING.md. No source code or data from either is copied; neither algorithmic novelty nor full IBEX compatibility is claimed.

@@ -1,4 +1,6 @@
-# RootCover 数值语义与边界
+# RootCover 求根模式数值语义与边界
+
+本文描述roots模式；0.2新增的观测带可行域模式见[PAVING.md](PAVING.md)。非方约束只属于可行域模式。
 
 ## 数学对象
 

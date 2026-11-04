@@ -1,18 +1,18 @@
 # RootCover
 
-**在给定区域内，包围多元多项式方程组的实根，并明确保留无法判定的区域。**
+**用同一套MoonBit区间内核，计算多项式方程的根与带观测容差的可行区域。**
 
-RootCover 是独立的 MoonBit 区间求解库，面向几何计算、非单调标定和科学模型开发者。它从有限区域搜索，而不是要求调用者准备一批初值。结果区分已确认的唯一解、已排除区域与未决区域；预算耗尽不会把剩余区域标成“没有解”。
+面向几何、标定软件与科学模型开发者：从指定有限区域出发，求根模式区分唯一解域与未决区域；可行域模式区分整盒可行区域与未决覆盖，支持观测带数量多于变量数量的模型。预算耗尽时保留所有待处理区域。
 
-维护者与参赛者：**李明坤 / LMK-ai-nb**，个人参赛。项目使用 AI 辅助开发；维护者负责理解、复核与解释。独立来源与旧项目关系见 [ORIGIN](docs/ORIGIN.md)。
+维护者与参赛者：**李明坤 / LMK-ai-nb**，个人参赛。AI辅助开发，由维护者复核、理解和解释。来源与旧工程关系见[ORIGIN](docs/ORIGIN.md)。
 
-[GitHub](https://github.com/LMK-ai-nb/RootCover) · [浏览器工作台](https://lmk-ai-nb.github.io/RootCover/) · [Mooncakes](https://mooncakes.io/docs/LMK-ai-nb/rootcover) · [实际发布状态](docs/RELEASE.md)
+[GitHub](https://github.com/LMK-ai-nb/RootCover) · [在线工作台](https://lmk-ai-nb.github.io/RootCover/) · [Mooncakes](https://mooncakes.io/docs/LMK-ai-nb/rootcover) · [实际发布记录](docs/RELEASE.md)
 
-![区间求解工作台](docs/assets/workbench.png)
+![区间工作台](docs/assets/workbench.png)
 
 ## 五分钟运行
 
-已验证工具链：moonc **0.10.17+093cb8f9c** / moon 0.1.20261021，Node.js 22+，Python 3.12+ 用于验证。运行求解器本身不需要 Python、npm install、API Key 或外部数值服务。
+已验证本地moonc 0.10.17 / moon 0.1.20261021；0.1版远程另验证moonc 0.10.19。当前版本0.2.0，远程/发布状态以RELEASE.md为准。Node22+运行CLI和网页，Python3.12+仅用于验证，无第三方npm或Python运行时依赖。
 
 ```text
 moon run cmd/demo
@@ -23,53 +23,56 @@ node bin/rootcover.mjs examples/equilibrium.json
 node scripts/serve.mjs
 ```
 
-打开 `http://127.0.0.1:4188`。网页与 CLI 调用同一份 MoonBit 内核。网页在 Worker 内运行，可停止求解、改输入、限制预算、选择标定分支并导出包含原始请求的报告。发布 ZIP 如已包含编译后的 dist/web 引擎，可以直接运行 Node 演示；更改 MoonBit 后重新 build。
+打开 http://127.0.0.1:4188。网页/CLI均调用同一份MoonBit数值内核，网页使用Worker运行并支持停止、编辑请求、切换分支、加入观测容差、限制预算和导出原始请求/结果。运行时不调用外部数值API。修改MoonBit后重新build。
 
-CLI 退出码：0 为给定区域已解析；1 为保留未决区域；2 为无效输入或宿主错误。`node bin/rootcover.mjs -` 从 stdin 读取请求。
+CLI也支持 `node bin/rootcover.mjs examples/noisy_localization.json` 与 `examples/calibration_band.json`。这两类观测带示例保留未决区域，**退出码1是预期结果**：0表示所有区域已分类，1表示仍有未决，2表示无效输入/宿主错误。`resolution_met=true`不替代`complete=true`。
 
-## 已实现的计算链路
+## 两类完整计算
 
-1. 有界表达式解析与模型校验：1…6 个变量、等数量方程、+/-/*、括号、整数幂 0…16，总次数不超过 32。
-2. IEEE-754 binary64 相邻值与向外舍入区间运算，正确处理零、次正规数、符号与溢出后的保守包围。
-3. 区间前向自动微分，计算多元 Jacobian 的范围。
-4. 自然区间排除与 Krawczyk 映像收缩；只有映像严格位于内部且无穷范数收缩界小于 1，才返回唯一解证据。
-5. 确定性区域划分、根包围精化、深度/精度/预算限制，以及显式未决覆盖。
-6. 类型化 API、严格版本化 JSON、CLI、离线浏览器、三类应用示例及重根反例。
+| 模式 | 输入 | 返回 |
+| --- | --- | --- |
+| roots（默认） | 1…6个变量、等数量多项式、有限初始盒 | 区间Jacobian、Krawczyk排除/收缩、严格唯一解域、根包围与未决区域 |
+| feasibility | 1…6个变量、1…32个多项式观测带、有限初始盒 | SIVIA区域划分、整盒可行证据、未决外包围、分辨率/资源状态 |
 
-这是一套可独立运行的求解器，不调用已有数值平台计算答案。算法思想已有成熟文献和实现，不主张算法发明、全球唯一或比成熟系统更快。[同类调查与独立价值](docs/RESEARCH.md) 明确披露已有区间算术、数值求根和外语区间求解器。
+核心区间运算、表达式解析、自动微分、两类搜索与结果判定均由MoonBit实现，无第三方数值引擎、绑定或服务代理。两类方法是既有数值方法，不主张算法首创。[同类调查](docs/RESEARCH.md)披露相邻库与成熟外语项目，并说明需要独立求解层的理由。
 
-## 三个完整使用场景
+## 三个完整应用场景
 
-| 使用者与问题 | 输入和操作 | 实际预期结果 | 验证 |
-| --- | --- | --- | --- |
-| 几何工具开发者，需要一个区域内的所有圆线交点 | `geometry.json`：x²+y²−2=0、y−x=0，范围 [-1.5,1.5]² | 两个唯一解区域，分别包含 (-1,-1)、(1,1)，未决为0 | 核心测试、CLI、浏览器 |
-| 标定软件开发者，需要避免非单调曲线只返回一个逆解 | `calibration.json`：x³−3x+1=0，先查 [-2.5,2.5]，再查 [0,1] | 先包围3个分支；限定范围后仅剩约0.3472963553的一个分支 | CLI、浏览器分支操作 |
-| 科学模型开发者，需要在指定正区域找反应模型稳态 | `equilibrium.json`：1−4x+x²y=0、3x−x²y=0，x∈[0.1,2]、y∈[0.1,6] | 一个唯一解区域，包含 (1,3)，未决为0 | CLI、浏览器 |
+| 使用者/问题 | 输入和操作 | 已验证结果 |
+| --- | --- | --- |
+| 几何工具开发者求区域内圆线全部交点 | geometry.json：x²+y²−2=0、y−x=0，[-1.5,1.5]² | 两个唯一解盒包含(-1,-1)、(1,1)，无未决 |
+| 标定软件开发者处理非单调响应和容差 | calibration.json：x³−3x+1=0先查[-2.5,2.5]，再限[0,1]；另可加入±0.125响应带 | 精确模式3个分支，限范围后1个；全范围观测带得到29个整盒可行盒、12个未决盒，达到0.001分辨率 |
+| 定位工具开发者处理有界测量误差 | noisy_localization.json：三个基站距离平方带约束两个坐标，范围[0,2]² | 19个整盒可行盒、40个未决盒，未决宽度达到1/64；(1,1)被保留 |
 
-另提供三维测距镜像定位与六元耦合64根模型，实际覆盖均通过。运行 `node scripts/benchmark.mjs` 可复现合成基准。
+这些数量是固定示例的结果。可行盒数量不是解的个数；各盒包含连续多个点。观测带是调用者给定的界，不代表统计置信区间或真实传感器精度。所有示例合成，不冒称客户/设备落地。
 
-所有输入均为合成模型，不代表真实客户、实验室或工业系统。完整输入、输出含义和步骤见 [SCENARIOS](docs/SCENARIOS.md)。`singular.json` 的 x²=0 保留包含0的未决区域，不能把重根当作已确认的唯一解。
+另保留反应模型稳态、三维测距镜像位置、六元耦合64根及重根反例。每个场景的完整用户、输入、操作、输出和验证见[SCENARIOS](docs/SCENARIOS.md)。
 
-## 在自己的 MoonBit 项目中复用
+## 在MoonBit中复用
 
 ```text
-moon add LMK-ai-nb/rootcover@0.1.0
+moon add LMK-ai-nb/rootcover@0.2.0
 ```
 
-调用包中导入 `LMK-ai-nb/rootcover`。公开 API 的可执行例子在 [API.mbt.md](API.mbt.md)，单独消费包见 `cmd/demo`。
+在调用包导入 `LMK-ai-nb/rootcover`。完整可执行示例见[API.mbt.md](API.mbt.md)，所有示例随moon test编译执行。
 
-| API | 返回内容 |
+| 接口 | 功能 |
 | --- | --- |
-| `interval` / `Interval` methods | 向外舍入的闭区间计算 |
-| `parse_polynomial` / `validate_system` | 明确语法和模型边界 |
-| `enclose` | 方程和 Jacobian 区间 |
-| `assess` | 单盒排除、唯一解证据、收缩或未决 |
-| `solve` | 初始区域中的根包围、未决覆盖、完成/精度标记及统计 |
-| `decode_request` / `solve_json` | 严格 JSON 输入与传输无关的结果 |
+| interval / Interval运算 | binary64向外舍入区间 |
+| parse_polynomial / validate_system | 明确语法、节点和模型边界 |
+| enclose / assess / solve | 方程/Jacobian区间、单盒判定与根域搜索 |
+| validate_constraints / classify_constraints / pave | 非方观测带模型、整盒判定和可行域内外包围 |
+| decode_request / decode_feasibility_request / solve_json | 严格版本化请求，字符串接口按mode分派 |
 
-`complete=true` 只讨论输入初始区域，且不等于无限精度；`tolerance_met` 单独报告已确认根包围是否达到用户要求。`complete=false` 时 `root_count` 仅为已确认的根数，不能当作全部根数。完整解释见 [SEMANTICS](docs/SEMANTICS.md)。
+省略mode保持0.1版求根行为；新增 `mode:"feasibility"`。拒绝重复解码键、未知字段、非有限数、不支持表达式和资源越界。两类API均不修改输入。
 
-## 验证
+## 正确理解结果
+
+求根：只有Krawczyk映像严格位于盒内部、收缩范数上界<1时才认证唯一性；小残差不是证明。完整分类时root_count表示初始区域内不同实根数；仍有未决时它只表示已确认根数。[求根语义](docs/SEMANTICS.md)。
+
+可行域：每个inside盒的整个区间像均落在所有观测带中，所以盒内所有点满足约束；inside与unresolved联合包围初始域内全部可行点。未决盒不能标成可行或不可行。resolution_met仅描述未决盒宽度，complete单独报告是否仍有未决；不输出root_count。[可行域语义](docs/PAVING.md)。
+
+## 实际验证
 
 ```text
 python scripts/verify.py --browser
@@ -77,16 +80,12 @@ python scripts/verify.py --browser
 python scripts/verify.py --native --browser
 ```
 
-脚本记录每个真实命令、退出码和输出到 `artifacts/validation.json`。当前有24项 MoonBit 测试（含可执行 API 文档）、9项 Node 集成；独立 Python Fraction/AST oracle 覆盖2800组区间算术、182个解析可知的方程组，重新计算513份唯一解证据。Chromium 验证三场景、分支选择、预算、报告、错误输入及390px布局。有限测试不是对任意方程和后端的形式化证明。
+33项MoonBit测试（含3项公开API文档）、13项Node集成。原求根核对：2800组区间、182个已知系统、513份唯一性证据重放。新增可行域核对：37个模型、1310个内包围盒精确重放、4413个有理数网格点覆盖检查。Python Fraction/AST参考不使用本项目的舍入、搜索或求解代码。
 
-本机未配置 MSVC/Windows SDK，不能将本地的全目标静态检查写成 native 实际运行。远程 Windows/macOS/Linux 四目标 CI 已实际通过，另验证 moonc 0.10.19。Mooncakes 0.1.0 已发布并从独立消费项目下载、在 Wasm-GC/JS 运行成功；证据见 [发布记录](docs/RELEASE.md)。
+Chromium实际测试包括根/容差场景、分支、预算、报告、坏JSON、注入文本、乱序样例响应、取消与390px布局。原始命令/退出码/输出写入artifacts，CI上传验证JSON。有限测试不是全实现形式化证明；本地未配置MSVC，native实际运行以远程CI证据为准。
 
-## 数值范围与后续工作
+## 范围
 
-本版专注**单一有限区域内的方形多项式方程组**。不支持超越函数、复根、符号精确因式分解、非方系统、全局优化、区间不确定系数、自动读取真实实验数据或安全认证。小残差不构成唯一性保证。边界根、重根、病态模型或资源限制可能保留未决。
+多项式仅支持+、-、*、括号与整数幂0…16，总次数≤32、全模型节点≤512、深度≤32。系数和输入边界按binary64点值解释，观测带是多项式输出约束；不等于系数不确定族、精确十进制、超越函数、复数、全局优化或统计概率。最多20000次评估、搜索深度80。重根、边界、病态和资源限制均可能留下未决。
 
-字面量系数与边界按 binary64 数值解释，不承诺精确十进制语义。包围论证依赖 IEEE-754 正确舍入和渐进下溢，不应使用破坏这些语义的 fast-math。最多512个表达式节点、深度32；最多20000次区域评估、搜索深度80。复杂度仍可能很高，浏览器使用 Worker 隔离与取消。
-
-下一阶段优先做经许可的真实模型集成、严重缩放/病态问题的系统评测、可选更高精度后端及更有效的分割策略；这些未实现能力不列入当前申报承诺。
-
-MIT；[依赖与来源](THIRD_PARTY_NOTICES.md)。报名仅准备事实清单和本人填写提纲，未代提交或确认承诺；[规则核对](docs/RULES_2026-11-04.md)。
+MIT，标准库许可和NOTICE随分发保留；[来源](THIRD_PARTY_NOTICES.md)。真实工业模型采用、系统规模/病态评测、更高精度后端尚未完成，不列为本轮已具备能力。官方报名和审核结果见规则记录，技术发布不构成通过初审。
