@@ -2,7 +2,7 @@
 
 本地Windows，moonc 0.10.17+093cb8f9c / moon 0.1.20261021，Node22+、Python3.13。真实命令记录在本地artifacts/validation.json，独立核对在artifacts/oracle.json。
 
-执行 `python scripts/verify.py --browser`，覆盖全目标静态检查、wasm/wasm-gc/js三目标的测试和构建、格式、公开接口、typed demo、JS桥接、CLI、精确有理数oracle、真实发布归档和Chromium。23项MoonBit测试（含API文档）、7项Node集成、2800组区间运算、180个解析已知模型、447份唯一性证据重放通过。浏览器检查三场景、分支、预算、下载、原始重复JSON键、注入文本与390px布局。
+执行 `python scripts/verify.py --browser`，覆盖全目标静态检查、wasm/wasm-gc/js三目标的测试和构建、格式、公开接口、typed demo、JS桥接、CLI、精确有理数oracle、真实发布归档和Chromium。24项MoonBit测试（含API文档）、9项Node集成、2800组区间运算、182个解析已知模型、513份唯一性证据重放通过。浏览器检查三场景、分支、预算、下载、原始重复JSON键、注入文本与390px布局。
 
 最初独立核对发现对称分割把某些简单根放在接口，造成保守未决；实现改用确定性非对称分割，并加入三维8根回归。没有通过删除失败输入或伪造完成标记掩盖该问题。边界根和重根仍如实保留未决。
 

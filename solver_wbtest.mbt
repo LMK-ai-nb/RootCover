@@ -97,3 +97,34 @@ test "asymmetric partition avoids artificial boundary roots in three dimensions"
   assert_true(r.complete)
   assert_eq(r.roots.length(), 8)
 }
+
+///|
+test "six coupled nonlinear equations cover all sixty-four analytic roots" {
+  let equations = Array::makei(6, i => {
+    let a = Sub(Pow(Variable(i), 2), Const(1.0))
+    let b = Sub(Pow(Variable((i + 1) % 6), 2), Const(1.0))
+    Add(a, Mul(Const(0.03125), b))
+  })
+  let s = { names: ["a", "b", "c", "d", "e", "f"], equations, }
+  let r = solve(s, Array::make(6, interval(-1.5, 1.5)), {
+    tolerance: 0.0000001,
+    max_assessments: 20000,
+    max_depth: 60,
+  })
+  assert_true(r.complete)
+  assert_eq(r.roots.length(), 64)
+  for mask in 0..<64 {
+    assert_true(
+      r.roots.any(b => {
+        let mut found = true
+        for j in 0..<6 {
+          let x = if (mask >> j) % 2 == 0 { -1.0 } else { 1.0 }
+          if !b.enclosure[j].contains(x) {
+            found = false
+          }
+        }
+        found
+      }),
+    )
+  }
+}

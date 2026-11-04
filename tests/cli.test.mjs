@@ -41,3 +41,11 @@ test('CLI exit status distinguishes complete, unresolved and invalid',()=>{
   const p=spawnSync(process.execPath,['bin/rootcover.mjs','-'],{input:'{"version":9}',encoding:'utf8'});
   assert.equal(p.status,2);assert(JSON.parse(p.stdout).error);
 });
+test('three-dimensional range localization preserves both mirror solutions',()=>{
+  const r=run(load('localization'));assert.equal(r.complete,true);assert.equal(r.root_count,2);
+  for(const z of [-2,2])assert(r.roots.some(b=>b.enclosure.every((a,i)=>contains(a,[1,1,z][i]))));
+});
+test('six coupled polynomial equations return all 64 analytic combinations',()=>{
+  const r=run(load('coupled6'));assert.equal(r.complete,true);assert.equal(r.root_count,64);
+  for(let mask=0;mask<64;mask++)assert(r.roots.some(b=>b.enclosure.every((a,i)=>contains(a,mask>>i&1?1:-1))));
+});

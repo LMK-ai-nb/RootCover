@@ -92,6 +92,9 @@ for _ in range(30):
     a=rng.randint(-9,9)/4;k=rng.randint(1,8)
     q={'version':1,'variables':['x'],'equations':[f'(x-({a}))^2+{k}'],'box':[[a-4,a+4]]}
     messages.append({'kind':'solve','request':q});expected.append((q,[]))
+for name,roots in [('localization',[(F(1),F(1),F(-2)),(F(1),F(1),F(2))]),('coupled6',list(itertools.product([F(-1),F(1)],repeat=6)))]:
+    q=json.loads((ROOT/'examples'/f'{name}.json').read_text(encoding='utf-8'))
+    messages.append({'kind':'solve','request':q});expected.append((q,roots))
 proc=subprocess.run(['node','tests/oracle_bridge.mjs'],cwd=ROOT,input='\n'.join(json.dumps(x) for x in messages)+'\n',text=True,capture_output=True,timeout=180,check=True)
 answers=[json.loads(x) for x in proc.stdout.splitlines()];assert len(answers)==len(messages),(len(answers),proc.stderr)
 assert len(answers[0])==len(rows)
