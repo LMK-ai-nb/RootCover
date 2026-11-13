@@ -36,6 +36,8 @@ pub fn interval(Double, Double) -> Interval raise RootError
 
 pub fn interval_newton(System, Array[Interval], max_rounds? : Int32) -> Contraction raise RootError
 
+pub fn new_paving_session(String) -> PavingSession raise RootError
+
 pub fn next_down(Double) -> Double
 
 pub fn next_up(Double) -> Double
@@ -51,6 +53,8 @@ pub fn pave_configured(ConstraintModel, Array[Interval], Options, ContractorOpti
 pub fn pave_predicate(PredicateProblem, Array[Interval], Options, ContractorOptions, SearchPolicy) -> PredicateResult raise RootError
 
 pub fn pave_with_contractors(ConstraintModel, Array[Interval], Options, ContractorOptions) -> PavingResult raise RootError
+
+pub fn restore_paving_session(String) -> PavingSession raise RootError
 
 pub fn solve(System, Array[Interval], Options) -> SolveResult raise RootError
 
@@ -208,6 +212,12 @@ pub(all) struct PavingResult {
   contractions : Int32
   contractor_calls : Int32
 }
+
+type PavingSession
+pub fn PavingSession::advance(Self, Int32) -> Unit raise RootError
+pub fn PavingSession::checkpoint(Self) -> String
+pub fn PavingSession::envelope(Self) -> String
+pub fn PavingSession::snapshot(Self) -> String
 
 pub(all) enum Predicate {
   Atom(Int32)

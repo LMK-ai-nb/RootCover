@@ -1,6 +1,6 @@
 name = "LMK-ai-nb/rootcover"
 
-version = "0.4.0-dev.1"
+version = "0.5.0-dev.1"
 
 readme = "README.md"
 
@@ -14,8 +14,9 @@ keywords = [
   "root-finding",
   "numerical-analysis",
   "set-inversion",
+  "nonlinear-constraints",
 ]
 
 preferred_target = "wasm-gc"
 
-description = "Polynomial root enclosures and bounded-observation feasible regions, with outward intervals, automatic Jacobians, Krawczyk contraction and explicit unresolved coverage."
+description = "Nonlinear root enclosures and composable constraint feasible regions, with elementary intervals, joint contractors, precision-aware search and verified resumable paving."

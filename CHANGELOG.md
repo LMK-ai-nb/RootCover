@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0-dev.1 — 2026-11-13 — local only
+
+- Owned feasible-set sessions with chunked advancement and persistent global budgets.
+- Covering-trace checkpoints revalidate partitions, contraction and terminal evidence.
+- Atomic CLI saves and a browser workbench for save/load/continue/cancel/export.
+-65 MoonBit tests per target,25 original CLI and8 session tests;48-model independent regression.
+- Root-mode resume and changing original budgets/models remain unsupported.
+
 ## 0.4.0-dev.1 — 2026-11-13 — local only
 
 - Positive All/Any/AtLeast constraints, conservative quorum hulls and per-atom evidence.

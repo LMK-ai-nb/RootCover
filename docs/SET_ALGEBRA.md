@@ -47,7 +47,7 @@ strategy为dfs/bfs；split为widest/scaled/smear。smear为本库的Jacobian相�
 
 逐变量允许宽度为 `max(atol[i], rtol*minimum_abs(box[i]))`，相对项向下舍入；盒跨0时相对项为0，防止远端数量级掩盖零附近细节。rtol∈[0,1]，atol必须为每变量一个正有限值。省略逐变量精度使用原tolerance；默认dfs/widest/rtol0保留旧行为。
 
-relative_scale和实际精度会导出。达到精度不证明存在根/可行点。预算没处理的盒标pending，已经处理仍无法判定的盒标unknown；两者都属于unresolved。该标签不是检查点，也没有持久化恢复接口。
+relative_scale和实际精度会导出。达到精度不证明存在根/可行点。预算没处理的盒标pending，已经处理仍无法判定的盒标unknown；两者都属于unresolved。单次结果的标签不是检查点；0.5可行域另有保存可复核轨迹的会话接口，见SESSIONS.md；求根仍没有恢复接口。
 
 ## 场景
 

@@ -61,4 +61,5 @@ jobs:
             artifacts/package-check.json
             artifacts/nonlinear-oracle.json
             artifacts/predicate-oracle.json
+            artifacts/session-oracle.json
             artifacts/intervalrootfinding-comparison.json

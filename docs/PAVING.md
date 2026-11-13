@@ -24,6 +24,6 @@ complete表示无未决，resolution_met仅表示所有未决盒达到要求宽�
 
 ## 预算与局限
 
-全查询共享contractors.max_steps；每次收缩还限max_rounds。额度耗尽不宣称固定点，不丢待处理盒；改用区间判定和细分。搜索另受max_assessments/max_depth和精度控制，可选DFS/BFS。输出status=pending专指assessment预算耗尽而未处理的盒，其他不能判定的盒为unknown；两者均在unresolved中，不支持序列化恢复。
+全查询共享contractors.max_steps；每次收缩还限max_rounds。额度耗尽不宣称固定点，不丢待处理盒；改用区间判定和细分。搜索另受max_assessments/max_depth和精度控制，可选DFS/BFS。输出status=pending专指assessment预算耗尽而未处理的盒，其他不能判定的盒为unknown；两者均在unresolved中。0.5可行域会话另支持分步暂停和可复核序列化，见SESSIONS.md；不能把单次结果直接当作检查点。
 
 宽自然区间像、周期逆像凸包、高维、奇异、厚度很窄、域边界或资源限制都可能产生大量未决。固定点不保证全局最优或存在可行点，不支持优化目标/整数/任意精度。具体算法见[NONLINEAR](NONLINEAR.md)。

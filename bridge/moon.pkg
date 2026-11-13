@@ -3,5 +3,7 @@ import {
 }
 
 options(
-  link: { "js": { "exports": [ "run_request" ], "format": "esm" } },
+  link: {
+    "js": { "exports": [ "run_request", "run_session" ], "format": "esm" },
+  },
 )

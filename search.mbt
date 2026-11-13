@@ -95,6 +95,25 @@ fn WorkQueue::empty(self : WorkQueue) -> Bool {
 }
 
 ///|
+fn WorkQueue::peek(self : WorkQueue) -> (Array[Interval], Int32) {
+  match self.order {
+    DepthFirst => self.cells[self.cells.length() - 1]
+    BreadthFirst => self.cells[self.head]
+  }
+}
+
+///|
+fn WorkQueue::pending(self : WorkQueue) -> Array[(Array[Interval], Int32)] {
+  let count = self.cells.length() - self.head
+  Array::makei(count, i => {
+    match self.order {
+      DepthFirst => self.cells[self.cells.length() - i - 1]
+      BreadthFirst => self.cells[self.head + i]
+    }
+  })
+}
+
+///|
 fn WorkQueue::take(self : WorkQueue) -> (Array[Interval], Int32) {
   match self.order {
     DepthFirst => self.cells.pop().unwrap()

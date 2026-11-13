@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RootCover · 分步求解</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="session.css"></head>
+<body>
+<header><a class="brand" href="./"><span class="mark">RC</span><b>RootCover</b><span class="tag">0.5 · 本地开发版</span></a><nav><a href="./">完整求解 ↗</a><a href="https://github.com/LMK-ai-nb/RootCover" target="_blank" rel="noreferrer">GitHub ↗</a></nav></header>
+<main>
+<section class="intro"><div><p class="eyebrow">ROOTCOVER · CONTINUOUS WORK</p><h1>算到一半，<br>也能接着算。</h1><p class="lead">把非线性可行域搜索分成多步。保存当前进度，稍后载入继续；已确认可行区域、待处理区域和边界未决分别保留。</p></div><aside><span class="live-dot"></span> 计算与文件均留在本机<p>继续同一条搜索<br>沿用精度与累计预算<br>载入时复核已有判定</p><small>李明坤 / LMK-ai-nb</small></aside></section>
+<section class="session-layout">
+<div class="panel"><div class="panel-title"><h2>问题与每步工作量</h2><span>FEASIBILITY / v1</span></div>
+<label for="session-example">使用场景</label><select id="session-example"><option value="design_alternatives">两个非线性设计方案</option><option value="thermal_parameters">指数响应参数估计</option><option value="robust_localization">允许一条异常测距</option><option value="scaled_parameters">混合量纲参数估计</option></select>
+<label for="session-request">约束请求 JSON</label><textarea id="session-request" spellcheck="false"></textarea>
+<label for="session-steps">每步最多评估的区域数</label><input id="session-steps" type="number" min="1" max="20000" step="1" value="100">
+<div class="actions"><button id="session-start" class="primary" disabled>开始分步求解 <span>→</span></button><button id="session-cancel" disabled>停止</button></div>
+<p class="hint">本页支持普通约束与 all / any / at_least 组合。求根模式请使用完整求解工作台。每步只增加工作量，不重置原请求的总评估、收缩和深度预算。</p></div>
+<div class="results"><div class="session-metrics"><div><small>已确认可行盒</small><strong id="session-inside">—</strong></div><div><small>待处理</small><strong id="session-pending">—</strong></div><div><small>边界未决</small><strong id="session-unknown">—</strong></div><div><small>累计评估</small><strong id="session-assessments">—</strong></div></div>
+<div class="panel session-progress"><div class="panel-title"><h2>搜索进度</h2><b id="session-status" role="status">正在载入场景</b></div><p id="session-summary" class="muted">开始后可以随时保存最近完成的一步。</p><label for="session-budget">已使用的评估预算</label><progress id="session-budget" value="0" max="1"></progress><p id="session-budget-text" class="hint">这表示预算使用量，不是求解完成百分比。</p>
+<div class="session-buttons"><button id="session-continue" class="primary" disabled>继续下一步 →</button><button id="session-save" disabled>保存进度 ↓</button><button id="session-load">载入进度 ↑</button><input type="file" id="session-file" accept="application/json,.json" hidden></div>
+<p class="hint">进度文件保存原问题与搜索轨迹。载入会复核已有判定，耗时随记录增加。停止会保留最近已完成的一步；正在执行的这一步会取消。</p></div>
+<div class="panel"><div class="panel-title"><h2>本步结果</h2><button id="session-report" disabled>导出结果 ↓</button></div><p id="session-result-note" class="muted">可行盒数量不是解的数量。待处理和边界未决都可能包含可行点。</p><details><summary>查看完整区间和证据</summary><pre id="session-raw">尚未计算</pre></details></div></div>
+</section>
+<section class="scope"><b>可以继续到哪里</b><p>“待处理”可以在剩余总预算内继续；达到精度、深度或数值表示限制的“边界未决”会保留，重复点击不会把它变成可行区域。当前不支持更改模型或提高原有预算后直接沿用旧会话，也不是求根模式的检查点。完整求解工作台保留原来的求根与可行域功能。</p></section>
+</main><footer>RootCover · MoonBit 核心 · 本地开发版<a href="./">返回完整求解工作台 ↗</a></footer><script type="module" src="session-app.js"></script>
+</body></html>

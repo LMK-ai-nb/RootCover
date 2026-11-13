@@ -113,7 +113,8 @@ fn paving_json(request : FeasibilityRequest, result : PavingResult) -> Json {
       "box": box_json(b.box),
       "reason": Json::string(b.reason),
       "status": Json::string(
-        if b.reason == "assessment budget exhausted" {
+        if b.reason == "assessment budget exhausted" ||
+          b.reason == "session paused with pending work" {
           "pending"
         } else {
           "unknown"

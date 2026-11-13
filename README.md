@@ -2,7 +2,7 @@
 
 **MoonBit 非线性约束区间求解库：区域求根、等式、不等式与带误差观测的可行域。**
 
-当前工作副本是 **0.4.0-dev.1，本地开发版，尚未推送或发布**。GitHub、Pages和Mooncakes仍为0.2.0，不能用`moon add`取得本轮新增能力。维护者：李明坤 / LMK-ai-nb。[来源与历史关系](docs/ORIGIN.md)。
+当前工作副本是 **0.5.0-dev.1，本地开发版，尚未推送或发布**。GitHub、Pages和Mooncakes仍为0.2.0，不能用`moon add`取得本轮新增能力。维护者：李明坤 / LMK-ai-nb。[来源与历史关系](docs/ORIGIN.md)。
 
 面向机构计算、参数估计和科学模型开发者，求解给定区域中的多个解或可行参数范围。核心、解析、区间导数、收缩与搜索均用MoonBit独立实现，不依赖Julia、外部数值引擎或网络服务运行。既有数值方法与成熟实现已披露，不主张算法首创或全面超越已有求解器。
 
@@ -30,6 +30,15 @@ node scripts/serve.mjs
 ## 本轮已实现
 
 0.4新增正公式all/any/at_least、异常观测共识、逐变量绝对/相对精度、BFS与归一化/Jacobian影响划分。完整[同类检索与取舍](docs/LANDSCAPE_2026-11-13.md)、[语义和例子](docs/SET_ALGEBRA.md)。
+
+0.5新增可行域会话：分步推进、保存/核验/恢复，保留累计预算、深度与精度，覆盖普通约束和正公式。类型化API、CLI和[浏览器分步工作台](web/session.html)共享MoonBit实现；求根恢复尚未实现。详见[SESSIONS](docs/SESSIONS.md)。
+
+```text
+node bin/rootcover.mjs examples/robust_localization.json --steps 10 --checkpoint robust.rootcover-checkpoint.json
+node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 --checkpoint robust.rootcover-checkpoint.json
+```
+
+浏览器入口为 http://127.0.0.1:4188/session.html 。进度载入会复核轨迹，存在随记录增长的验证开销；当前不支持提高原预算或改变模型后沿用会话。
 
 
 | 能力 | 接口和范围 |
@@ -87,10 +96,10 @@ mpmath1.3.0仅用于100位独立验证。浏览器测试另需`pip install playw
 
 实际运行Julia1.13.3 / IntervalRootFinding.jl0.7.2：20模型、Newton和Krawczyk共40次；16常规模型唯一根数量吻合，3奇异/边界模型均未决，极点处理有一处已披露差异。不是全API兼容或速度排名。[基准与复现](docs/BASELINE.md)。
 
-当前wasm/wasm-gc/js各58项测试、25项CLI及完整21步均通过。旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；高精度函数/导数、134模型在三种机制下共402次收缩保留继续通过。正公式另有54模型、284份精确内盒证据、162次配置收缩及24组搜索策略验证。有限测试不是形式化证明。
+当前wasm/wasm-gc/js各65项测试、25项原CLI及8项会话JS/CLI通过。旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；高精度函数/导数、134模型在三种机制下共402次收缩保留继续通过。正公式另有54模型、284份精确内盒证据、162次配置收缩及24组搜索策略验证；会话另有48模型、548份状态、9074次精确内盒核对及44791次可行样本覆盖检查。有限测试不是形式化证明。
 
 ## 边界与来源
 
-实数、binary64点常数和有限初始区域。不支持任意精度、复根、整数、全局优化、任意回调/显式Jacobian、否定/量词、搜索恢复或严格不等式。重根、边界、奇异/非光滑、宽区间、高维和资源限制均可能未决；32变量是输入上限，不是大规模完成保证。
+实数、binary64点常数和有限初始区域。不支持任意精度、复根、整数、全局优化、任意回调/显式Jacobian、否定/量词、求根会话恢复或严格不等式。重根、边界、奇异/非光滑、宽区间、高维和资源限制均可能未决；32变量是输入上限，不是大规模完成保证。
 
-MIT，标准库许可和NOTICE随分发保留。[调研](docs/RESEARCH.md)、[第三方来源](THIRD_PARTY_NOTICES.md)。0.3/0.4均是本仓库0.2基础上的扩展；来源、已有项目重合和未实现边界如实披露，本地开发不代表官方审核通过。
+MIT，标准库许可和NOTICE随分发保留。[调研](docs/RESEARCH.md)、[第三方来源](THIRD_PARTY_NOTICES.md)。0.3/0.4/0.5均是本仓库0.2基础上的扩展；来源、已有项目重合和未实现边界如实披露，本地开发不代表官方审核通过。

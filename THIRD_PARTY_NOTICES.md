@@ -1,5 +1,7 @@
 # Sources and dependencies
 
+0.5 feasible-set sessions reference IBEX COV/search-state and IntervalRootFinding iterable-search concepts (docs/SESSIONS.md). Covering-trace storage and verification are independently implemented; no upstream code is copied or linked, and the format does not claim COV interoperability.
+
 Copyright for the independent RootCover implementation: 2026 李明坤 / LMK-ai-nb.
 Original source is MIT. AI assisted implementation, research, tests and documentation;
 the maintainer remains responsible for understanding and reviewing the work.

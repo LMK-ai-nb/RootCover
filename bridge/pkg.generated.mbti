@@ -4,6 +4,8 @@ package "LMK-ai-nb/rootcover/bridge"
 // Values
 pub fn run_request(String) -> String
 
+pub fn run_session(String, Int32, String) -> String
+
 // Errors
 
 // Types and methods

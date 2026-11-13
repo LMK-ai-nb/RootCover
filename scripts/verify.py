@@ -19,10 +19,12 @@ def main():
             run('moon','test','--target',target,'--deny-warn');run('moon','build','--target',target,'--deny-warn')
         run('moon','fmt','--check');run('moon','info');run('moon','run','cmd/demo')
         run('node','scripts/build.mjs');run('node','--test','tests/cli.test.mjs')
+        run('node','--test','tests/session.test.mjs')
         run('moon','build','tests/probe','--target','js','--release','--deny-warn');run(sys.executable,'tests/oracle.py')
         run(sys.executable,'tests/paving_oracle.py')
         run(sys.executable,'tests/nonlinear_oracle.py')
         run(sys.executable,'tests/predicate_oracle.py')
+        run(sys.executable,'tests/session_oracle.py')
         run(sys.executable,'scripts/compare_intervalrootfinding.py')
         run(sys.executable,'scripts/package_check.py')
         if args.browser:

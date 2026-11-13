@@ -11,3 +11,4 @@ web/licenses/
 dist/
 
 .venv/
+*.rootcover-checkpoint.json

@@ -1,0 +1,673 @@
+{
+  "version": "0.5.0-dev.1",
+  "status": "local only; no push or publication",
+  "checked_on": "2026-11-13",
+  "moon": "0.1.20261021",
+  "moonc": "0.10.17+093cb8f9c",
+  "strict_all_target_static_check": true,
+  "executed_targets": [
+    "wasm",
+    "wasm-gc",
+    "js"
+  ],
+  "moonbit_tests_each": 65,
+  "distinct_moonbit_tests": 65,
+  "cli_tests": 25,
+  "browser_passed": true,
+  "native_executed": false,
+  "native_reason": "local MSVC/Windows SDK is not configured",
+  "full_steps": 23,
+  "raw_local_validation_sha256": "e73854301644801533105847cd11085c01fd2f529a692f7a212965c302507182",
+  "commands": [
+    {
+      "command": [
+        "moon",
+        "version",
+        "--all"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "check",
+        "--target",
+        "all",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "test",
+        "--target",
+        "wasm",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "build",
+        "--target",
+        "wasm",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "test",
+        "--target",
+        "wasm-gc",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "build",
+        "--target",
+        "wasm-gc",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "test",
+        "--target",
+        "js",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "build",
+        "--target",
+        "js",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "fmt",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "info"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "run",
+        "cmd/demo"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "node",
+        "scripts/build.mjs"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/cli.test.mjs"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/session.test.mjs"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "build",
+        "tests/probe",
+        "--target",
+        "js",
+        "--release",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "tests/oracle.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "tests/paving_oracle.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "tests/nonlinear_oracle.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "tests/predicate_oracle.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "tests/session_oracle.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "scripts/compare_intervalrootfinding.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "scripts/package_check.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python",
+        "tests/browser.py",
+        "http://127.0.0.1:62004"
+      ],
+      "exit": 0
+    }
+  ],
+  "core_file_sha256": {
+    "interval.mbt": "24fcb0daf2b9d4a960093c7a2ac2984ec9c5bd8a75d4730ca8c7dbc551616cc9",
+    "elementary.mbt": "89aa52cce0a314d648f45e1c02f889ce102ab03678b837d3eabee8fb36fedbba",
+    "expression.mbt": "6867eb51611a770dc765c4678c0eed44adf61e710fb7cba8d6c15ff9025f72df",
+    "polynomial.mbt": "a0f8a6dd414960179699adf9e2efd3f774f2eed4e6b23b17d2ee74de4e74f6ce",
+    "parser.mbt": "6a6146cf93ae729c8e9923a9e71cb44e4185a4f7bc1aea8eac3c83857319e744",
+    "krawczyk.mbt": "36ce66dcae91baa90fc01b9e22ce9a76d5c167417485276e8234bc04e3c652a8",
+    "contractor.mbt": "72d02abe4cc08f5a4f4a81b81ac51c04c2e01b8f08cbd0d5a021ab8647374c9a",
+    "contractor_format.mbt": "b7b75f5227ff133890767ce0444438334d45420d01535351fc05d19c69f9e0d6",
+    "solver.mbt": "b1fb5c978cfc8db79e9c07db341be8c556151a604a63c49ffbcaa6f9c2128ab6",
+    "paving.mbt": "242176ac76efe3f003aaa3ec8f565bdd7edfe1ef26cac94d5df86278f12e3d9f",
+    "format.mbt": "7f7f39099177230a513d22a0825466f2e70f631fe9e28389246725e9de16bde9",
+    "paving_format.mbt": "1be4f8b7486f302a337ea31fcaba3f49414015746139bfc783a2ee7ebb5bc77c",
+    "search.mbt": "4e523da8d61504f2aa2a133221c835b25427da4b6612688e4d16a18d2ebbf9e0",
+    "predicate.mbt": "97a10068905bcf211dc43ca95f6b48631d46ff9d70609a8a9a730852531bfae5",
+    "predicate_format.mbt": "4858c616946b0f725501026279b04013c158940622897aba061410e3fa62a961",
+    "session.mbt": "2546be4a73915b106268c28ba1ef3885249bb2b1bf46b312b973429b64743ba5"
+  },
+  "root_oracle": {
+    "seed": 20261104,
+    "interval_cases": 2800,
+    "systems": 182,
+    "exact_certificate_replays": 513,
+    "passed": true
+  },
+  "paving_oracle": {
+    "systems": 37,
+    "exact_inner_box_replays": 1215,
+    "rational_grid_points": 4413,
+    "passed": true
+  },
+  "nonlinear_oracle": {
+    "passed": true,
+    "seed": 20261111,
+    "mpmath_version": "1.3.0",
+    "decimal_digits": 100,
+    "expression_boxes": 525,
+    "high_precision_values": 4076,
+    "high_precision_derivatives": 5900,
+    "contractor_models": 134,
+    "contractor_runs": 402,
+    "contractor_grid_checks": 21114,
+    "root_systems": 19,
+    "nonlinear_feasible_scenarios": 3,
+    "feasible_cell_points": 14562
+  },
+  "predicate_oracle": {
+    "passed": true,
+    "seed": 20261113,
+    "rational_formula_models": 54,
+    "exact_inner_formula_certificates": 284,
+    "rational_feasible_samples": 920,
+    "configured_contractor_runs": 162,
+    "contractor_preserved_samples": 2760,
+    "root_search_policy_cases": 24,
+    "new_scenarios": 3,
+    "high_precision_inner_points": 3825
+  },
+  "julia_comparison": {
+    "passed": true,
+    "julia_version": "1.13.3",
+    "intervalrootfinding_version": "0.7.2",
+    "models": 20,
+    "julia_method_runs": 40,
+    "regular_models_matching_both_methods": 16,
+    "shared_singular_unresolved_models": 3,
+    "semantic_differences": [
+      {
+        "name": "pole_without_root",
+        "reason": "RootCover excludes 1/x=0 algebraically on defined points; Julia retains an unknown box at the pole."
+      }
+    ],
+    "cases": [
+      {
+        "name": "documented_four_roots",
+        "rootcover_unique": 4,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 4,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 4,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "fixed_point",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "exponential_decay",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "log_domain",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "sqrt_domain",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "nested_transcendentals",
+        "rootcover_unique": 2,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 2,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 2,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "atan",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "asin",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "acos",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "sinh",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "cosh",
+        "rootcover_unique": 2,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 2,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 2,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "tanh",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "pole_without_root",
+        "rootcover_unique": 0,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 0,
+            "unknown": 1
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 0,
+            "unknown": 1
+          }
+        ]
+      },
+      {
+        "name": "absolute_corner",
+        "rootcover_unique": 0,
+        "rootcover_unresolved": 1,
+        "rootcover_complete": false,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 0,
+            "unknown": 1
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 0,
+            "unknown": 1
+          }
+        ]
+      },
+      {
+        "name": "sqrt_boundary",
+        "rootcover_unique": 0,
+        "rootcover_unresolved": 1,
+        "rootcover_complete": false,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 0,
+            "unknown": 1
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 0,
+            "unknown": 1
+          }
+        ]
+      },
+      {
+        "name": "multiple_log_root",
+        "rootcover_unique": 0,
+        "rootcover_unresolved": 1,
+        "rootcover_complete": false,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 0,
+            "unknown": 1
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 0,
+            "unknown": 1
+          }
+        ]
+      },
+      {
+        "name": "trigonometric_2d",
+        "rootcover_unique": 2,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 2,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 2,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "robot_2r",
+        "rootcover_unique": 2,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 2,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 2,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "coupled_12d",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      },
+      {
+        "name": "coupled_32d",
+        "rootcover_unique": 1,
+        "rootcover_unresolved": 0,
+        "rootcover_complete": true,
+        "julia": [
+          {
+            "method": "Newton",
+            "unique": 1,
+            "unknown": 0
+          },
+          {
+            "method": "Krawczyk",
+            "unique": 1,
+            "unknown": 0
+          }
+        ]
+      }
+    ],
+    "scope": "finite functional regression, no full-API parity, performance or formal-correctness claim"
+  },
+  "julia_reference_note": "Previously executed 20 Julia models / 40 method calls; this run re-compares current RootCover to the saved reference, not a fresh Julia execution.",
+  "session_js_cli_tests": 8,
+  "distribution_sha256": {
+    "dist/engine.js": "b766316491870a428ff165ba469a5b1b21cc382513f701cba085c751d5f20a02",
+    "web/engine.js": "b766316491870a428ff165ba469a5b1b21cc382513f701cba085c751d5f20a02",
+    "bin/rootcover.mjs": "2ff0101060bc745a8f316f13fe4b36b3df0a20ce7f2834fd1feb0c6025d5f0b1",
+    "web/session-app.js": "e2dba746f2b456a095abd53b3c69a23618c29476865efcbbce68ca5c13c7f6cb",
+    "web/session-worker.js": "3dfd37873c807a594251e40594ac749af17012e93bcd257dfd602987434af10f"
+  },
+  "session_oracle": {
+    "passed": true,
+    "seed": 20261113,
+    "models": 48,
+    "checked_snapshots": 548,
+    "exact_inner_certificates": 9074,
+    "feasible_sample_coverage_checks": 44791,
+    "trace_mutations": 240,
+    "rejected_mutations": 190,
+    "accepted_mutations_checked": 50,
+    "scope": "finite exact-rational polynomial/formula regression; no formal proof or exhaustive corruption claim"
+  }
+}

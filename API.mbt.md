@@ -1,6 +1,6 @@
 # RootCover typed API
 
-This file describes the local 0.4.0-dev.1 build. It has not been pushed or
+This file describes the local 0.5.0-dev.1 build. It has not been pushed or
 published; Mooncakes 0.2.0 does not contain these new interfaces. The package
 alias below is `@rootcover`.
 The following examples are compiled and executed by `moon test`.
@@ -160,6 +160,19 @@ test "root solving accepts a breadth first search policy" {
   assert_true(r.complete)
   assert_true(r.roots[0].enclosure[0].contains(0.6931471805599453))
 }
+
+///|
+test "pause and verify a feasible-set checkpoint" {
+  let source =
+    #|{"version":1,"mode":"feasibility","variables":["x"],"constraints":[{"expression":"x","range":[-0.5,0.5]}],"box":[[-1,1]],"contractors":{"propagation":false,"newton":false}}
+  let session = @rootcover.new_paving_session(source)
+  session.advance(1)
+  let saved = session.checkpoint()
+  let restored = @rootcover.restore_paving_session(saved)
+  assert_eq(restored.checkpoint(), saved)
+  restored.advance(4)
+  assert_true(restored.checkpoint().length() > saved.length())
+}
 ```
 
 `parse_expression` accepts arithmetic, division, negative integer powers and
@@ -182,3 +195,11 @@ See docs/NONLINEAR.md and docs/PAVING.md for domain, budget and null-endpoint
 semantics. This local API is not yet available in the published0.2.0 module.
 
 `PredicateProblem` adds positive All/Any/AtLeast composition. `classify_predicate`, `contract_predicate` and `pave_predicate` preserve conservative set semantics; no implicit negation or statistical confidence. `SearchPolicy` configures DFS/BFS, per-axis absolute/mixed relative precision and branching. `solve_configured`/`pave_configured` accept it directly. JSON exports both policy and pending/unknown tags. See docs/SET_ALGEBRA.md.
+
+`new_paving_session` owns a decoded feasibility request. `advance` adds1..20000
+assessments within its original global limits. `snapshot`, `checkpoint` and
+`envelope` serialize results, a verified covering trace, or both. Restoration
+recomputes contraction and terminal evidence and validates geometric splits;
+it does not trust cached outside/inside flags. In-memory continuation retains
+the frontier without replay. File restoration has verification cost, and
+currently supports feasibility only; see docs/SESSIONS.md.
