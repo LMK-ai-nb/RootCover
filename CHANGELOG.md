@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0-dev.1 — 2026-11-13 — local only
+
+- Positive All/Any/AtLeast constraints, conservative quorum hulls and per-atom evidence.
+- DFS/BFS, per-axis absolute/mixed relative precision, normalized/Jacobian-impact branching.
+- Pending vs processed-unknown tags; robust observations, design alternatives and mixed-unit examples.
+- Refreshed3761-module metadata scan and documented feature/permission boundaries; no push/publication.
+
+
 ## 0.3.0-dev.1 — 2026-11-11 — local only
 
 - Thirteen elementary functions, division/negative powers, domain/smoothness states and interval AD.

@@ -4,6 +4,8 @@ pub(all) struct FeasibilityRequest {
   box : Array[Interval]
   options : Options
   contractors : ContractorOptions
+  search : SearchPolicy
+  formula : Predicate?
 }
 
 ///|
@@ -19,6 +21,7 @@ fn decode_feasibility_object(
 ) -> FeasibilityRequest raise RootError {
   j_only(o, [
     "version", "mode", "variables", "constraints", "box", "options", "contractors",
+    "search", "formula",
   ])
   guard request_mode(o) == "feasibility" else {
     raise Invalid("expected feasibility mode")
@@ -73,6 +76,14 @@ fn decode_feasibility_object(
   })
   let model = { names, constraints, }
   validate_constraints(model)
+  let formula = match o.get("formula") {
+    None => None
+    Some(raw) => {
+      let p = decode_formula(raw, constraints.length(), 0, Ref(0))
+      validate_predicate({ model, predicate: p, })
+      Some(p)
+    }
+  }
   let box = j_array(j_required(o, "box")).map(v => {
     let a = j_array(v)
     guard a.length() == 2 else {
@@ -86,6 +97,8 @@ fn decode_feasibility_object(
     box,
     options: request_options(o),
     contractors: request_contractors(o),
+    search: request_search(o, names.length()),
+    formula,
   }
 }
 
@@ -99,12 +112,24 @@ fn paving_json(request : FeasibilityRequest, result : PavingResult) -> Json {
     let value : Json = {
       "box": box_json(b.box),
       "reason": Json::string(b.reason),
+      "status": Json::string(
+        if b.reason == "assessment budget exhausted" {
+          "pending"
+        } else {
+          "unknown"
+        },
+      ),
     }
     value
   })
   {
     "version": 1,
     "mode": "feasibility",
+    "search": search_json(
+      request.search,
+      request.options,
+      request.model.names.length(),
+    ),
     "variables": Json::array(request.model.names.map(x => Json::string(x))),
     "initial_box": box_json(request.box),
     "complete": Json::boolean(result.complete),

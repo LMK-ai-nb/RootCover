@@ -125,3 +125,47 @@ test('unbounded output endpoints remain valid JSON when elementary ranges overfl
   const r=run(q);assert(!r.error);assert.equal(r.complete,true);assert.equal(r.inside.length,1);
   assert(r.inside[0].ranges[0][0]>1e300);assert.equal(r.inside[0].ranges[0][1],null);
 });
+
+test('explicit sensor consensus tolerates one outlier while mandatory rules still apply',()=>{
+  const q=load('robust_localization'),r=run(q);
+  assert.equal(r.certificate_kind,'positive_formula_interval_truth');assert(r.inside.length>0);
+  assert([...r.inside,...r.unresolved].some(b=>b.box.every(a=>contains(a,1))));
+  for(const b of r.inside){assert.equal(b.formula_truth,'true');assert.equal(b.atoms[4].truth,'true');assert(b.atoms.slice(0,4).filter(a=>a.truth==='true').length>=3);}
+  delete q.formula;const strict=run(q);assert.equal(strict.definitely_empty,true);
+});
+
+test('alternative nonlinear designs preserve both modes without certifying the intervening gap',()=>{
+  const r=run(load('design_alternatives'));assert(r.inside.length>0);
+  for(const p of [[.5,Math.exp(.25)],[2,Math.sqrt(2)]])assert([...r.inside,...r.unresolved].some(b=>b.box.every((a,i)=>contains(a,p[i]))));
+  assert(!r.inside.some(b=>contains(b.box[0],1.5)));
+  for(const b of r.inside)assert.equal(b.atoms[4].truth,'true');
+});
+
+test('mixed-unit precision is exported and satisfied without claiming unknown boxes feasible',()=>{
+  const q=load('scaled_parameters'),r=run(q);assert.equal(r.resolution_met,true);assert.equal(r.complete,false);
+  assert.deepEqual(r.search.absolute_tolerances,q.search.absolute_tolerances);
+  assert.equal(r.search.relative_scale,'minimum_absolute_value_in_box');
+  for(const cell of r.unresolved)for(const [i,[a,b]]of cell.box.entries()){
+    const minimum=a<=0&&b>=0?0:Math.min(Math.abs(a),Math.abs(b));
+    assert(b-a<=Math.max(q.search.absolute_tolerances[i],q.search.relative_tolerance*minimum));
+    assert.equal(cell.status,'unknown');
+  }
+});
+
+test('budget-pending boxes remain distinguishable under breadth first traversal',()=>{
+  const q=load('robust_localization');q.options.max_assessments=1;const r=run(q);
+  assert.equal(r.complete,false);assert.equal(r.search.strategy,'bfs');assert(r.unresolved.length>0);
+  assert(r.unresolved.every(b=>b.status==='pending'));
+});
+
+test('invalid logical votes and search settings are rejected explicitly',()=>{
+  const q=load('robust_localization');
+  for(const formula of [{not:0},{all:[]},{any:[99]},{at_least:{count:2,of:[0,0]}},{all:[0],any:[1]}])assert(run({...q,formula}).error);
+  for(const search of [{strategy:'random'},{split:'magic'},{absolute_tolerances:[.1]},{absolute_tolerances:[0,.1]},{relative_tolerance:-1},{relative_tolerance:2}])assert(run({...q,search}).error);
+});
+
+test('logical alternatives serialize undefined inactive atoms without treating them as defined',()=>{
+  const q={version:1,mode:'feasibility',variables:['x'],constraints:[{expression:'x',range:[-2,-1]},{expression:'log(x)',range:[0,.2]}],formula:{any:[0,1]},box:[[-1.8,-1.2]]};
+  const r=run(q);assert.equal(r.complete,true);assert.equal(r.inside.length,1);
+  assert.equal(r.inside[0].atoms[1].range,null);assert.equal(r.inside[0].atoms[1].fully_defined,false);
+});

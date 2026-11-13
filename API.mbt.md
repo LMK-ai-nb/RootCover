@@ -1,6 +1,6 @@
 # RootCover typed API
 
-This file describes the local 0.3.0-dev.1 build. It has not been pushed or
+This file describes the local 0.4.0-dev.1 build. It has not been pushed or
 published; Mooncakes 0.2.0 does not contain these new interfaces. The package
 alias below is `@rootcover`.
 The following examples are compiled and executed by `moon test`.
@@ -99,6 +99,67 @@ test "mixed observation bands have a typed contractor API" {
   assert_true(c.box.unwrap()[0].contains(0.5))
   assert_true(c.changed && c.propagation_calls > 0 && c.newton_calls > 0)
 }
+
+///|
+test "a positive predicate preserves a consensus despite an incompatible atom" {
+  let model : @rootcover.ConstraintModel = {
+    names: ["x"],
+    constraints: [
+      {
+        polynomial: @rootcover.Expr::Variable(0),
+        allowed: @rootcover.interval(0.0, 2.0),
+      },
+      {
+        polynomial: @rootcover.Expr::Variable(0),
+        allowed: @rootcover.interval(1.0, 3.0),
+      },
+      {
+        polynomial: @rootcover.Expr::Variable(0),
+        allowed: @rootcover.interval(10.0, 20.0),
+      },
+    ],
+  }
+  let problem : @rootcover.PredicateProblem = {
+    model,
+    predicate: @rootcover.Predicate::AtLeast(2, [
+      @rootcover.Predicate::Atom(0),
+      @rootcover.Predicate::Atom(1),
+      @rootcover.Predicate::Atom(2),
+    ]),
+  }
+  let r = @rootcover.pave_predicate(
+    problem,
+    [@rootcover.interval(-1.0, 21.0)],
+    @rootcover.default_options(),
+    @rootcover.default_contractors(),
+    @rootcover.default_search(),
+  )
+  assert_true(r.complete)
+  assert_true(r.inside.any(b => b.box[0].contains(1.5)))
+}
+
+///|
+test "root solving accepts a breadth first search policy" {
+  let system : @rootcover.System = {
+    names: ["x"],
+    equations: [@rootcover.parse_expression("exp(x)-2", ["x"])],
+  }
+  let policy : @rootcover.SearchPolicy = {
+    order: @rootcover.SearchOrder::BreadthFirst,
+    split: @rootcover.SplitRule::Scaled,
+    absolute_tolerances: Some([0.0000001]),
+    relative_tolerance: 0.000001,
+  }
+  let r = @rootcover.solve_configured(
+    system,
+    [@rootcover.interval(0.0, 1.0)],
+    @rootcover.default_options(),
+    @rootcover.default_contractors(),
+    policy,
+  )
+  assert_true(r.complete)
+  assert_true(r.roots[0].enclosure[0].contains(0.6931471805599453))
+}
 ```
 
 `parse_expression` accepts arithmetic, division, negative integer powers and
@@ -119,3 +180,5 @@ variants accept explicit controls. `decode_request` and
 `solve_json` dispatches roots/feasibility mode; omitted mode means roots.
 See docs/NONLINEAR.md and docs/PAVING.md for domain, budget and null-endpoint
 semantics. This local API is not yet available in the published0.2.0 module.
+
+`PredicateProblem` adds positive All/Any/AtLeast composition. `classify_predicate`, `contract_predicate` and `pave_predicate` preserve conservative set semantics; no implicit negation or statistical confidence. `SearchPolicy` configures DFS/BFS, per-axis absolute/mixed relative precision and branching. `solve_configured`/`pave_configured` accept it directly. JSON exports both policy and pending/unknown tags. See docs/SET_ALGEBRA.md.

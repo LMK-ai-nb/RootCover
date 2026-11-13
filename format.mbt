@@ -4,6 +4,7 @@ pub(all) struct Request {
   box : Array[Interval]
   options : Options
   contractors : ContractorOptions
+  search : SearchPolicy
 }
 
 ///|
@@ -100,6 +101,7 @@ pub fn decode_request(source : String) -> Request raise RootError {
 fn decode_root_object(o : Map[String, Json]) -> Request raise RootError {
   j_only(o, [
     "version", "mode", "variables", "equations", "box", "options", "contractors",
+    "search",
   ])
   guard request_mode(o) == "roots" else { raise Invalid("expected roots mode") }
   guard j_integer(j_required(o, "version"), 1) == 1 else {
@@ -129,6 +131,7 @@ fn decode_root_object(o : Map[String, Json]) -> Request raise RootError {
     box,
     options: request_options(o),
     contractors: request_contractors(o),
+    search: request_search(o, names.length()),
   }
 }
 
@@ -160,14 +163,18 @@ fn request_options(o : Map[String, Json]) -> Options raise RootError {
 
 ///|
 fn box_json(box : Array[Interval]) -> Json {
-  fn endpoint(x : Double) -> Json {
-    if x.is_inf() {
-      Json::null()
-    } else {
-      Json::number(x)
-    }
+  Json::array(
+    box.map(x => Json::array([endpoint_json(x.lo), endpoint_json(x.hi)])),
+  )
+}
+
+///|
+fn endpoint_json(x : Double) -> Json {
+  if x.is_inf() {
+    Json::null()
+  } else {
+    Json::number(x)
   }
-  Json::array(box.map(x => Json::array([endpoint(x.lo), endpoint(x.hi)])))
 }
 
 ///|
@@ -191,12 +198,27 @@ fn result_json(request : Request, result : SolveResult) -> Json {
     v
   })
   let unresolved = result.unresolved.map(u => {
-    let v : Json = { "box": box_json(u.box), "reason": Json::string(u.reason) }
+    let v : Json = {
+      "box": box_json(u.box),
+      "reason": Json::string(u.reason),
+      "status": Json::string(
+        if u.reason == "assessment budget exhausted" {
+          "pending"
+        } else {
+          "unknown"
+        },
+      ),
+    }
     v
   })
   {
     "version": 1,
     "mode": "roots",
+    "search": search_json(
+      request.search,
+      request.options,
+      request.system.names.length(),
+    ),
     "variables": Json::array(request.system.names.map(x => Json::string(x))),
     "initial_box": box_json(request.box),
     "complete": Json::boolean(result.complete),
@@ -223,23 +245,38 @@ pub fn solve_json(source : String) -> String raise RootError {
       let request = decode_root_object(o)
       result_json(
         request,
-        solve_with_contractors(
+        solve_configured(
           request.system,
           request.box,
           request.options,
           request.contractors,
+          request.search,
         ),
       ).stringify()
     }
     "feasibility" => {
       let request = decode_feasibility_object(o)
+      if request.formula is Some(predicate) {
+        return predicate_json(
+          request,
+          predicate,
+          pave_predicate(
+            { model: request.model, predicate, },
+            request.box,
+            request.options,
+            request.contractors,
+            request.search,
+          ),
+        ).stringify()
+      }
       paving_json(
         request,
-        pave_with_contractors(
+        pave_configured(
           request.model,
           request.box,
           request.options,
           request.contractors,
+          request.search,
         ),
       ).stringify()
     }

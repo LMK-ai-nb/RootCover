@@ -8,6 +8,8 @@ with sync_playwright() as p:
     page=browser.new_page(viewport={'width':1440,'height':1200});errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:4188')
+    expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决');expect(page.locator('#root-count')).to_have_text('15')
+    page.locator('[data-case="geometry"]').click()
     expect(page.locator('#status')).to_have_text('区域已解析');expect(page.locator('#root-count')).to_have_text('2')
     page.get_by_role('button',name='体验预算耗尽').click();expect(page.locator('#status')).to_have_text('仍有未决');assert int(page.locator('#unknown-count').inner_text())>0
     page.locator('[data-case="calibration"]').click();expect(page.locator('#root-count')).to_have_text('3')
@@ -57,6 +59,24 @@ with sync_playwright() as p:
     assert page.locator('#request').input_value()==before
     expect(page.locator('#status')).to_have_text('已停止')
     page.locator('[data-case="geometry"]').click();expect(page.locator('#status')).to_have_text('区域已解析')
+    page.locator('[data-case="robust_localization"]').click()
+    expect(page.locator('#root-count')).to_have_text('15');expect(page.locator('#unknown-count')).to_have_text('38')
+    expect(page.locator('#legend-main')).to_have_text('整盒满足约束组合')
+    with page.expect_download() as event:page.locator('#download').click()
+    event.value.save_as(ROOT/'artifacts/logical-browser-report.json')
+    logical=json.loads((ROOT/'artifacts/logical-browser-report.json').read_text())
+    assert logical['request']['formula']['all'][1]['at_least']['count']==3
+    assert logical['result']['certificate_kind']=='positive_formula_interval_truth'
+    page.locator('#search-strategy').select_option('dfs')
+    expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
+    assert json.loads(page.locator('#raw').text_content())['search']['strategy']=='dfs'
+    page.locator('[data-case="design_alternatives"]').click()
+    expect(page.locator('#root-count')).to_have_text('184')
+    page.locator('[data-case="scaled_parameters"]').click()
+    expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
+    assert json.loads(page.locator('#raw').text_content())['search']['absolute_tolerances']==[.05,.000005]
+    page.locator('[data-case="robust_localization"]').click()
+    expect(page.locator('#root-count')).to_have_text('15')
     (ROOT/'docs/assets').mkdir(parents=True,exist_ok=True)
     page.screenshot(path=str(ROOT/'docs/assets/workbench.png'),full_page=True)
     page.set_viewport_size({'width':390,'height':844})

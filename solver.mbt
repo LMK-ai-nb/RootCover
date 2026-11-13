@@ -70,10 +70,22 @@ pub fn solve_with_contractors(
   options : Options,
   contractors : ContractorOptions,
 ) -> SolveResult raise RootError {
+  solve_configured(system, initial, options, contractors, default_search())
+}
+
+///|
+pub fn solve_configured(
+  system : System,
+  initial : Array[Interval],
+  options : Options,
+  contractors : ContractorOptions,
+  search : SearchPolicy,
+) -> SolveResult raise RootError {
   validate_system(system)
   check_box(initial, system.names.length())
   validate_options(options)
   validate_contractors(contractors)
+  validate_search(search, system.names.length())
   let model = {
     names: system.names,
     constraints: system.equations.map(e => {
@@ -81,7 +93,7 @@ pub fn solve_with_contractors(
       allowed: point(0.0),
     }),
   }
-  let stack : Array[(Array[Interval], Int32)] = [(initial.map(x => x), 0)]
+  let queue = WorkQueue::new(initial, search.order)
   let roots : Array[RootBox] = []
   let unresolved : Array[UnresolvedBox] = []
   let mut assessments = 0
@@ -89,8 +101,8 @@ pub fn solve_with_contractors(
   let mut contractions = 0
   let mut splits = 0
   let mut contractor_calls = 0
-  while !stack.is_empty() {
-    let (box, depth) = stack.pop().unwrap()
+  while !queue.empty() {
+    let (box, depth) = queue.take()
     if assessments >= options.max_assessments {
       unresolved.push({ box, reason: "assessment budget exhausted", })
       continue
@@ -105,7 +117,7 @@ pub fn solve_with_contractors(
         for attempt = 0
             attempt < 12 &&
            assessments < options.max_assessments &&
-           max_width(enclosure) > options.tolerance
+           !precision_met(enclosure, options, search)
             attempt = attempt + 1 {
           assessments = assessments + 1
           let next = match assess_unchecked(system, enclosure) {
@@ -129,7 +141,7 @@ pub fn solve_with_contractors(
       }
       Contracted(narrowed) => {
         contractions = contractions + 1
-        stack.push((narrowed, depth))
+        queue.put(narrowed, depth)
       }
       Undecided(reason) => {
         if contractor_calls < contractors.max_steps &&
@@ -159,14 +171,14 @@ pub fn solve_with_contractors(
               })
               if max_width(padded) < max_width(box) * 0.9 {
                 contractions = contractions + 1
-                stack.push((padded, depth))
+                queue.put(padded, depth)
                 continue
               }
             }
             _ => ()
           }
         }
-        if max_width(box) <= options.tolerance {
+        if precision_met(box, options, search) {
           unresolved.push({
             box,
             reason: "tolerance reached without a uniqueness proof: " + reason,
@@ -177,7 +189,8 @@ pub fn solve_with_contractors(
           unresolved.push({ box, reason: "depth limit reached: " + reason, })
           continue
         }
-        let (left, right) = match bisect_box(box) {
+        let (left, right) = match
+          split_with_policy(box, options, search, system.equations) {
           Some(pair) => pair
           None => {
             unresolved.push({
@@ -187,8 +200,7 @@ pub fn solve_with_contractors(
             continue
           }
         }
-        stack.push((right, depth + 1))
-        stack.push((left, depth + 1))
+        queue.children(left, right, depth + 1)
         splits = splits + 1
       }
     }
@@ -197,31 +209,11 @@ pub fn solve_with_contractors(
     roots,
     unresolved,
     complete: unresolved.is_empty(),
-    tolerance_met: roots.all(x => max_width(x.enclosure) <= options.tolerance),
+    tolerance_met: roots.all(x => precision_met(x.enclosure, options, search)),
     assessments,
     excluded,
     contractions,
     splits,
     contractor_calls,
   }
-}
-
-///|
-/// Closed children cover the parent, meeting only at their shared interface.
-fn bisect_box(box : Array[Interval]) -> (Array[Interval], Array[Interval])? {
-  let mut axis = 0
-  for i = 1; i < box.length(); i = i + 1 {
-    if box[i].width() > box[axis].width() {
-      axis = i
-    }
-  }
-  let mid = box[axis].lo * 0.47 + box[axis].hi * 0.53
-  if !(mid > box[axis].lo && mid < box[axis].hi) {
-    return None
-  }
-  let left = box.map(x => x)
-  let right = box.map(x => x)
-  left[axis] = { lo: box[axis].lo, hi: mid, }
-  right[axis] = { lo: mid, hi: box[axis].hi, }
-  Some((left, right))
 }

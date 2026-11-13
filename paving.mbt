@@ -125,11 +125,23 @@ pub fn pave_with_contractors(
   options : Options,
   contractors : ContractorOptions,
 ) -> PavingResult raise RootError {
+  pave_configured(model, initial, options, contractors, default_search())
+}
+
+///|
+pub fn pave_configured(
+  model : ConstraintModel,
+  initial : Array[Interval],
+  options : Options,
+  contractors : ContractorOptions,
+  search : SearchPolicy,
+) -> PavingResult raise RootError {
   validate_constraints(model)
   check_box(initial, model.names.length())
   validate_options(options)
   validate_contractors(contractors)
-  let stack : Array[(Array[Interval], Int32)] = [(initial.map(x => x), 0)]
+  validate_search(search, model.names.length())
+  let queue = WorkQueue::new(initial, search.order)
   let inside : Array[FeasibleBox] = []
   let unresolved : Array[UnresolvedBox] = []
   let mut assessments = 0
@@ -137,8 +149,8 @@ pub fn pave_with_contractors(
   let mut splits = 0
   let mut contractions = 0
   let mut contractor_calls = 0
-  while !stack.is_empty() {
-    let (original, depth) = stack.pop().unwrap()
+  while !queue.empty() {
+    let (original, depth) = queue.take()
     let mut box = original
     if assessments >= options.max_assessments {
       unresolved.push({ box, reason: "assessment budget exhausted", })
@@ -169,7 +181,7 @@ pub fn pave_with_contractors(
       Inside(ranges) => inside.push({ box, ranges, })
       Outside(_) => excluded = excluded + 1
       Indeterminate => {
-        if max_width(box) <= options.tolerance {
+        if precision_met(box, options, search) {
           unresolved.push({
             box,
             reason: "resolution reached without whole-box classification",
@@ -180,10 +192,15 @@ pub fn pave_with_contractors(
           unresolved.push({ box, reason: "depth limit reached", })
           continue
         }
-        match bisect_box(box) {
+        match
+          split_with_policy(
+            box,
+            options,
+            search,
+            model.constraints.map(c => c.polynomial),
+          ) {
           Some((left, right)) => {
-            stack.push((right, depth + 1))
-            stack.push((left, depth + 1))
+            queue.children(left, right, depth + 1)
             splits = splits + 1
           }
           None =>
@@ -199,7 +216,7 @@ pub fn pave_with_contractors(
     inside,
     unresolved,
     complete: unresolved.is_empty(),
-    resolution_met: unresolved.all(b => max_width(b.box) <= options.tolerance),
+    resolution_met: unresolved.all(b => precision_met(b.box, options, search)),
     assessments,
     excluded,
     splits,

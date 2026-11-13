@@ -1,6 +1,6 @@
 name = "LMK-ai-nb/rootcover"
 
-version = "0.3.0-dev.1"
+version = "0.4.0-dev.1"
 
 readme = "README.md"
 

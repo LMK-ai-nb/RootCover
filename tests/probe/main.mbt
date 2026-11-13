@@ -85,11 +85,19 @@ pub fn nonlinear_probe(source : String) -> String {
     }
     let result : Json = if text(o["operation"]) == "contract" {
       let request = @root.decode_feasibility_request(text(o["request"]))
-      let c = @root.contract_constraints(
-        request.model,
-        request.box,
-        request.contractors,
-      )
+      let c = if request.formula is Some(predicate) {
+        @root.contract_predicate(
+          { model: request.model, predicate, },
+          request.box,
+          request.contractors,
+        )
+      } else {
+        @root.contract_constraints(
+          request.model,
+          request.box,
+          request.contractors,
+        )
+      }
       {
         "box": match c.box {
           None => Json::null()

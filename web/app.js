@@ -1,9 +1,12 @@
 const $ = s => document.querySelector(s);
-let selected='geometry', worker=null, serial=0, loadId=0, last=null, request=null;
+let selected='robust_localization', worker=null, serial=0, loadId=0, last=null, request=null;
 const descriptions={
   robot_workspace:'合成双连杆：末端坐标均落在 [0.98,1.02]，联合求解两个关节角范围。角度为弧度；不是机械安全认证。',
   thermal_parameters:'合成指数响应 a·exp(-k·t)+b：由三个有界观测和非负约束求 a、k、b 的可行范围；图中只显示前两维投影。',
   mixed_process:'合成过程模型：log(x)+y 和 sqrt(x)+y 的观测带，加上 x²+y²≤2。从跨越定义域的输入范围开始，保留所有可能可行点。',
+  robust_localization:'合成四基站观测：第四条人为设为不相容测距，要求至少三条成立，同时满足必选范围。不是故障概率或传感器可信度证明。',
+  design_alternatives:'方案A采用指数响应，方案B采用根式响应；允许任选其一，但两者都必须满足资源上限。不同方案之间的空隙不会被当成可行区域。',
+  scaled_parameters:'offset 约为一百万，gain 约为千分之一。分别指定精度，并用广度优先与归一化划分，避免单一量纲控制全部搜索。',
   geometry:'圆 x² + y² = 2 与直线 y = x。在 [-1.5, 1.5]² 搜索，预期有两处交点。',
   calibration:'合成标定曲线 x³ − 3x + 1 = 0。可限制取值范围，或加入 ±0.125 的观测容差。',
   equilibrium:'合成反应模型的两个非线性平衡方程，在给定正区域包围 (1, 3)。',
@@ -17,7 +20,7 @@ function resetWorker(){
   current.onerror=e=>{if(current===worker)finish({error:{message:e.message||'求解线程加载失败'}});};
 }
 function busy(value){
-  for(const id of ['run','request','branch','tolerance-band','budget','reset','contractors'])$('#'+id).disabled=value;
+  for(const id of ['run','request','branch','tolerance-band','budget','reset','contractors','search-strategy','search-split'])$('#'+id).disabled=value;
   $('#cancel').disabled=!value;
 }
 async function load(name){
@@ -27,7 +30,7 @@ async function load(name){
     const response=await fetch(`data/${name}.json`);
     if(!response.ok)throw new Error('无法读取示例');
     const q=await response.json();if(id!==loadId)return;
-    $('#request').value=JSON.stringify(q,null,2);syncContractors(q);
+    $('#request').value=JSON.stringify(q,null,2);syncContractors(q);syncSearch(q);
     $('#case-description').textContent=descriptions[name];
     $('#branch').hidden=name!=='calibration';$('#tolerance-band').hidden=name!=='calibration';
     document.querySelectorAll('[data-case]').forEach(b=>b.classList.toggle('active',b.dataset.case===name));run();
@@ -44,18 +47,19 @@ function finish(result){
     $('#status').textContent='输入无效';$('#status').classList.add('error');$('#root-count').textContent='—';$('#unknown-count').textContent='—';
     $('#summary').textContent=result.error.message;$('#plot').replaceChildren();return;
   }
-  const paving=result.mode==='feasibility';
+  const paving=result.mode==='feasibility',logical=Boolean(result.formula);
   $('#primary-label').textContent=paving?'已确认可行盒':'已确认唯一解';
   $('#root-count').textContent=paving?result.inner_box_count:result.root_count;
   $('#unknown-count').textContent=result.unresolved.length;
   $('#status').textContent=result.complete?(paving?'区域已分类':'区域已解析'):(paving&&result.resolution_met?'分辨率已达 · 有未决':'仍有未决');
-  $('#legend-main').textContent=paving?'整盒满足全部观测带':'唯一解包围盒 / 中心标记';
+  $('#legend-main').textContent=paving?(logical?'整盒满足约束组合':'整盒满足全部观测带'):'唯一解包围盒 / 中心标记';
   const stats=result.stats;
-  if(request)syncContractors(request);
+  if(request){syncContractors(request);syncSearch(request);}
   let summary=`${stats.assessments} 次区域评估 · ${stats.excluded} 次排除 · ${stats.splits} 次划分 · ${stats.contractor_calls??0} 次传播/区间 Newton 调用。`;
   if(paving){
     summary+=result.resolution_met?'所有未决盒宽度已达到设定分辨率。':'仍有未决盒尚未达到设定分辨率。';
     summary+='可行盒数量不是解的个数；未决盒可能可行，也可能不可行。';
+    if(logical)summary+='绿色表示整个约束组合成立，未要求每条原子约束都成立；逐项状态见原始结果。';
   }else{
     summary+=`${stats.contractions} 次收缩。`;
     summary+=result.roots.length?(result.tolerance_met?'已确认解的包围宽度满足设定容差。':'部分根包围尚未达到设定容差。'):'当前没有已确认的唯一解。';
@@ -106,6 +110,9 @@ $('#run').onclick=run;$('#reset').onclick=()=>load(selected);
 $('#cancel').onclick=()=>{loadId++;serial++;resetWorker();busy(false);$('#status').textContent='已停止';$('#summary').textContent='计算已停止，可调整请求后再次运行。';};
 function modify(fn){try{const q=JSON.parse($('#request').value);fn(q);$('#request').value=JSON.stringify(q,null,2);run();}catch(e){finish({error:{message:e.message}});}}
 function syncContractors(q){const c=q.contractors??{propagation:true,newton:true};const p=c.propagation??true,n=c.newton??true;$('#contractors').value=p?(n?'joint':'propagation'):(n?'newton':'none');}
+function syncSearch(q){$('#search-strategy').value=q.search?.strategy??'dfs';$('#search-split').value=q.search?.split??'widest';}
+$('#search-strategy').onchange=()=>modify(q=>{q.search={...q.search,strategy:$('#search-strategy').value};});
+$('#search-split').onchange=()=>modify(q=>{q.search={...q.search,split:$('#search-split').value};});
 $('#contractors').onchange=()=>modify(q=>{const mode=$('#contractors').value;q.contractors={...q.contractors,propagation:['joint','propagation'].includes(mode),newton:['joint','newton'].includes(mode)};});
 $('#budget').onclick=()=>modify(q=>{q.options={...q.options,max_assessments:1};});
 $('#branch').onclick=()=>modify(q=>{q.box=[[0,1]];});
@@ -118,4 +125,4 @@ $('#download').onclick=()=>{
   if(!last||last.error)return;
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({request,result:last},null,2)],{type:'application/json'}));a.download='rootcover-report.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
-resetWorker();load('geometry');
+resetWorker();load('robust_localization');

@@ -1,5 +1,7 @@
 # IntervalRootFinding.jl 功能基准
 
+这是0.3的实际Julia基准记录，0.4继续回归同一组参考；其新增BFS/相对与逐变量精度另经独立策略测试，不再属于未实现项。新的生态对照见LANDSCAPE_2026-11-13.md。
+
 2026-11-11本地实际运行：Windows，Julia **1.13.3**、IntervalRootFinding.jl **0.7.2**、JSON3 **1.14.4**（仅参考适配器）。Julia二进制来自官方versions.json并核对SHA256；环境保存在work，不随本库分发。
 
 原始输出：`evidence/intervalrootfinding-reference.json`；实际比较：`evidence/intervalrootfinding-comparison.json`。不代表全API覆盖或性能排名。
@@ -10,15 +12,15 @@
 - abs尖点、sqrt边界、log平方重根共3模型均未决；划分不同，不比较未决盒个数。
 - `1/x=0`跨0域有一处差异：Julia保留极点未决；RootCover反向乘积传播证明定义点上分子1不可能为0，排除所有零点。不是在证明函数在0有定义，也不据此宣称整体更强。
 
-## 对应与缺口
+## 当前0.4对应与缺口
 
-| 方向 | 本地RootCover0.3 | 尚未对齐 |
+| 方向 | 本地RootCover0.4 | 尚未对齐 |
 | --- | --- | --- |
 | 根域分类 | 唯一根证书、未决覆盖、绝对容差/预算 | 仅有限模型对照，不是全库兼容 |
 | 表达式 | 固定安全语法与13种函数 | 任意Julia函数组合和更多特殊函数 |
 | 导数 | 自身区间前向AD | 自定义Jacobian回调 |
 | Newton | 独立预条件区间Gauss-Seidel/坐标Newton及联合收缩 | 唯一根证书仍是Krawczyk，不声称复刻Julia Newton全部证书机制 |
-| 搜索 | 有界DFS、绝对容差 | BFS、相对容差、外部可迭代搜索状态 |
+| 搜索 | 有界DFS/BFS、绝对/相对与逐变量精度、宽度/归一化/Jacobian影响划分 | 外部可迭代搜索状态、持久化恢复；划分启发式不声称完整复刻IBEX |
 | 数值基础 | binary64、域/光滑性状态、保守函数包围 | 任意精度、全decorations、IEEE-1788完整实现 |
 | 非方约束 | 等式、≤、≥、观测带，SIVIA+前后向传播+Newton | roots基准不等于完整约束框架；该层另参考IBEX概念，也未全面对齐IBEX |
 

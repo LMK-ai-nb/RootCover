@@ -60,4 +60,5 @@ jobs:
             artifacts/paving-oracle.json
             artifacts/package-check.json
             artifacts/nonlinear-oracle.json
+            artifacts/predicate-oracle.json
             artifacts/intervalrootfinding-comparison.json

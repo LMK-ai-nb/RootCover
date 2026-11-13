@@ -22,6 +22,7 @@ def main():
         run('moon','build','tests/probe','--target','js','--release','--deny-warn');run(sys.executable,'tests/oracle.py')
         run(sys.executable,'tests/paving_oracle.py')
         run(sys.executable,'tests/nonlinear_oracle.py')
+        run(sys.executable,'tests/predicate_oracle.py')
         run(sys.executable,'scripts/compare_intervalrootfinding.py')
         run(sys.executable,'scripts/package_check.py')
         if args.browser:

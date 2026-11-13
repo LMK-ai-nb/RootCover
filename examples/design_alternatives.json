@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "mode": "feasibility",
+  "variables": ["x", "y"],
+  "constraints": [
+    {"expression": "x", "range": [0.2, 1.2]},
+    {"expression": "y-exp(x/2)", "range": [-0.1, 0.1]},
+    {"expression": "x", "range": [1.8, 2.8]},
+    {"expression": "y-sqrt(x)", "range": [-0.1, 0.1]},
+    {"expression": "x^2+y^2", "relation": "<=", "rhs": 12}
+  ],
+  "formula": {"all": [4, {"any": [{"all": [0, 1]}, {"all": [2, 3]}]}]},
+  "box": [[0, 3], [0, 3]],
+  "search": {"strategy": "bfs", "split": "smear"},
+  "options": {"tolerance": 0.04, "max_assessments": 12000}
+}
