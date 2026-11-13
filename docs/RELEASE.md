@@ -1,6 +1,15 @@
 # RootCover 实际发布记录
 
-**本地另有0.5.0-dev.1（保留0.3/0.4历史快照），尚未推送或发布。下列CI、Pages、Mooncakes记录属于已发布0.1/0.2，不能当作本轮新增功能已远程验证的证据。**
+## 0.5.0-dev.1源码与验证入口
+
+本次源码更新包括初等函数、区间Newton/传播、正公式、精度策略与可复核会话；同一RootCover的连续扩展。0.3/0.4本地快照与验证摘要保留。维护者李明坤，账号LMK-ai-nb。
+
+- 本地三个执行目标各65项MoonBit测试、25项原CLI、8项会话JS/CLI及23步完整检查通过；见VALIDATION.md。
+- 当前源码以[main分支](https://github.com/LMK-ai-nb/RootCover/tree/main)为准；远程结果见[CI工作流](https://github.com/LMK-ai-nb/RootCover/actions/workflows/ci.yml)与[Pages工作流](https://github.com/LMK-ai-nb/RootCover/actions/workflows/pages.yml)。没有把旧版远程成功冒充新版检查。
+- Mooncakes仍只发布到0.2.0；本次推送不执行新版moon publish，源码功能不能由旧包取得。源码与包版本分别记录。
+- [完整工作台](https://lmk-ai-nb.github.io/RootCover/)与[分步工作台](https://lmk-ai-nb.github.io/RootCover/session.html)的当前可用性以实际Pages部署结果为准。
+
+以下CI/包下载记录属于0.1/0.2的历史发布，不能替代0.5的远程验证。
 
 ## 当前版本0.2.0（2026-11-04）
 

@@ -1,7 +1,7 @@
 # RootCover typed API
 
-This file describes the local 0.5.0-dev.1 build. It has not been pushed or
-published; Mooncakes 0.2.0 does not contain these new interfaces. The package
+This file describes the 0.5.0-dev.1 source build. Mooncakes 0.2.0 does not
+contain these interfaces; build this source checkout to use them. The package
 alias below is `@rootcover`.
 The following examples are compiled and executed by `moon test`.
 

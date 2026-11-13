@@ -2,7 +2,7 @@
 
 **MoonBit 非线性约束区间求解库：区域求根、等式、不等式与带误差观测的可行域。**
 
-当前工作副本是 **0.5.0-dev.1，本地开发版，尚未推送或发布**。GitHub、Pages和Mooncakes仍为0.2.0，不能用`moon add`取得本轮新增能力。维护者：李明坤 / LMK-ai-nb。[来源与历史关系](docs/ORIGIN.md)。
+当前源码版本是 **0.5.0-dev.1**。Mooncakes已发布的包仍为0.2.0，不能用`moon add`取得本轮新增能力；请按下文从源码运行。源码、网页和检查状态见[发布记录](docs/RELEASE.md)。维护者：李明坤 / LMK-ai-nb。[来源与历史关系](docs/ORIGIN.md)。
 
 面向机构计算、参数估计和科学模型开发者，求解给定区域中的多个解或可行参数范围。核心、解析、区间导数、收缩与搜索均用MoonBit独立实现，不依赖Julia、外部数值引擎或网络服务运行。既有数值方法与成熟实现已披露，不主张算法首创或全面超越已有求解器。
 
@@ -92,7 +92,7 @@ python scripts/verify.py
 python scripts/verify.py --browser
 ```
 
-mpmath1.3.0仅用于100位独立验证。浏览器测试另需`pip install playwright`、`python -m playwright install chromium`；可把PLAYWRIGHT_BROWSERS_PATH设在本工程work。具备本机C工具链可加`--native`。脚本记录实际命令/退出码，报告见[VALIDATION](docs/VALIDATION.md)；本轮没有触发远程CI。
+mpmath1.3.0仅用于100位独立验证。浏览器测试另需`pip install playwright`、`python -m playwright install chromium`；可把PLAYWRIGHT_BROWSERS_PATH设在本工程work。具备本机C工具链可加`--native`。脚本记录实际命令/退出码，报告见[VALIDATION](docs/VALIDATION.md)；当前远程结果以[CI工作流](https://github.com/LMK-ai-nb/RootCover/actions/workflows/ci.yml)为准。
 
 实际运行Julia1.13.3 / IntervalRootFinding.jl0.7.2：20模型、Newton和Krawczyk共40次；16常规模型唯一根数量吻合，3奇异/边界模型均未决，极点处理有一处已披露差异。不是全API兼容或速度排名。[基准与复现](docs/BASELINE.md)。
 

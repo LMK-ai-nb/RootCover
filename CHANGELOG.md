@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.5.0-dev.1 — 2026-11-13 — local only
+## 0.5.0-dev.1 — 2026-11-13 — source build
 
 - Owned feasible-set sessions with chunked advancement and persistent global budgets.
 - Covering-trace checkpoints revalidate partitions, contraction and terminal evidence.

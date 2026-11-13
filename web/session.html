@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RootCover · 分步求解</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="session.css"></head>
 <body>
-<header><a class="brand" href="./"><span class="mark">RC</span><b>RootCover</b><span class="tag">0.5 · 本地开发版</span></a><nav><a href="./">完整求解 ↗</a><a href="https://github.com/LMK-ai-nb/RootCover" target="_blank" rel="noreferrer">GitHub ↗</a></nav></header>
+<header><a class="brand" href="./"><span class="mark">RC</span><b>RootCover</b><span class="tag">0.5 · 开发版</span></a><nav><a href="./">完整求解 ↗</a><a href="https://github.com/LMK-ai-nb/RootCover" target="_blank" rel="noreferrer">GitHub ↗</a></nav></header>
 <main>
 <section class="intro"><div><p class="eyebrow">ROOTCOVER · CONTINUOUS WORK</p><h1>算到一半，<br>也能接着算。</h1><p class="lead">把非线性可行域搜索分成多步。保存当前进度，稍后载入继续；已确认可行区域、待处理区域和边界未决分别保留。</p></div><aside><span class="live-dot"></span> 计算与文件均留在本机<p>继续同一条搜索<br>沿用精度与累计预算<br>载入时复核已有判定</p><small>李明坤 / LMK-ai-nb</small></aside></section>
 <section class="session-layout">
@@ -19,5 +19,5 @@
 <div class="panel"><div class="panel-title"><h2>本步结果</h2><button id="session-report" disabled>导出结果 ↓</button></div><p id="session-result-note" class="muted">可行盒数量不是解的数量。待处理和边界未决都可能包含可行点。</p><details><summary>查看完整区间和证据</summary><pre id="session-raw">尚未计算</pre></details></div></div>
 </section>
 <section class="scope"><b>可以继续到哪里</b><p>“待处理”可以在剩余总预算内继续；达到精度、深度或数值表示限制的“边界未决”会保留，重复点击不会把它变成可行区域。当前不支持更改模型或提高原有预算后直接沿用旧会话，也不是求根模式的检查点。完整求解工作台保留原来的求根与可行域功能。</p></section>
-</main><footer>RootCover · MoonBit 核心 · 本地开发版<a href="./">返回完整求解工作台 ↗</a></footer><script type="module" src="session-app.js"></script>
+</main><footer>RootCover · MoonBit 核心 · 源码开发版<a href="./">返回完整求解工作台 ↗</a></footer><script type="module" src="session-app.js"></script>
 </body></html>

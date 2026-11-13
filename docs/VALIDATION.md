@@ -1,6 +1,6 @@
 # 0.5 本地实际验证
 
-完整验证2026-11-13；版本0.5.0-dev.1，未推送、未发布、未执行新的远程CI。历史公开0.1/0.2验证见RELEASE.md；0.3证据保留于evidence/local-0.3-validation.json，不当作新版证据。
+完整本地验证2026-11-13；版本0.5.0-dev.1。此记录及local-0.5证据反映推送前快照；后续源码/网页/远程CI状态见RELEASE.md。历史公开0.1/0.2验证见RELEASE.md；0.3证据保留于evidence/local-0.3-validation.json，不当作新版证据。
 
 ## 已执行命令
 
