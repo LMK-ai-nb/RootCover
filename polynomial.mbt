@@ -1,5 +1,5 @@
 ///|
-/// Polynomial expressions use exact binary64 input constants; no transcendental functions.
+/// Real expressions with exact binary64 input constants.
 pub(all) enum Expr {
   Const(Double)
   Variable(Int32)
@@ -7,13 +7,15 @@ pub(all) enum Expr {
   Sub(Expr, Expr)
   Mul(Expr, Expr)
   Pow(Expr, Int32)
+  Div(Expr, Expr)
+  Apply(Unary, Expr)
 }
 
 ///|
 pub extend Expr with @debug.Debug::{to_repr}
 
 ///|
-/// A square polynomial system, with 1..6 named variables.
+/// A square real-expression system, with 1..32 named variables.
 pub(all) struct System {
   names : Array[String]
   equations : Array[Expr]
@@ -23,6 +25,9 @@ pub(all) struct System {
 pub(all) struct Evaluation {
   ranges : Array[Interval]
   jacobian : Array[Array[Interval]]
+  fully_defined : Bool
+  smooth : Bool
+  empty_domain : Bool
 }
 
 ///|
@@ -50,7 +55,7 @@ fn check_expr(
   count : Ref[Int32],
 ) -> Int32 raise RootError {
   count.val = count.val + 1
-  guard depth <= 32 && count.val <= 512 else {
+  guard depth <= 64 && count.val <= 8192 else {
     raise Invalid("expression size/depth limit exceeded")
   }
   let degree = match e {
@@ -68,6 +73,15 @@ fn check_expr(
       check_expr(a, n, depth + 1, count).max(check_expr(b, n, depth + 1, count))
     Mul(a, b) =>
       check_expr(a, n, depth + 1, count) + check_expr(b, n, depth + 1, count)
+    Div(a, b) => {
+      let _ = check_expr(a, n, depth + 1, count)
+      let _ = check_expr(b, n, depth + 1, count)
+      0
+    }
+    Apply(_, a) => {
+      let _ = check_expr(a, n, depth + 1, count)
+      0
+    }
     Pow(a, k) => {
       guard k >= 0 && k <= 16 else { raise Invalid("power must be in 0..16") }
       check_expr(a, n, depth + 1, count) * k
@@ -94,10 +108,10 @@ fn validate_polynomials(
 ) -> Unit raise RootError {
   let n = names.length()
   guard n >= 1 &&
-    n <= 6 &&
+    n <= 32 &&
     expressions.length() >= 1 &&
-    expressions.length() <= 32 else {
-    raise Invalid("require 1..6 variables and 1..32 polynomials")
+    expressions.length() <= 128 else {
+    raise Invalid("require 1..32 variables and 1..128 expressions")
   }
   for i = 0; i < n; i = i + 1 {
     guard valid_name(names[i]) else {
@@ -160,6 +174,19 @@ fn dual(
       }
       (v.power(k), g.map(x => d.mul(x)))
     }
+    Div(a, b) => {
+      let (v, g) = dual(a, box)
+      let (w, h) = dual(b, box)
+      (
+        v.div(w),
+        Array::makei(n, i => g[i].mul(w).sub(v.mul(h[i])).div(w.mul(w))),
+      )
+    }
+    Apply(op, a) => {
+      let (v, g) = dual(a, box)
+      let d = unary_slope(op, v)
+      (elementary_value(op, v), g.map(x => d.mul(x)))
+    }
   }
 }
 
@@ -170,12 +197,19 @@ fn evaluate_unchecked(
 ) -> Evaluation raise RootError {
   let ranges : Array[Interval] = []
   let jacobian : Array[Array[Interval]] = []
+  let mut fully_defined = true
+  let mut smooth = true
+  let mut empty_domain = false
   for e in system.equations {
+    let state = expression_range_unchecked(e, box)
+    fully_defined = fully_defined && state.fully_defined
+    smooth = smooth && state.smooth
+    empty_domain = empty_domain || state.range is None
     let (v, g) = dual(e, box)
     ranges.push(v)
     jacobian.push(g)
   }
-  { ranges, jacobian, }
+  { ranges, jacobian, fully_defined, smooth, empty_domain, }
 }
 
 ///|
@@ -198,5 +232,7 @@ pub impl @debug.Debug for Expr with fn to_repr(self) {
     Sub(a, b) => @debug.Repr(("Sub", a, b))
     Mul(a, b) => @debug.Repr(("Mul", a, b))
     Pow(a, k) => @debug.Repr(("Pow", a, k))
+    Div(a, b) => @debug.Repr(("Div", a, b))
+    Apply(op, a) => @debug.Repr(("Apply", op, a))
   }
 }

@@ -3,6 +3,7 @@ pub(all) struct Request {
   system : System
   box : Array[Interval]
   options : Options
+  contractors : ContractorOptions
 }
 
 ///|
@@ -97,20 +98,22 @@ pub fn decode_request(source : String) -> Request raise RootError {
 
 ///|
 fn decode_root_object(o : Map[String, Json]) -> Request raise RootError {
-  j_only(o, ["version", "mode", "variables", "equations", "box", "options"])
+  j_only(o, [
+    "version", "mode", "variables", "equations", "box", "options", "contractors",
+  ])
   guard request_mode(o) == "roots" else { raise Invalid("expected roots mode") }
   guard j_integer(j_required(o, "version"), 1) == 1 else {
     raise Invalid("unsupported request version")
   }
   let names = j_array(j_required(o, "variables")).map(j_text)
-  guard names.length() >= 1 && names.length() <= 6 else {
-    raise Invalid("require 1..6 variables")
+  guard names.length() >= 1 && names.length() <= 32 else {
+    raise Invalid("require 1..32 variables")
   }
   let eqs = j_array(j_required(o, "equations"))
   guard eqs.length() == names.length() else {
     raise Invalid("equation count must equal variable count")
   }
-  let equations = eqs.map(x => parse_polynomial(j_text(x), names))
+  let equations = eqs.map(x => parse_expression(j_text(x), names))
   let system = { names, equations, }
   validate_system(system)
   let box = j_array(j_required(o, "box")).map(x => {
@@ -121,7 +124,12 @@ fn decode_root_object(o : Map[String, Json]) -> Request raise RootError {
     interval(j_number(a[0]), j_number(a[1]))
   })
   check_box(box, names.length())
-  { system, box, options: request_options(o), }
+  {
+    system,
+    box,
+    options: request_options(o),
+    contractors: request_contractors(o),
+  }
 }
 
 ///|
@@ -152,9 +160,14 @@ fn request_options(o : Map[String, Json]) -> Options raise RootError {
 
 ///|
 fn box_json(box : Array[Interval]) -> Json {
-  Json::array(
-    box.map(x => Json::array([Json::number(x.lo), Json::number(x.hi)])),
-  )
+  fn endpoint(x : Double) -> Json {
+    if x.is_inf() {
+      Json::null()
+    } else {
+      Json::number(x)
+    }
+  }
+  Json::array(box.map(x => Json::array([endpoint(x.lo), endpoint(x.hi)])))
 }
 
 ///|
@@ -196,6 +209,7 @@ fn result_json(request : Request, result : SolveResult) -> Json {
       "excluded": Json::number(result.excluded.to_double()),
       "contractions": Json::number(result.contractions.to_double()),
       "splits": Json::number(result.splits.to_double()),
+      "contractor_calls": Json::number(result.contractor_calls.to_double()),
     },
   }
 }
@@ -207,11 +221,27 @@ pub fn solve_json(source : String) -> String raise RootError {
   match request_mode(o) {
     "roots" => {
       let request = decode_root_object(o)
-      result_json(request, solve(request.system, request.box, request.options)).stringify()
+      result_json(
+        request,
+        solve_with_contractors(
+          request.system,
+          request.box,
+          request.options,
+          request.contractors,
+        ),
+      ).stringify()
     }
     "feasibility" => {
       let request = decode_feasibility_object(o)
-      paving_json(request, pave(request.model, request.box, request.options)).stringify()
+      paving_json(
+        request,
+        pave_with_contractors(
+          request.model,
+          request.box,
+          request.options,
+          request.contractors,
+        ),
+      ).stringify()
     }
     _ => raise Invalid("unsupported mode; use roots or feasibility")
   }

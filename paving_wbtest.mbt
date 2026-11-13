@@ -49,7 +49,9 @@ test "paving separates tolerance bands and preserves possible solutions" {
 test "budget and depth limitations retain unresolved outer coverage" {
   let m = {
     names: ["x"],
-    constraints: [{ polynomial: Variable(0), allowed: interval(-0.25, 0.25), }],
+    constraints: [
+      { polynomial: Pow(Variable(0), 2), allowed: interval(0.5, 1.0), },
+    ],
   }
   let r = pave(m, [interval(-1.0, 1.0)], {
     tolerance: 0.00001,
@@ -60,7 +62,8 @@ test "budget and depth limitations retain unresolved outer coverage" {
   assert_false(r.resolution_met)
   assert_eq(r.assessments, 1)
   assert_eq(r.unresolved.length(), 2)
-  assert_true(r.unresolved.any(b => b.box[0].contains(0.0)))
+  assert_true(r.unresolved.any(b => b.box[0].contains(-0.8)))
+  assert_true(r.unresolved.any(b => b.box[0].contains(0.8)))
   let d = pave(m, [interval(-1.0, 1.0)], {
     tolerance: 0.00001,
     max_assessments: 100,

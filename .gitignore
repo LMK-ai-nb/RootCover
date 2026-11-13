@@ -9,3 +9,5 @@ web/engine.js
 web/data/
 web/licenses/
 dist/
+
+.venv/

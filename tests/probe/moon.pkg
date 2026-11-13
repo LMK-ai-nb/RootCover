@@ -4,5 +4,5 @@ import {
 }
 
 options(
-  link: { "js": { "exports": [ "probe" ], "format": "esm" } },
+  link: { "js": { "exports": [ "probe", "nonlinear_probe" ], "format": "esm" } },
 )

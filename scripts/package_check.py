@@ -15,7 +15,7 @@ with zipfile.ZipFile(p) as z:
         if 'third_party' not in parts:
             assert not private_contact.search(data),entry.filename
     names=[x.replace('\\','/') for x in z.namelist()]
-    for name in ['interval.mbt','polynomial.mbt','krawczyk.mbt','solver.mbt','parser.mbt','format.mbt','paving.mbt','paving_format.mbt','LICENSE']:
+    for name in ['interval.mbt','polynomial.mbt','elementary.mbt','expression.mbt','contractor.mbt','contractor_format.mbt','krawczyk.mbt','solver.mbt','parser.mbt','format.mbt','paving.mbt','paving_format.mbt','LICENSE']:
         assert any(x==name or x.endswith('/'+name) for x in names),name
 report={'archive':p.name,'files':len(names),'bytes':p.stat().st_size,'privacy_scan':'passed'}
 (ROOT/'artifacts').mkdir(exist_ok=True)

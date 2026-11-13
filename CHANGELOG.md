@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0-dev.1 — 2026-11-11 — local only
+
+- Thirteen elementary functions, division/negative powers, domain/smoothness states and interval AD.
+- HC4-style dependency propagation, independent interval Newton and fair bounded joint contraction.
+- Up to32 variables/128 mixed constraints, nonlinear robotics/parameter scenarios and UI controls.
+- Actual Julia IntervalRootFinding0.7.2 reference and independent100-digit validation.
+- No push, publication or new remote CI this round.
+
+
 ## 0.2.0 — 2026-11-04
 
 - Bounded-observation feasible sets with non-square polynomial constraints.

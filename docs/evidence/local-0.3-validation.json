@@ -1,0 +1,250 @@
+{
+  "version": "0.3.0-dev.1",
+  "status": "local only; no push or publication",
+  "checked_on": "2026-11-11",
+  "moon": "0.1.20261021",
+  "moonc": "0.10.17+093cb8f9c",
+  "strict_all_target_static_check": true,
+  "executed_targets": [
+    "wasm",
+    "wasm-gc",
+    "js"
+  ],
+  "moonbit_tests_each": 46,
+  "cli_tests": 19,
+  "browser_passed": true,
+  "native_executed": false,
+  "native_reason": "local MSVC/Windows SDK is not configured",
+  "root_oracle": {
+    "seed": 20261104,
+    "interval_cases": 2800,
+    "systems": 182,
+    "exact_certificate_replays": 513,
+    "passed": true
+  },
+  "paving_oracle": {
+    "systems": 37,
+    "exact_inner_box_replays": 1215,
+    "rational_grid_points": 4413,
+    "passed": true
+  },
+  "nonlinear_oracle": {
+    "passed": true,
+    "seed": 20261111,
+    "mpmath_version": "1.3.0",
+    "decimal_digits": 100,
+    "expression_boxes": 525,
+    "high_precision_values": 4076,
+    "high_precision_derivatives": 5900,
+    "contractor_models": 134,
+    "contractor_runs": 402,
+    "contractor_grid_checks": 21114,
+    "root_systems": 19,
+    "nonlinear_feasible_scenarios": 3,
+    "feasible_cell_points": 14562
+  },
+  "julia_baseline": {
+    "passed": true,
+    "julia_version": "1.13.3",
+    "intervalrootfinding_version": "0.7.2",
+    "models": 20,
+    "julia_method_runs": 40,
+    "regular_models_matching_both_methods": 16,
+    "shared_singular_unresolved_models": 3,
+    "semantic_differences": [
+      {
+        "name": "pole_without_root",
+        "reason": "RootCover excludes 1/x=0 algebraically on defined points; Julia retains an unknown box at the pole."
+      }
+    ],
+    "scope": "finite functional regression, no full-API parity, performance or formal-correctness claim"
+  },
+  "commands": [
+    {
+      "command": [
+        "moon",
+        "version",
+        "--all"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "check",
+        "--target",
+        "all",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "test",
+        "--target",
+        "wasm",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "build",
+        "--target",
+        "wasm",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "test",
+        "--target",
+        "wasm-gc",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "build",
+        "--target",
+        "wasm-gc",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "test",
+        "--target",
+        "js",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "build",
+        "--target",
+        "js",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "fmt",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "info"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "run",
+        "cmd/demo"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "node",
+        "scripts/build.mjs"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tests/cli.test.mjs"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "moon",
+        "build",
+        "tests/probe",
+        "--target",
+        "js",
+        "--release",
+        "--deny-warn"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python.exe",
+        "tests/oracle.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python.exe",
+        "tests/paving_oracle.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python.exe",
+        "tests/nonlinear_oracle.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python.exe",
+        "scripts/compare_intervalrootfinding.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python.exe",
+        "scripts/package_check.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python.exe",
+        "tests/browser.py",
+        "http://127.0.0.1:54766"
+      ],
+      "exit": 0
+    }
+  ],
+  "core_file_sha256": {
+    "interval.mbt": "24fcb0daf2b9d4a960093c7a2ac2984ec9c5bd8a75d4730ca8c7dbc551616cc9",
+    "elementary.mbt": "89aa52cce0a314d648f45e1c02f889ce102ab03678b837d3eabee8fb36fedbba",
+    "expression.mbt": "6867eb51611a770dc765c4678c0eed44adf61e710fb7cba8d6c15ff9025f72df",
+    "polynomial.mbt": "a0f8a6dd414960179699adf9e2efd3f774f2eed4e6b23b17d2ee74de4e74f6ce",
+    "parser.mbt": "6a6146cf93ae729c8e9923a9e71cb44e4185a4f7bc1aea8eac3c83857319e744",
+    "krawczyk.mbt": "36ce66dcae91baa90fc01b9e22ce9a76d5c167417485276e8234bc04e3c652a8",
+    "contractor.mbt": "72d02abe4cc08f5a4f4a81b81ac51c04c2e01b8f08cbd0d5a021ab8647374c9a",
+    "contractor_format.mbt": "b7b75f5227ff133890767ce0444438334d45420d01535351fc05d19c69f9e0d6",
+    "solver.mbt": "8beb97c1b72137825806d8d75cb899bf847ba134f684c576128db76e1a948932",
+    "paving.mbt": "d6f69bbf7f905d962bbd907436d5138f93d4bc8f7a6e9797222ca227b45fbb79",
+    "format.mbt": "50f9c2c43864e66ef7b694d3edce8b4b821eae083832617fe328b103e25c27cc",
+    "paving_format.mbt": "93337a37bf7070310b670b30cf06886efd6e42199cef690e23556af3dc8985d5"
+  },
+  "reviewed_on": "2026-11-13"
+}

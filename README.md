@@ -1,91 +1,80 @@
 # RootCover
 
-**用同一套MoonBit区间内核，计算多项式方程的根与带观测容差的可行区域。**
+**MoonBit 非线性约束区间求解库：区域求根、等式、不等式与带误差观测的可行域。**
 
-面向几何、标定软件与科学模型开发者：从指定有限区域出发，求根模式区分唯一解域与未决区域；可行域模式区分整盒可行区域与未决覆盖，支持观测带数量多于变量数量的模型。预算耗尽时保留所有待处理区域。
+当前工作副本是 **0.3.0-dev.1，本地开发版，尚未推送或发布**。GitHub、Pages和Mooncakes仍为0.2.0，不能用`moon add`取得本轮新增能力。维护者：李明坤 / LMK-ai-nb。[来源与历史关系](docs/ORIGIN.md)。
 
-维护者与参赛者：**李明坤 / LMK-ai-nb**，个人参赛。AI辅助开发，由维护者复核、理解和解释。来源与旧工程关系见[ORIGIN](docs/ORIGIN.md)。
+面向机构计算、参数估计和科学模型开发者，求解给定区域中的多个解或可行参数范围。核心、解析、区间导数、收缩与搜索均用MoonBit独立实现，不依赖Julia、外部数值引擎或网络服务运行。既有数值方法与成熟实现已披露，不主张算法首创或全面超越已有求解器。
 
-[GitHub](https://github.com/LMK-ai-nb/RootCover) · [在线工作台](https://lmk-ai-nb.github.io/RootCover/) · [Mooncakes](https://mooncakes.io/docs/LMK-ai-nb/rootcover) · [实际发布记录](docs/RELEASE.md)
+![本地工作台](docs/assets/workbench.png)
 
-![区间工作台](docs/assets/workbench.png)
+## 本地运行
 
-## 五分钟运行
-
-当前版本0.2.0：本地moonc 0.10.17 / moon 0.1.20261021已验证；远程moonc 0.10.19在Windows、macOS、Linux的四个目标全部通过。Mooncakes发布和独立下载运行已成功，证据见RELEASE.md。Node22+运行CLI和网页，Python3.12+仅用于验证，无第三方npm或Python运行时依赖。
+工程目录 `D:\CodexProjects\RootCover`；MoonBit0.10.17、Node22+。
 
 ```text
 moon run cmd/demo
 node scripts/build.mjs
-node bin/rootcover.mjs examples/geometry.json
-node bin/rootcover.mjs examples/calibration.json
-node bin/rootcover.mjs examples/equilibrium.json
+node bin/rootcover.mjs examples/robot_roots.json
+node bin/rootcover.mjs examples/robot_workspace.json
+node bin/rootcover.mjs examples/thermal_parameters.json
+node bin/rootcover.mjs examples/mixed_process.json
 node scripts/serve.mjs
 ```
 
-打开 http://127.0.0.1:4188。网页/CLI均调用同一份MoonBit数值内核，网页使用Worker运行并支持停止、编辑请求、切换分支、加入观测容差、限制预算和导出原始请求/结果。运行时不调用外部数值API。修改MoonBit后重新build。
+浏览器打开 http://127.0.0.1:4188 。网页、CLI和typed API共享内核；Worker计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI退出码0表示全部分类，1表示仍有未决，2表示错误；三个容差示例退出1是预期结果。
 
-CLI也支持 `node bin/rootcover.mjs examples/noisy_localization.json` 与 `examples/calibration_band.json`。这两类观测带示例保留未决区域，**退出码1是预期结果**：0表示所有区域已分类，1表示仍有未决，2表示无效输入/宿主错误。`resolution_met=true`不替代`complete=true`。
+## 本轮已实现
 
-## 两类完整计算
-
-| 模式 | 输入 | 返回 |
-| --- | --- | --- |
-| roots（默认） | 1…6个变量、等数量多项式、有限初始盒 | 区间Jacobian、Krawczyk排除/收缩、严格唯一解域、根包围与未决区域 |
-| feasibility | 1…6个变量、1…32个多项式观测带、有限初始盒 | SIVIA区域划分、整盒可行证据、未决外包围、分辨率/资源状态 |
-
-核心区间运算、表达式解析、自动微分、两类搜索与结果判定均由MoonBit实现，无第三方数值引擎、绑定或服务代理。两类方法是既有数值方法，不主张算法首创。[同类调查](docs/RESEARCH.md)披露相邻库与成熟外语项目，并说明需要独立求解层的理由。
-
-## 三个完整应用场景
-
-| 使用者/问题 | 输入和操作 | 已验证结果 |
-| --- | --- | --- |
-| 几何工具开发者求区域内圆线全部交点 | geometry.json：x²+y²−2=0、y−x=0，[-1.5,1.5]² | 两个唯一解盒包含(-1,-1)、(1,1)，无未决 |
-| 标定软件开发者处理非单调响应和容差 | calibration.json：x³−3x+1=0先查[-2.5,2.5]，再限[0,1]；另可加入±0.125响应带 | 精确模式3个分支，限范围后1个；全范围观测带得到29个整盒可行盒、12个未决盒，达到0.001分辨率 |
-| 定位工具开发者处理有界测量误差 | noisy_localization.json：三个基站距离平方带约束两个坐标，范围[0,2]² | 19个整盒可行盒、40个未决盒，未决宽度达到1/64；(1,1)被保留 |
-
-这些数量是固定示例的结果。可行盒数量不是解的个数；各盒包含连续多个点。观测带是调用者给定的界，不代表统计置信区间或真实传感器精度。所有示例合成，不冒称客户/设备落地。
-
-另保留反应模型稳态、三维测距镜像位置、六元耦合64根及重根反例。每个场景的完整用户、输入、操作、输出和验证见[SCENARIOS](docs/SCENARIOS.md)。
-
-## 在MoonBit中复用
-
-```text
-moon add LMK-ai-nb/rootcover@0.2.0
-```
-
-在调用包导入 `LMK-ai-nb/rootcover`。完整可执行示例见[API.mbt.md](API.mbt.md)，所有示例随moon test编译执行。
-
-| 接口 | 功能 |
+| 能力 | 接口和范围 |
 | --- | --- |
-| interval / Interval运算 | binary64向外舍入区间 |
-| parse_polynomial / validate_system | 明确语法、节点和模型边界 |
-| enclose / assess / solve | 方程/Jacobian区间、单盒判定与根域搜索 |
-| validate_constraints / classify_constraints / pave | 非方观测带模型、整盒判定和可行域内外包围 |
-| decode_request / decode_feasibility_request / solve_json | 严格版本化请求，字符串接口按mode分派 |
+| 表达式 | `+ - * /`、括号、整数幂0…16及负整数幂；13种函数：sin/cos/tan/exp/log(ln)/sqrt/abs/atan/asin/acos/sinh/cosh/tanh |
+| 区间计算 | 向外舍入四则、带余项界的初等函数、区间自动Jacobian；显式定义域和光滑性状态 |
+| 区域求根 | Krawczyk唯一性证书、独立区间Newton收缩、传播与有界搜索；未决覆盖保留 |
+| 非线性约束 | 非方等式、≤、≥、观测带；前向—反向传播、变量依赖agenda、预条件区间Gauss-Seidel与坐标Newton联合收缩、SIVIA内外包围 |
+| 输入上限 | 1…32变量、1…128约束，总AST节点8192、深度64；初始盒有限，预算有限 |
 
-省略mode保持0.1版求根行为；新增 `mode:"feasibility"`。拒绝重复解码键、未知字段、非有限数、不支持表达式和资源越界。两类API均不修改输入。
+新调用使用`parse_expression`；`parse_polynomial`保持旧严格语法。`Constraint.polynomial`字段名为0.2兼容保留，其值可以是完整非线性Expr。`interval_newton`、`contract_constraints`可单独调用，返回收缩盒/空、调用次数和固定点预算状态，不单独声称可行或唯一。可执行例子见[API.mbt.md](API.mbt.md)。
+
+## 三个新增应用场景
+
+| 用户/用途 | 可运行输入 | 实际结果 |
+| --- | --- | --- |
+| 机构计算开发者求双连杆逆解及位置误差允许的关节角范围 | robot_roots.json、robot_workspace.json；三角关系和关节约束 | 精确问题两组唯一逆解；容差问题2个内盒、21个未决盒，分辨率0.02 |
+| 参数估计开发者反演指数响应 `a*exp(-k*t)+b` | thermal_parameters.json；3变量、5观测/非负约束 | 537个内盒、2974个未决盒；保留(2,0.5,0.25)，分辨率1/64 |
+| 科学模型开发者联立对数、根式和非线性不等式 | mixed_process.json；跨定义域初始范围 | 5个内盒、45个未决盒；保留(1,0.7)，分辨率1/64 |
+
+均为合成模型，不声称真实设备采用、统计置信度或机械安全认证。完整用户、输入、操作、输出与验证见[SCENARIOS](docs/SCENARIOS.md)。旧几何/标定/稳态/测距/六元64根示例保留。
+
+## JSON调用
+
+`mode:"roots"`或省略mode求方形系统；`mode:"feasibility"`求一般约束。约束可用`{"expression":"log(x)+y","range":[0.68,0.72]}`，或`{"expression":"x^2+y^2","relation":"<=","rhs":2}`。range与relation/rhs二选一；range的下/上端点null表示下/上无界，结果区间同理，null不代表数值0。初始box仍须有限。
+
+可加 `"contractors":{"propagation":true,"newton":true,"max_steps":256,"max_rounds":4}`。max_steps由全查询共享；耗尽后回到区间判定/细分，不丢待处理区域。`options`中的tolerance、max_assessments、max_depth继续有效。重复键、未知字段、任意函数调用、严格不等式及越界资源拒绝。
 
 ## 正确理解结果
 
-求根：只有Krawczyk映像严格位于盒内部、收缩范数上界<1时才认证唯一性；小残差不是证明。完整分类时root_count表示初始区域内不同实根数；仍有未决时它只表示已确认根数。[求根语义](docs/SEMANTICS.md)。
+唯一性仍须严格Krawczyk证据，Newton/传播负责排除和收缩。每个可行内盒中所有点满足约束；内盒∪未决包围全部可行点。未决不是可行点，盒数不是解数。complete、resolution_met和收缩固定点状态分别解释。
 
-可行域：每个inside盒的整个区间像均落在所有观测带中，所以盒内所有点满足约束；inside与unresolved联合包围初始域内全部可行点。未决盒不能标成可行或不可行。resolution_met仅描述未决盒宽度，complete单独报告是否仍有未决；不输出root_count。[可行域语义](docs/PAVING.md)。
+log/sqrt/反三角定义域、除数含0、tan极点与abs非光滑区不会直接获得错误的整盒/唯一性判定。初等函数使用区间级数和余项界，不假设宿主libm误差≤1ulp；大三角参数和过宽周期逆像保守放宽。详见[NONLINEAR](docs/NONLINEAR.md)、[根语义](docs/SEMANTICS.md)、[可行域语义](docs/PAVING.md)。
 
-## 实际验证
+## 验证与基准
 
 ```text
+python -m pip install -r requirements-dev.txt
+python scripts/verify.py
+# 安装Playwright/Chromium后：
 python scripts/verify.py --browser
-# 具备本机C工具链时：
-python scripts/verify.py --native --browser
 ```
 
-33项MoonBit测试（含3项公开API文档）、13项Node集成。原求根核对：2800组区间、182个已知系统、513份唯一性证据重放。新增可行域核对：37个模型、1310个内包围盒精确重放、4413个有理数网格点覆盖检查。Python Fraction/AST参考不使用本项目的舍入、搜索或求解代码。
+mpmath1.3.0仅用于100位独立验证。浏览器测试另需`pip install playwright`、`python -m playwright install chromium`；可把PLAYWRIGHT_BROWSERS_PATH设在本工程work。具备本机C工具链可加`--native`。脚本记录实际命令/退出码，报告见[VALIDATION](docs/VALIDATION.md)；本轮没有触发远程CI。
 
-Chromium实际测试包括根/容差场景、分支、预算、报告、坏JSON、注入文本、乱序样例响应、取消与390px布局。原始命令/退出码/输出写入artifacts，CI上传验证JSON。有限测试不是全实现形式化证明；本地未配置MSVC，native实际运行以远程CI证据为准。
+实际运行Julia1.13.3 / IntervalRootFinding.jl0.7.2：20模型、Newton和Krawczyk共40次；16常规模型唯一根数量吻合，3奇异/边界模型均未决，极点处理有一处已披露差异。不是全API兼容或速度排名。[基准与复现](docs/BASELINE.md)。
 
-## 范围
+旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；新增高精度函数/导数、134模型在三种机制下共402次收缩保留、混合可行域与真实浏览器验证。有限测试不是形式化证明。
 
-多项式仅支持+、-、*、括号与整数幂0…16，总次数≤32、全模型节点≤512、深度≤32。系数和输入边界按binary64点值解释，观测带是多项式输出约束；不等于系数不确定族、精确十进制、超越函数、复数、全局优化或统计概率。最多20000次评估、搜索深度80。重根、边界、病态和资源限制均可能留下未决。
+## 边界与来源
 
-MIT，标准库许可和NOTICE随分发保留；[来源](THIRD_PARTY_NOTICES.md)。真实工业模型采用、系统规模/病态评测、更高精度后端尚未完成，不列为本轮已具备能力。官方报名和审核结果见规则记录，技术发布不构成通过初审。
+实数、binary64点常数和有限初始区域。不支持任意精度、复根、整数、全局优化、任意回调/显式Jacobian、相对容差、BFS或严格不等式。重根、边界、奇异/非光滑、宽区间、高维和资源限制均可能未决；32变量是输入上限，不是大规模完成保证。
+
+MIT，标准库许可和NOTICE随分发保留。[调研](docs/RESEARCH.md)、[第三方来源](THIRD_PARTY_NOTICES.md)。0.3是本仓库0.2基础上的扩展，不是换名另报的无关联工程；本地开发不代表官方审核通过。

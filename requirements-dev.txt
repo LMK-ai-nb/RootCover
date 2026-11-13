@@ -1,0 +1,2 @@
+# Validation only. No Python dependency is needed by the MoonBit library or CLI.
+mpmath==1.3.0

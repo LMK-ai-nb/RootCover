@@ -3,6 +3,7 @@ pub(all) struct FeasibilityRequest {
   model : ConstraintModel
   box : Array[Interval]
   options : Options
+  contractors : ContractorOptions
 }
 
 ///|
@@ -16,7 +17,9 @@ pub fn decode_feasibility_request(
 fn decode_feasibility_object(
   o : Map[String, Json],
 ) -> FeasibilityRequest raise RootError {
-  j_only(o, ["version", "mode", "variables", "constraints", "box", "options"])
+  j_only(o, [
+    "version", "mode", "variables", "constraints", "box", "options", "contractors",
+  ])
   guard request_mode(o) == "feasibility" else {
     raise Invalid("expected feasibility mode")
   }
@@ -25,19 +28,47 @@ fn decode_feasibility_object(
   }
   let names = j_array(j_required(o, "variables")).map(j_text)
   let cs = j_array(j_required(o, "constraints"))
-  guard cs.length() >= 1 && cs.length() <= 32 else {
-    raise Invalid("require 1..32 constraints")
+  guard cs.length() >= 1 && cs.length() <= 128 else {
+    raise Invalid("require 1..128 constraints")
   }
   let constraints = cs.map(v => {
     let c = j_object(v)
-    j_only(c, ["expression", "range"])
-    let r = j_array(j_required(c, "range"))
-    guard r.length() == 2 else {
-      raise Invalid("each observation range requires two endpoints")
+    j_only(c, ["expression", "range", "relation", "rhs"])
+    let allowed = match c.get("range") {
+      Some(value) => {
+        guard c.get("relation") is None && c.get("rhs") is None else {
+          raise Invalid("use range or relation/rhs, never both")
+        }
+        let r = j_array(value)
+        guard r.length() == 2 else {
+          raise Invalid("each range requires two endpoints")
+        }
+        let lo = match r[0] {
+          Null => @double.neg_infinity
+          _ => j_number(r[0])
+        }
+        let hi = match r[1] {
+          Null => @double.infinity
+          _ => j_number(r[1])
+        }
+        interval(lo, hi)
+      }
+      None => {
+        let rhs = j_number(j_required(c, "rhs"))
+        match j_text(j_required(c, "relation")) {
+          "==" => point(rhs)
+          "<=" => interval(@double.neg_infinity, rhs)
+          ">=" => interval(rhs, @double.infinity)
+          _ =>
+            raise Invalid(
+              "relation must be ==, <= or >=; strict inequalities are unsupported",
+            )
+        }
+      }
     }
     {
-      polynomial: parse_polynomial(j_text(j_required(c, "expression")), names),
-      allowed: interval(j_number(r[0]), j_number(r[1])),
+      polynomial: parse_expression(j_text(j_required(c, "expression")), names),
+      allowed,
     }
   })
   let model = { names, constraints, }
@@ -50,7 +81,12 @@ fn decode_feasibility_object(
     interval(j_number(a[0]), j_number(a[1]))
   })
   check_box(box, names.length())
-  { model, box, options: request_options(o), }
+  {
+    model,
+    box,
+    options: request_options(o),
+    contractors: request_contractors(o),
+  }
 }
 
 ///|
@@ -83,7 +119,8 @@ fn paving_json(request : FeasibilityRequest, result : PavingResult) -> Json {
       "assessments": Json::number(result.assessments.to_double()),
       "excluded": Json::number(result.excluded.to_double()),
       "splits": Json::number(result.splits.to_double()),
-      "contractions": 0,
+      "contractions": Json::number(result.contractions.to_double()),
+      "contractor_calls": Json::number(result.contractor_calls.to_double()),
     },
   }
 }

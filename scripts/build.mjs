@@ -8,4 +8,4 @@ for(const dir of ['dist','web/data','web/licenses','dist/licenses'])mkdirSync(re
 for(const file of ['dist/engine.js','web/engine.js'])copyFileSync(resolve(root,'_build/js/release/build/bridge/bridge.js'),resolve(root,file));
 for(const name of readdirSync(resolve(root,'examples')).filter(x=>x.endsWith('.json')))copyFileSync(resolve(root,'examples',name),resolve(root,'web/data',name));
 for(const folder of ['web/licenses','dist/licenses'])for(const name of ['LICENSE','NOTICE'])copyFileSync(resolve(root,`third_party/MoonBit-core-${name}.txt`),resolve(root,folder,`MoonBit-core-${name}.txt`));
-console.log('Built shared MoonBit polynomial solver.');
+console.log('Built shared MoonBit nonlinear interval solver.');

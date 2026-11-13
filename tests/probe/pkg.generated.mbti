@@ -2,6 +2,8 @@
 package "LMK-ai-nb/rootcover/tests/probe"
 
 // Values
+pub fn nonlinear_probe(String) -> String
+
 pub fn probe(String) -> String
 
 // Errors

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "mode": "feasibility",
+  "variables": ["q1", "q2"],
+  "constraints": [
+    {"expression": "cos(q1)+cos(q1+q2)", "range": [0.98, 1.02]},
+    {"expression": "sin(q1)+sin(q1+q2)", "range": [0.98, 1.02]},
+    {"expression": "cos(q1)", "relation": ">=", "rhs": 0}
+  ],
+  "box": [[-0.25, 1.8], [-2, 2]],
+  "options": {"tolerance": 0.02, "max_assessments": 12000}
+}

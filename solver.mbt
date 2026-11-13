@@ -35,6 +35,7 @@ pub(all) struct SolveResult {
   excluded : Int32
   contractions : Int32
   splits : Int32
+  contractor_calls : Int32
 }
 
 ///|
@@ -59,9 +60,27 @@ pub fn solve(
   initial : Array[Interval],
   options : Options,
 ) -> SolveResult raise RootError {
+  solve_with_contractors(system, initial, options, default_contractors())
+}
+
+///|
+pub fn solve_with_contractors(
+  system : System,
+  initial : Array[Interval],
+  options : Options,
+  contractors : ContractorOptions,
+) -> SolveResult raise RootError {
   validate_system(system)
   check_box(initial, system.names.length())
   validate_options(options)
+  validate_contractors(contractors)
+  let model = {
+    names: system.names,
+    constraints: system.equations.map(e => {
+      polynomial: e,
+      allowed: point(0.0),
+    }),
+  }
   let stack : Array[(Array[Interval], Int32)] = [(initial.map(x => x), 0)]
   let roots : Array[RootBox] = []
   let unresolved : Array[UnresolvedBox] = []
@@ -69,6 +88,7 @@ pub fn solve(
   let mut excluded = 0
   let mut contractions = 0
   let mut splits = 0
+  let mut contractor_calls = 0
   while !stack.is_empty() {
     let (box, depth) = stack.pop().unwrap()
     if assessments >= options.max_assessments {
@@ -112,6 +132,40 @@ pub fn solve(
         stack.push((narrowed, depth))
       }
       Undecided(reason) => {
+        if contractor_calls < contractors.max_steps &&
+          (contractors.propagation || contractors.newton) {
+          let c = contract_unchecked(model, box, {
+            propagation: contractors.propagation,
+            newton: contractors.newton,
+            max_steps: contractors.max_steps - contractor_calls,
+            max_rounds: contractors.max_rounds,
+          })
+          contractor_calls = contractor_calls + c.calls
+          match c.box {
+            None => {
+              excluded = excluded + 1
+              continue
+            }
+            Some(b) if c.changed => {
+              // Retain a small neighbourhood for an existence/uniqueness proof.
+              // Exact HC4 projections can otherwise collapse a regular root to
+              // a point on which strict-interior Krawczyk tests cannot succeed.
+              let padded = Array::makei(box.length(), i => {
+                let pad = box[i].width() * 0.01
+                {
+                  lo: box[i].lo.max(next_down(b[i].lo - pad)),
+                  hi: box[i].hi.min(next_up(b[i].hi + pad)),
+                }
+              })
+              if max_width(padded) < max_width(box) * 0.9 {
+                contractions = contractions + 1
+                stack.push((padded, depth))
+                continue
+              }
+            }
+            _ => ()
+          }
+        }
         if max_width(box) <= options.tolerance {
           unresolved.push({
             box,
@@ -148,6 +202,7 @@ pub fn solve(
     excluded,
     contractions,
     splits,
+    contractor_calls,
   }
 }
 

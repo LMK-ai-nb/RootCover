@@ -30,9 +30,10 @@ test "budget exhaustion returns unresolved coverage rather than complete" {
     o,
   )
   assert_false(r.complete)
-  assert_eq(r.unresolved.length(), 2)
+  assert_true(r.unresolved.length() > 0)
   assert_eq(r.assessments, 1)
-  assert_true(r.unresolved[0].box[0].contains(0.0))
+  assert_true(r.unresolved.any(b => b.box[0].contains(-2.0)))
+  assert_true(r.unresolved.any(b => b.box[0].contains(2.0)))
 }
 
 ///|

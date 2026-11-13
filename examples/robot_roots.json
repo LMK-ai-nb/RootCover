@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "variables": ["q1", "q2"],
+  "equations": ["cos(q1)+cos(q1+q2)-1", "sin(q1)+sin(q1+q2)-1"],
+  "box": [[-0.25, 1.8], [-2, 2]],
+  "options": {"tolerance": 0.0000001, "max_assessments": 12000}
+}

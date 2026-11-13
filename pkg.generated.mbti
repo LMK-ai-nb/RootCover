@@ -10,27 +10,43 @@ pub fn assess(System, Array[Interval]) -> Assessment raise RootError
 
 pub fn classify_constraints(ConstraintModel, Array[Interval]) -> FeasibilityAssessment raise RootError
 
+pub fn contract_constraints(ConstraintModel, Array[Interval], ContractorOptions) -> Contraction raise RootError
+
 pub fn decode_feasibility_request(String) -> FeasibilityRequest raise RootError
 
 pub fn decode_request(String) -> Request raise RootError
 
+pub fn default_contractors() -> ContractorOptions
+
 pub fn default_options() -> Options
+
+pub fn elementary(Unary, Interval) -> DomainRange
 
 pub fn enclose(System, Array[Interval]) -> Evaluation raise RootError
 
+pub fn evaluate_expression(Expr, Array[Interval]) -> DomainRange raise RootError
+
 pub fn interval(Double, Double) -> Interval raise RootError
+
+pub fn interval_newton(System, Array[Interval], max_rounds? : Int32) -> Contraction raise RootError
 
 pub fn next_down(Double) -> Double
 
 pub fn next_up(Double) -> Double
 
+pub fn parse_expression(String, Array[String]) -> Expr raise RootError
+
 pub fn parse_polynomial(String, Array[String]) -> Expr raise RootError
 
 pub fn pave(ConstraintModel, Array[Interval], Options) -> PavingResult raise RootError
 
+pub fn pave_with_contractors(ConstraintModel, Array[Interval], Options, ContractorOptions) -> PavingResult raise RootError
+
 pub fn solve(System, Array[Interval], Options) -> SolveResult raise RootError
 
 pub fn solve_json(String) -> String raise RootError
+
+pub fn solve_with_contractors(System, Array[Interval], Options, ContractorOptions) -> SolveResult raise RootError
 
 pub fn validate_constraints(ConstraintModel) -> Unit raise RootError
 
@@ -70,9 +86,36 @@ pub(all) struct ConstraintModel {
   constraints : Array[Constraint]
 }
 
+pub(all) struct Contraction {
+  box : Array[Interval]?
+  calls : Int32
+  rounds : Int32
+  changed : Bool
+  fixed_point : Bool
+  budget_exhausted : Bool
+  propagation_calls : Int32
+  newton_calls : Int32
+}
+
+pub(all) struct ContractorOptions {
+  propagation : Bool
+  newton : Bool
+  max_steps : Int32
+  max_rounds : Int32
+}
+
+pub(all) struct DomainRange {
+  range : Interval?
+  fully_defined : Bool
+  smooth : Bool
+}
+
 pub(all) struct Evaluation {
   ranges : Array[Interval]
   jacobian : Array[Array[Interval]]
+  fully_defined : Bool
+  smooth : Bool
+  empty_domain : Bool
 }
 
 pub(all) enum Expr {
@@ -82,6 +125,8 @@ pub(all) enum Expr {
   Sub(Expr, Expr)
   Mul(Expr, Expr)
   Pow(Expr, Int32)
+  Div(Expr, Expr)
+  Apply(Unary, Expr)
 }
 pub fn Expr::to_repr(Self) -> @debug.Repr
 pub impl @debug.Debug for Expr
@@ -96,6 +141,7 @@ pub(all) struct FeasibilityRequest {
   model : ConstraintModel
   box : Array[Interval]
   options : Options
+  contractors : ContractorOptions
 }
 
 pub(all) struct FeasibleBox {
@@ -107,9 +153,13 @@ pub(all) struct Interval {
   lo : Double
   hi : Double
 }
+pub fn Interval::abs(Self) -> Self
 pub fn Interval::add(Self, Self) -> Self
 pub fn Interval::contains(Self, Double) -> Bool
+pub fn Interval::cos(Self) -> Self
+pub fn Interval::div(Self, Self) -> Self
 pub fn Interval::equal(Self, Self) -> Bool
+pub fn Interval::exp(Self) -> Self
 pub fn Interval::finite(Self) -> Bool
 pub fn Interval::intersection(Self, Self) -> Self?
 pub fn Interval::magnitude(Self) -> Double
@@ -118,6 +168,7 @@ pub fn Interval::mul(Self, Self) -> Self
 pub fn Interval::neg(Self) -> Self
 pub fn Interval::not_equal(Self, Self) -> Bool
 pub fn Interval::power(Self, Int32) -> Self raise RootError
+pub fn Interval::sin(Self) -> Self
 pub fn Interval::sub(Self, Self) -> Self
 pub fn Interval::to_repr(Self) -> @debug.Repr
 pub fn Interval::width(Self) -> Double
@@ -138,12 +189,15 @@ pub(all) struct PavingResult {
   assessments : Int32
   excluded : Int32
   splits : Int32
+  contractions : Int32
+  contractor_calls : Int32
 }
 
 pub(all) struct Request {
   system : System
   box : Array[Interval]
   options : Options
+  contractors : ContractorOptions
 }
 
 pub(all) struct RootBox {
@@ -160,12 +214,31 @@ pub(all) struct SolveResult {
   excluded : Int32
   contractions : Int32
   splits : Int32
+  contractor_calls : Int32
 }
 
 pub(all) struct System {
   names : Array[String]
   equations : Array[Expr]
 }
+
+pub(all) enum Unary {
+  Sin
+  Cos
+  Tan
+  Exp
+  Log
+  Sqrt
+  Abs
+  Atan
+  Asin
+  Acos
+  Sinh
+  Cosh
+  Tanh
+}
+pub fn Unary::to_repr(Self) -> @debug.Repr
+pub impl @debug.Debug for Unary
 
 pub(all) struct UnresolvedBox {
   box : Array[Interval]

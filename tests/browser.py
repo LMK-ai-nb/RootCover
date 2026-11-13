@@ -9,7 +9,7 @@ with sync_playwright() as p:
     page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:4188')
     expect(page.locator('#status')).to_have_text('区域已解析');expect(page.locator('#root-count')).to_have_text('2')
-    page.get_by_role('button',name='体验预算耗尽').click();expect(page.locator('#status')).to_have_text('仍有未决');expect(page.locator('#unknown-count')).to_have_text('2')
+    page.get_by_role('button',name='体验预算耗尽').click();expect(page.locator('#status')).to_have_text('仍有未决');assert int(page.locator('#unknown-count').inner_text())>0
     page.locator('[data-case="calibration"]').click();expect(page.locator('#root-count')).to_have_text('3')
     page.locator('#branch').click();expect(page.locator('#root-count')).to_have_text('1')
     with page.expect_download() as event:page.locator('#download').click()
@@ -18,7 +18,7 @@ with sync_playwright() as p:
     page.locator('[data-case="equilibrium"]').click();expect(page.locator('#status')).to_have_text('区域已解析');expect(page.locator('#root-count')).to_have_text('1')
     page.locator('[data-case="noisy_localization"]').click()
     expect(page.locator('#primary-label')).to_have_text('已确认可行盒')
-    expect(page.locator('#root-count')).to_have_text('19');expect(page.locator('#unknown-count')).to_have_text('40')
+    expect(page.locator('#root-count')).to_have_text('17');expect(page.locator('#unknown-count')).to_have_text('38')
     expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
     with page.expect_download() as event:page.locator('#download').click()
     event.value.save_as(ROOT/'artifacts/paving-browser-report.json')
@@ -27,7 +27,16 @@ with sync_playwright() as p:
     assert len(report['request']['constraints'])==3 and 'root_count' not in report['result']
     page.locator('[data-case="calibration"]').click();expect(page.locator('#primary-label')).to_have_text('已确认唯一解')
     page.locator('#tolerance-band').click();expect(page.locator('#primary-label')).to_have_text('已确认可行盒')
-    expect(page.locator('#root-count')).to_have_text('29');expect(page.locator('#unknown-count')).to_have_text('12')
+    expect(page.locator('#root-count')).to_have_text('33');expect(page.locator('#unknown-count')).to_have_text('6')
+    for sample in ['robot_workspace','thermal_parameters','mixed_process']:
+        page.locator(f'[data-case="{sample}"]').click()
+        expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
+        assert int(page.locator('#root-count').inner_text())>0
+    page.locator('[data-case="mixed_process"]').click()
+    expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
+    page.locator('#contractors').select_option('none')
+    expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
+    assert json.loads(page.locator('#request').input_value())['contractors']=={'propagation':False,'newton':False}
     page.locator('#request').fill('{"version":1,"version":1}');page.locator('#run').click();expect(page.locator('#status')).to_have_text('输入无效')
     page.locator('[data-case="geometry"]').click();expect(page.locator('#root-count')).to_have_text('2')
     q=json.loads(page.locator('#request').input_value());q['variables'][0]='<img src=x onerror=alert(1)>'

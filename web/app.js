@@ -1,6 +1,9 @@
 const $ = s => document.querySelector(s);
 let selected='geometry', worker=null, serial=0, loadId=0, last=null, request=null;
 const descriptions={
+  robot_workspace:'合成双连杆：末端坐标均落在 [0.98,1.02]，联合求解两个关节角范围。角度为弧度；不是机械安全认证。',
+  thermal_parameters:'合成指数响应 a·exp(-k·t)+b：由三个有界观测和非负约束求 a、k、b 的可行范围；图中只显示前两维投影。',
+  mixed_process:'合成过程模型：log(x)+y 和 sqrt(x)+y 的观测带，加上 x²+y²≤2。从跨越定义域的输入范围开始，保留所有可能可行点。',
   geometry:'圆 x² + y² = 2 与直线 y = x。在 [-1.5, 1.5]² 搜索，预期有两处交点。',
   calibration:'合成标定曲线 x³ − 3x + 1 = 0。可限制取值范围，或加入 ±0.125 的观测容差。',
   equilibrium:'合成反应模型的两个非线性平衡方程，在给定正区域包围 (1, 3)。',
@@ -14,7 +17,7 @@ function resetWorker(){
   current.onerror=e=>{if(current===worker)finish({error:{message:e.message||'求解线程加载失败'}});};
 }
 function busy(value){
-  for(const id of ['run','request','branch','tolerance-band','budget','reset'])$('#'+id).disabled=value;
+  for(const id of ['run','request','branch','tolerance-band','budget','reset','contractors'])$('#'+id).disabled=value;
   $('#cancel').disabled=!value;
 }
 async function load(name){
@@ -24,7 +27,7 @@ async function load(name){
     const response=await fetch(`data/${name}.json`);
     if(!response.ok)throw new Error('无法读取示例');
     const q=await response.json();if(id!==loadId)return;
-    $('#request').value=JSON.stringify(q,null,2);
+    $('#request').value=JSON.stringify(q,null,2);syncContractors(q);
     $('#case-description').textContent=descriptions[name];
     $('#branch').hidden=name!=='calibration';$('#tolerance-band').hidden=name!=='calibration';
     document.querySelectorAll('[data-case]').forEach(b=>b.classList.toggle('active',b.dataset.case===name));run();
@@ -48,7 +51,8 @@ function finish(result){
   $('#status').textContent=result.complete?(paving?'区域已分类':'区域已解析'):(paving&&result.resolution_met?'分辨率已达 · 有未决':'仍有未决');
   $('#legend-main').textContent=paving?'整盒满足全部观测带':'唯一解包围盒 / 中心标记';
   const stats=result.stats;
-  let summary=`${stats.assessments} 次区域评估 · ${stats.excluded} 次排除 · ${stats.splits} 次划分。`;
+  if(request)syncContractors(request);
+  let summary=`${stats.assessments} 次区域评估 · ${stats.excluded} 次排除 · ${stats.splits} 次划分 · ${stats.contractor_calls??0} 次传播/区间 Newton 调用。`;
   if(paving){
     summary+=result.resolution_met?'所有未决盒宽度已达到设定分辨率。':'仍有未决盒尚未达到设定分辨率。';
     summary+='可行盒数量不是解的个数；未决盒可能可行，也可能不可行。';
@@ -101,6 +105,8 @@ for(const b of document.querySelectorAll('[data-case]'))b.onclick=()=>load(b.dat
 $('#run').onclick=run;$('#reset').onclick=()=>load(selected);
 $('#cancel').onclick=()=>{loadId++;serial++;resetWorker();busy(false);$('#status').textContent='已停止';$('#summary').textContent='计算已停止，可调整请求后再次运行。';};
 function modify(fn){try{const q=JSON.parse($('#request').value);fn(q);$('#request').value=JSON.stringify(q,null,2);run();}catch(e){finish({error:{message:e.message}});}}
+function syncContractors(q){const c=q.contractors??{propagation:true,newton:true};const p=c.propagation??true,n=c.newton??true;$('#contractors').value=p?(n?'joint':'propagation'):(n?'newton':'none');}
+$('#contractors').onchange=()=>modify(q=>{const mode=$('#contractors').value;q.contractors={...q.contractors,propagation:['joint','propagation'].includes(mode),newton:['joint','newton'].includes(mode)};});
 $('#budget').onclick=()=>modify(q=>{q.options={...q.options,max_assessments:1};});
 $('#branch').onclick=()=>modify(q=>{q.box=[[0,1]];});
 $('#tolerance-band').onclick=()=>modify(q=>{

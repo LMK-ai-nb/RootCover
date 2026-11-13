@@ -81,8 +81,14 @@ fn assess_unchecked(
 ) -> Assessment raise RootError {
   let n = box.length()
   let ev = evaluate_unchecked(system, box)
+  if ev.empty_domain {
+    return Excluded("expression undefined throughout the box")
+  }
   if ev.ranges.any(x => !x.contains(0.0)) {
     return Excluded("polynomial range excludes zero")
+  }
+  if !ev.fully_defined || !ev.smooth {
+    return Undecided("expression domain boundary, pole or nonsmooth region")
   }
   let center = box.map(x => x.midpoint())
   let at_center = evaluate_unchecked(system, center.map(point))

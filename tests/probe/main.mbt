@@ -53,3 +53,76 @@ pub fn probe(source : String) -> String {
     _ => "{\"error\":true}"
   }
 }
+
+///|
+/// Test adapter: delegates evaluation and contraction to public typed APIs.
+pub fn nonlinear_probe(source : String) -> String {
+  try {
+    let o = match @json.parse(source) {
+      Object(o) => o
+      _ => abort("object expected")
+    }
+    fn text(v : Json) -> String {
+      match v {
+        String(s) => s
+        _ => abort("string expected")
+      }
+    }
+    fn array(v : Json) -> Array[Json] {
+      match v {
+        Array(a) => a
+        _ => abort("array expected")
+      }
+    }
+    fn box(v : Json) -> Array[@root.Interval] raise @root.RootError {
+      array(v).map(x => {
+        let a = array(x)
+        @root.interval(number(a[0]), number(a[1]))
+      })
+    }
+    fn encode_box(b : Array[@root.Interval]) -> Json {
+      Json::array(b.map(x => Json::array([encoded(x.lo), encoded(x.hi)])))
+    }
+    let result : Json = if text(o["operation"]) == "contract" {
+      let request = @root.decode_feasibility_request(text(o["request"]))
+      let c = @root.contract_constraints(
+        request.model,
+        request.box,
+        request.contractors,
+      )
+      {
+        "box": match c.box {
+          None => Json::null()
+          Some(b) => encode_box(b)
+        },
+        "calls": Json::number(c.calls.to_double()),
+        "propagation_calls": Json::number(c.propagation_calls.to_double()),
+        "newton_calls": Json::number(c.newton_calls.to_double()),
+        "fixed_point": Json::boolean(c.fixed_point),
+        "budget_exhausted": Json::boolean(c.budget_exhausted),
+      }
+    } else {
+      let names = array(o["variables"]).map(text)
+      let expression = @root.parse_expression(text(o["expression"]), names)
+      let input = box(o["box"])
+      let v = @root.evaluate_expression(expression, input)
+      // enclose is square; repeat the expression for a derivative probe only.
+      let ev = @root.enclose(
+        { names, equations: Array::make(names.length(), expression), },
+        input,
+      )
+      {
+        "range": match v.range {
+          None => Json::null()
+          Some(r) => Json::array([encoded(r.lo), encoded(r.hi)])
+        },
+        "fully_defined": Json::boolean(v.fully_defined),
+        "smooth": Json::boolean(v.smooth),
+        "gradient": encode_box(ev.jacobian[0]),
+      }
+    }
+    result.stringify()
+  } catch {
+    _ => "{\"error\":true}"
+  }
+}

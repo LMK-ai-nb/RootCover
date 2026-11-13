@@ -17,7 +17,7 @@ Interval arithmetic, forward-mode automatic differentiation, the Krawczyk operat
 and branch-and-bound region search are established methods. RootCover does not
 claim their invention and is not a source-code port of the projects below.
 
-- [IntervalRootFinding.jl documentation](https://juliaintervals.github.io/IntervalRootFinding.jl/latest/): conceptual reference for root-region statuses and interval root solving. GitHub reports multiple/unclassified licensing; no code or fixtures copied.
+- [IntervalRootFinding.jl documentation](https://juliaintervals.github.io/IntervalRootFinding.jl/latest/): conceptual reference for root-region statuses and interval root solving. MIT license actually read on 2026-11-11. No solver implementation copied; the reference adapter uses documented mathematical examples and independently constructed models.
 - [IBEX documentation](https://ibex-lib.readthedocs.io/en/latest/): conceptual reference for interval contractors and system solving; upstream repository LGPL-3.0. No code or fixtures copied.
 - [Luna-Flow/floating](https://github.com/Luna-Flow/floating), Apache-2.0: related arbitrary-precision and interval arithmetic. No import or source-code reuse.
 - [CAIMEOX/mbmath](https://github.com/CAIMEOX/mbmath), Apache-2.0: related arbitrary-precision numerical methods. No import or source-code reuse.
@@ -30,3 +30,7 @@ repository. Generic engineering conventions do not import old project business
 implementations; see `docs/ORIGIN.md` for the relationship to earlier work.
 
 Version 0.2 adds independently implemented interval set inversion (SIVIA), following established concepts documented in IBEX and the 2016 paper linked in docs/PAVING.md. No source code or data from either is copied; neither algorithmic novelty nor full IBEX compatibility is claimed.
+
+Version0.3 adds independently implemented elementary interval series/remainder bounds, interval Newton and HC4-style forward/backward propagation. Concept references and actual Julia functional baseline are documented in docs/BASELINE.md and docs/NONLINEAR.md. No Julia/IBEX implementation is linked or ported.
+
+mpmath1.3.0 is a BSD-3-Clause validation-only dependency (requirements-dev.txt), used for independent100-digit function/derivative checks. It is not redistributed or imported by the solver runtime. Julia1.13.3, IntervalRootFinding0.7.2 (MIT) and JSON3 1.14.4 are separate local reference tools under ignored work, not package dependencies. Actual reference JSON and the independently written adapter are included for regression.

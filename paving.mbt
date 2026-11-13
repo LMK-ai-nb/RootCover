@@ -1,12 +1,14 @@
 ///|
-/// A bounded observation/constraint: polynomial(x) must lie in allowed.
+/// A real-expression observation/constraint. The historical field name
+/// `polynomial` is retained for typed 0.2 caller compatibility; it accepts Expr
+/// division and elementary function nodes as well as polynomials.
 pub(all) struct Constraint {
   polynomial : Expr
   allowed : Interval
 }
 
 ///|
-/// Constraints need not be square: 1..32 bands on 1..6 variables.
+/// Constraints need not be square: 1..128 bands on 1..32 variables.
 pub(all) struct ConstraintModel {
   names : Array[String]
   constraints : Array[Constraint]
@@ -37,14 +39,22 @@ pub(all) struct PavingResult {
   assessments : Int32
   excluded : Int32
   splits : Int32
+  contractions : Int32
+  contractor_calls : Int32
 }
 
 ///|
 pub fn validate_constraints(model : ConstraintModel) -> Unit raise RootError {
   validate_polynomials(model.names, model.constraints.map(c => c.polynomial))
   for c in model.constraints {
-    guard c.allowed.finite() else {
-      raise Invalid("constraint ranges must be finite ordered intervals")
+    guard !c.allowed.lo.is_nan() &&
+      !c.allowed.hi.is_nan() &&
+      c.allowed.lo <= c.allowed.hi &&
+      !c.allowed.lo.is_pos_inf() &&
+      !c.allowed.hi.is_neg_inf() else {
+      raise Invalid(
+        "constraint ranges must be ordered, nonempty real intervals",
+      )
     }
   }
 }
@@ -52,14 +62,7 @@ pub fn validate_constraints(model : ConstraintModel) -> Unit raise RootError {
 ///|
 /// Natural interval extension without unnecessary Jacobian work.
 fn range_unchecked(e : Expr, box : Array[Interval]) -> Interval raise RootError {
-  match e {
-    Const(x) => point(x)
-    Variable(i) => box[i]
-    Add(a, b) => range_unchecked(a, box).add(range_unchecked(b, box))
-    Sub(a, b) => range_unchecked(a, box).sub(range_unchecked(b, box))
-    Mul(a, b) => range_unchecked(a, box).mul(range_unchecked(b, box))
-    Pow(a, k) => range_unchecked(a, box).power(k)
-  }
+  expression_range_unchecked(e, box).range.unwrap_or(whole())
 }
 
 ///|
@@ -71,11 +74,16 @@ fn classify_unchecked(
   let mut inside = true
   for i = 0; i < model.constraints.length(); i = i + 1 {
     let c = model.constraints[i]
-    let r = range_unchecked(c.polynomial, box)
+    let state = expression_range_unchecked(c.polynomial, box)
+    let r = match state.range {
+      None =>
+        return Outside("constraint expression is undefined throughout this box")
+      Some(r) => r
+    }
     if r.hi < c.allowed.lo || r.lo > c.allowed.hi {
       return Outside("constraint \{i} range is disjoint")
     }
-    if !(r.lo >= c.allowed.lo && r.hi <= c.allowed.hi) {
+    if !state.fully_defined || !(r.lo >= c.allowed.lo && r.hi <= c.allowed.hi) {
       inside = false
     }
     ranges.push(r)
@@ -107,22 +115,56 @@ pub fn pave(
   initial : Array[Interval],
   options : Options,
 ) -> PavingResult raise RootError {
+  pave_with_contractors(model, initial, options, default_contractors())
+}
+
+///|
+pub fn pave_with_contractors(
+  model : ConstraintModel,
+  initial : Array[Interval],
+  options : Options,
+  contractors : ContractorOptions,
+) -> PavingResult raise RootError {
   validate_constraints(model)
   check_box(initial, model.names.length())
   validate_options(options)
+  validate_contractors(contractors)
   let stack : Array[(Array[Interval], Int32)] = [(initial.map(x => x), 0)]
   let inside : Array[FeasibleBox] = []
   let unresolved : Array[UnresolvedBox] = []
   let mut assessments = 0
   let mut excluded = 0
   let mut splits = 0
+  let mut contractions = 0
+  let mut contractor_calls = 0
   while !stack.is_empty() {
-    let (box, depth) = stack.pop().unwrap()
+    let (original, depth) = stack.pop().unwrap()
+    let mut box = original
     if assessments >= options.max_assessments {
       unresolved.push({ box, reason: "assessment budget exhausted", })
       continue
     }
     assessments = assessments + 1
+    if contractor_calls < contractors.max_steps &&
+      (contractors.propagation || contractors.newton) {
+      let contracted = contract_unchecked(model, box, {
+        propagation: contractors.propagation,
+        newton: contractors.newton,
+        max_steps: contractors.max_steps - contractor_calls,
+        max_rounds: contractors.max_rounds,
+      })
+      contractor_calls = contractor_calls + contracted.calls
+      if contracted.changed {
+        contractions = contractions + 1
+      }
+      match contracted.box {
+        None => {
+          excluded = excluded + 1
+          continue
+        }
+        Some(b) => box = b
+      }
+    }
     match classify_unchecked(model, box) {
       Inside(ranges) => inside.push({ box, ranges, })
       Outside(_) => excluded = excluded + 1
@@ -161,5 +203,7 @@ pub fn pave(
     assessments,
     excluded,
     splits,
+    contractions,
+    contractor_calls,
   }
 }
