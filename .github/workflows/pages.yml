@@ -23,7 +23,7 @@ jobs:
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
       - run: node scripts/build.mjs
-      - run: node --test tests/cli.test.mjs
+      - run: node --test tests/cli.test.mjs tests/session.test.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

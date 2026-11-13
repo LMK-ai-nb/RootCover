@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0-dev.2 — 2026-11-14 — maintenance
+
+- Recover cleanly from worker-module load failures and allow retry; cancel without starting an unused worker.
+- Verify a separate consumer against the actual packaged archive, with 5 public API tests per executed target.
+- Include consumer evidence in three-platform CI and session tests in the Pages gate.
+- Keep routine browser screenshots in ignored artifacts and record browser results; package publication remains deferred.
+
 ## 0.5.0-dev.1 — 2026-11-13 — source build
 
 - Owned feasible-set sessions with chunked advancement and persistent global budgets.

@@ -1,0 +1,4 @@
+import {
+  "LMK-ai-nb/rootcover",
+  "moonbitlang/core/json",
+} for "test"

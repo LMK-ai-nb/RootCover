@@ -27,6 +27,7 @@ def main():
         run(sys.executable,'tests/session_oracle.py')
         run(sys.executable,'scripts/compare_intervalrootfinding.py')
         run(sys.executable,'scripts/package_check.py')
+        run(sys.executable,'scripts/consumer_check.py',*(['--native'] if args.native else []))
         if args.browser:
             with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
             env=os.environ.copy();env['PORT']=str(port)

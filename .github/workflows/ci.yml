@@ -59,6 +59,8 @@ jobs:
             artifacts/oracle.json
             artifacts/paving-oracle.json
             artifacts/package-check.json
+            artifacts/package-consumer.json
+            artifacts/browser-check.json
             artifacts/nonlinear-oracle.json
             artifacts/predicate-oracle.json
             artifacts/session-oracle.json

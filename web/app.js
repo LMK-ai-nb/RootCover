@@ -13,18 +13,24 @@ const descriptions={
   noisy_localization:'三个测距基站位于 (0,0)、(4,0)、(0,4)，距离平方观测带为 [1.75,2.25]、[9.75,10.25]、[9.75,10.25]。绿色盒内所有坐标均符合观测。'
 };
 function resetWorker(){
-  worker?.terminate();
+  stopWorker();
   const current = new Worker(new URL('./worker.js',import.meta.url),{type:'module'});
   worker=current;
   current.onmessage=({data})=>{if(current===worker && data.id===serial)finish(data.result);};
-  current.onerror=e=>{if(current===worker)finish({error:{message:e.message||'求解线程加载失败'}});};
+  current.onerror=e=>{
+    e.preventDefault();
+    if(current!==worker)return;
+    stopWorker();
+    finish({error:{code:'WORKER_ERROR',message:e.message||'求解线程加载失败，请重试。'}});
+  };
 }
+function stopWorker(){worker?.terminate();worker=null;}
 function busy(value){
   for(const id of ['run','request','branch','tolerance-band','budget','reset','contractors','search-strategy','search-split'])$('#'+id).disabled=value;
   $('#cancel').disabled=!value;
 }
 async function load(name){
-  const id=++loadId;selected=name;serial++;resetWorker();busy(true);
+  const id=++loadId;selected=name;serial++;stopWorker();busy(true);
   $('#download').disabled=true;$('#status').textContent='正在读取样例…';
   try{
     const response=await fetch(`data/${name}.json`);
@@ -39,12 +45,13 @@ async function load(name){
 function run(){
   serial++;last=null;$('#download').disabled=true;$('#status').textContent='正在求解…';$('#status').classList.remove('error');
   try{request=JSON.parse($('#request').value);}catch{request=null;}
-  busy(true);worker.postMessage({id:serial,source:$('#request').value});
+  busy(true);if(!worker)resetWorker();worker.postMessage({id:serial,source:$('#request').value});
 }
 function finish(result){
   busy(false);last=result;$('#raw').textContent=JSON.stringify(result,null,2);$('#root-list').replaceChildren();
   if(result.error){
-    $('#status').textContent='输入无效';$('#status').classList.add('error');$('#root-count').textContent='—';$('#unknown-count').textContent='—';
+    $('#status').textContent=['WORKER_ERROR','RUNTIME_ERROR'].includes(result.error.code)?'求解线程异常，请重试':'输入无效';$('#status').classList.add('error');$('#root-count').textContent='—';$('#unknown-count').textContent='—';
+    $('#download').disabled=true;
     $('#summary').textContent=result.error.message;$('#plot').replaceChildren();return;
   }
   const paving=result.mode==='feasibility',logical=Boolean(result.formula);
@@ -107,7 +114,7 @@ function draw(r){
 }
 for(const b of document.querySelectorAll('[data-case]'))b.onclick=()=>load(b.dataset.case);
 $('#run').onclick=run;$('#reset').onclick=()=>load(selected);
-$('#cancel').onclick=()=>{loadId++;serial++;resetWorker();busy(false);$('#status').textContent='已停止';$('#summary').textContent='计算已停止，可调整请求后再次运行。';};
+$('#cancel').onclick=()=>{loadId++;serial++;stopWorker();busy(false);$('#status').textContent='已停止';$('#summary').textContent='计算已停止，可调整请求后再次运行。';};
 function modify(fn){try{const q=JSON.parse($('#request').value);fn(q);$('#request').value=JSON.stringify(q,null,2);run();}catch(e){finish({error:{message:e.message}});}}
 function syncContractors(q){const c=q.contractors??{propagation:true,newton:true};const p=c.propagation??true,n=c.newton??true;$('#contractors').value=p?(n?'joint':'propagation'):(n?'newton':'none');}
 function syncSearch(q){$('#search-strategy').value=q.search?.strategy??'dfs';$('#search-split').value=q.search?.split??'widest';}
@@ -125,4 +132,4 @@ $('#download').onclick=()=>{
   if(!last||last.error)return;
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({request,result:last},null,2)],{type:'application/json'}));a.download='rootcover-report.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
-resetWorker();load('robust_localization');
+load('robust_localization');

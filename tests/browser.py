@@ -1,8 +1,11 @@
 """Real Chromium interactions against local or hosted demo."""
 from pathlib import Path
-import json,sys
+import json,sys,os
 from playwright.sync_api import sync_playwright,expect
 ROOT=Path(__file__).resolve().parents[1]
+(ROOT/'artifacts').mkdir(exist_ok=True)
+SHOTS=ROOT/('docs/assets' if os.environ.get('ROOTCOVER_UPDATE_SCREENSHOTS')=='1' else 'artifacts')
+SHOTS.mkdir(parents=True,exist_ok=True)
 with sync_playwright() as p:
     browser=p.chromium.launch(headless=True)
     page=browser.new_page(viewport={'width':1440,'height':1200});errors=[]
@@ -77,8 +80,7 @@ with sync_playwright() as p:
     assert json.loads(page.locator('#raw').text_content())['search']['absolute_tolerances']==[.05,.000005]
     page.locator('[data-case="robust_localization"]').click()
     expect(page.locator('#root-count')).to_have_text('15')
-    (ROOT/'docs/assets').mkdir(parents=True,exist_ok=True)
-    page.screenshot(path=str(ROOT/'docs/assets/workbench.png'),full_page=True)
+    page.screenshot(path=str(SHOTS/'workbench.png'),full_page=True)
     page.set_viewport_size({'width':390,'height':844})
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     page.screenshot(path=str(ROOT/'artifacts/mobile.png'),full_page=True)
@@ -121,10 +123,24 @@ with sync_playwright() as p:
     saved=json.loads((ROOT/'artifacts/browser-session-result.json').read_text())
     assert saved['result']['session']['coverage']=='verified_from_initial_box'
     assert saved['result']['stats']['assessments']==110
-    session_page.screenshot(path=str(ROOT/'docs/assets/session.png'),full_page=True)
+    session_page.screenshot(path=str(SHOTS/'session.png'),full_page=True)
     session_page.set_viewport_size({'width':390,'height':844})
     assert session_page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     session_page.screenshot(path=str(ROOT/'artifacts/session-mobile.png'),full_page=True)
+    retry_page=browser.new_page(viewport={'width':900,'height':900})
+    retry_page.on('pageerror',lambda e:errors.append(str(e)))
+    def block_worker(route):route.abort('failed')
+    retry_page.route('**/worker.js',block_worker)
+    retry_page.goto(base+'/')
+    expect(retry_page.locator('#status')).to_have_text('求解线程异常，请重试')
+    expect(retry_page.locator('#run')).to_be_enabled()
+    expect(retry_page.locator('#download')).to_be_disabled()
+    retry_page.unroute('**/worker.js',block_worker)
+    retry_page.locator('#run').click()
+    expect(retry_page.locator('#status')).to_have_text('分辨率已达 · 有未决')
+    expect(retry_page.locator('#root-count')).to_have_text('15')
+    expect(retry_page.locator('#download')).to_be_enabled()
     assert not errors,errors
+    (ROOT/'artifacts/browser-check.json').write_text(json.dumps({'passed':True,'base_url':base,'workbenches':2,'worker_load_failure_retry':True,'checkpoint_save_load_continue_cancel_export':True,'viewport_widths':[1440,390],'uncaught_errors':errors,'documentation_screenshots_updated':SHOTS==ROOT/'docs/assets'},indent=2)+'\n',encoding='utf-8')
     browser.close()
-print('Chromium: both workbenches passed, including nonlinear/formula examples, checkpoint save/reload/verification/cancellation/export, duplicate JSON, injection, load races and 390px layouts.')
+print('Chromium: both workbenches passed, including worker-load failure and retry, nonlinear/formula examples, checkpoint save/reload/verification/cancellation/export, duplicate JSON, injection, load races and390px layouts.')
