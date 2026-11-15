@@ -169,3 +169,16 @@ test('logical alternatives serialize undefined inactive atoms without treating t
   const r=run(q);assert.equal(r.complete,true);assert.equal(r.inside.length,1);
   assert.equal(r.inside[0].atoms[1].range,null);assert.equal(r.inside[0].atoms[1].fully_defined,false);
 });
+test('Bratu 5x5 discretisation yields a unique certificate in four assessments',()=>{
+  const r=run(load('bratu25'));
+  assert.equal(r.complete,true);assert.equal(r.root_count,1);
+  assert.equal(r.stats.assessments,4);
+  const q=r.roots[0].certificate.contraction_bound;
+  assert(q>0.014&&q<0.016,'contraction bound drifted: '+q);
+});
+test('six-variable combined feasible set matches its recorded paving',()=>{
+  const r=run(load('design_window6'));
+  assert.equal(r.resolution_met,true);
+  assert.equal(r.inside.length,750);assert.equal(r.unresolved.length,1798);
+  assert.equal(r.stats.assessments,5191);
+});
