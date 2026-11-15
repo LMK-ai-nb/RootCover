@@ -2,8 +2,8 @@
 
 ## 0.5.0（2026-11-15）
 
-- 已推送至 main；0.5.0 内容提交为 `7c01833`，其后为文档与测试提交。相对 `baf8f20` 的改动包括版本号、README/文档定位、PARITY A/B 拆分、浏览器产物表述改正（--target js），以及 `coupled32` / `nonlinear8` / `bratu25` / `design_window6` 四个新算例；数值内核未改（65 项测试原样通过）。
-- CI 记录：[43729043893](https://github.com/LMK-ai-nb/RootCover/actions/runs/43729043893)（对应 `40415e4`），三平台 success。
+- 已推送至 main（HEAD `8d28028`）；内容提交 `7c01833`，其后为文档、测试与浏览器用例提交。相对 `baf8f20` 的改动包括版本号、README/文档定位、PARITY A/B 拆分、浏览器产物表述改正（--target js），以及 `coupled32` / `nonlinear8` / `bratu25` / `design_window6` 四个新算例；数值内核未改（65 项测试原样通过）。
+- CI 记录：[43732000096](https://github.com/LMK-ai-nb/RootCover/actions/runs/43732000096)（对应 `8d28028`，verify ubuntu/macos/windows 全 success）；Pages 部署是另一个 workflow（[43732000103](https://github.com/LMK-ai-nb/RootCover/actions/runs/43732000103)），不充当测试证据。
 - 工作区另有一组未提交改动（浏览器会话与测试相关），不属于本次送审范围，由作者处理。
 - Mooncakes 仍为 0.2.0；本轮不执行发布。
 
@@ -22,7 +22,7 @@
 
 以下CI/包下载记录属于0.1/0.2的历史发布，不能替代0.5的远程验证。
 
-## 当前版本0.2.0（2026-11-04）
+## 历史版本0.2.0（2026-11-04）
 
 本轮补充带容差观测的连续可行域求解、非方约束、整盒可行证据与未决外包围，保留原有区域求根。三场景已实际覆盖几何交点、非单调标定/观测容差和有界误差定位；不把可行盒数量当作根数。
 
