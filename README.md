@@ -2,15 +2,25 @@
 
 **MoonBit 非线性约束可行域求解库：等式、不等式与带误差观测界定的可行参数区域；区域求根是其特例。**
 
-当前源码版本是 **0.5.0-dev.3**。Mooncakes 已发布的包仍为 0.2.0，`moon add` 尚不能取得本轮新增能力；请从源码运行（0.5.0 发布后移除本说明）。能力覆盖与边界见 [docs/PARITY.md](docs/PARITY.md)；源码、网页和检查状态见[发布记录](docs/RELEASE.md)。维护者：李明坤 / LMK-ai-nb。[来源与历史关系](docs/ORIGIN.md)。
+面向机构计算、参数估计与科学模型开发者：在给定有限区域内求可行参数范围，统一输出已确认区域与未决覆盖，帮助使用者区分"唯一根 / 整盒可行 / 尚不能判定"。
 
-面向机构计算、参数估计和科学模型开发者，求解给定区域中的多个解或可行参数范围。核心、解析、区间导数、收缩与搜索均用MoonBit独立实现，不依赖Julia、外部数值引擎或网络服务运行。既有数值方法与成熟实现已披露，不主张算法首创或全面超越已有求解器。
+核心、解析、区间导数、收缩与搜索均为 MoonBit 独立实现，不依赖 Julia、外部数值引擎或网络服务运行；成熟实现、来源与重合边界如实披露，不主张算法首创或全面超越已有求解器。
+
+| 能力 | 接口与范围 |
+| --- | --- |
+| 表达式 | `+ - * /`、括号、整数幂 0…16 及负整数幂；13 种函数：sin/cos/tan/exp/log(ln)/sqrt/abs/atan/asin/acos/sinh/cosh/tanh |
+| 区间计算 | 向外舍入四则、带余项界的初等函数、区间自动 Jacobian；显式定义域和光滑性状态 |
+| 区域求根 | Krawczyk 唯一性证书、独立区间 Newton 收缩、传播与有界搜索；未决覆盖保留 |
+| 非线性约束 | 非方等式、≤、≥、观测带；前向—反向传播、变量依赖 agenda、预条件区间 Gauss-Seidel 与坐标 Newton 联合收缩、SIVIA 内外包围 |
+| 输入上限 | 1…32 变量、1…128 约束，总 AST 节点 8192、深度 64；初始盒有限，预算有限 |
+
+**与 IntervalRootFinding.jl 0.7.2 的对照（节选）**：区域根包围与唯一性证书、13 种初等函数、区间 Newton 与联合收缩、前后向约束传播、非方约束与组合语义均为支持项；32 变量 / 128 约束是输入上限。完整覆盖与"明确不做"（任意精度、符号量词、全局优化、高维保证）见 [docs/PARITY.md](docs/PARITY.md)。
 
 ![本地工作台](docs/assets/workbench.png)
 
-## 本地运行
+## 从源码运行
 
-工程目录 `D:\CodexProjects\RootCover`；MoonBit0.10.17、Node22+。
+MoonBit 0.1.20261021+、Node 22+。
 
 ```text
 moon run cmd/demo
@@ -25,17 +35,17 @@ node bin/rootcover.mjs examples/scaled_parameters.json
 node scripts/serve.mjs
 ```
 
-浏览器打开 http://127.0.0.1:4188 。网页、CLI和typed API共享内核；Worker计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI退出码0表示全部分类，1表示仍有未决，2表示错误；上列六个可行域示例退出1是预期结果。
+浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列六个可行域示例退出 1 是预期结果。
 
 ## 验收维护
 
-0.5.0-dev.2修复线程加载失败后的重试，普通浏览器验证的截图写入忽略的artifacts目录，不再改写文档图片。完整回归另包含真实Moon包的独立消费工程，每执行目标5项公开API检查；见[PACKAGE_CONSUMER](docs/PACKAGE_CONSUMER.md)。
+0.5 修复线程加载失败后的重试，普通浏览器验证的截图写入忽略的artifacts目录，不再改写文档图片。完整回归另包含真实Moon包的独立消费工程，每执行目标5项公开API检查；见[PACKAGE_CONSUMER](docs/PACKAGE_CONSUMER.md)。
 
 ```text
 python scripts/consumer_check.py
 ```
 
-[十一月规则复核](docs/RULES_2026-11-14.md)、[逐项工程验收记录](docs/ACCEPTANCE_2026-11-14.md)。源码维护与新版包发布分别记录；Mooncakes发布按用户要求暂停，不宣称完成全部官方验收。
+[十一月规则复核](docs/RULES_2026-11-14.md)、[逐项工程验收记录](docs/ACCEPTANCE_2026-11-14.md)。源码维护与发布记录分开，不以本地开发代替官方审核。
 
 ## 本轮已实现
 

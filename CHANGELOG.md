@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 — 2026-11-15 — feasible-set release
+
+- Feasible-set solving over equality, ≤, ≥ and observation bands, with all/any/at_least formulas, per-variable absolute/relative tolerances and DFS/BFS search.
+- Interval Newton, preconditioned interval Gauss-Seidel and coordinate Newton joint contraction, forward/backward propagation, and SIVIA inner/outer boxes.
+- Verified feasible-set sessions: step, save, verified load and resume with persistent budgets.
+- Browser workbench recovers from worker load failures; consumer check runs against the packaged archive.
+- Boundaries: binary64, 32 variables / 128 constraints at most, no arbitrary precision, no root-session resume.
+
 ## 0.5.0-dev.2 — 2026-11-14 — maintenance
 
 - Recover cleanly from worker-module load failures and allow retry; cancel without starting an unused worker.
