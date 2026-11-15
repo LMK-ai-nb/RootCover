@@ -1,6 +1,6 @@
 # 0.5 本地实际验证
 
-## 当前维护0.5.0-dev.2（2026-11-14）
+## 0.5.0维护记录（2026-11-14，形成于dev.2）
 
 完整本地检查增加真实Moon包消费步骤，包含独立工程每目标5项接口测试；本地三个目标均执行。线程模块失败/重试和原有两个工作台的浏览器回归通过。命令仍为`python scripts/verify.py --browser`；本轮24步记录及源码哈希见evidence/maintenance-2026-11-14.json。C工具链可用时传--native，三平台CI会实际运行native。普通截图和浏览器JSON结果写入artifacts；仅设置ROOTCOVER_UPDATE_SCREENSHOTS=1时更新文档截图。
 

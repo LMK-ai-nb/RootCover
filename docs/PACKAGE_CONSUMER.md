@@ -1,6 +1,6 @@
 # 真实打包文件的独立消费检查
 
-0.5.0-dev.2维护新增。此检查不执行publish，也不冒充从Mooncakes下载了新版。
+0.5.0维护新增（记录形成于dev.2阶段）。此检查不执行publish，也不冒充从Mooncakes下载了新版。
 
 ```text
 python scripts/consumer_check.py

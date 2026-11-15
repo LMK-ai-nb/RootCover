@@ -10,7 +10,7 @@ license = "MIT"
 
 keywords = [
   "interval",
-  "polynomial",
+  "feasible-set",
   "root-finding",
   "numerical-analysis",
   "set-inversion",

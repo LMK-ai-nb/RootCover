@@ -28,13 +28,13 @@ RootCover从多元多项式**根区域求解**起步，0.2补充观测带可行�
 | [CAIMEOX/mbmath](https://github.com/CAIMEOX/mbmath)，Apache-2.0 | README明确包含区间算术和数值求根等，不能隐瞒 | 本版实际具备初始区域覆盖、Krawczyk证据和预算耗尽的未决输出；通过独立Fraction/AST核对 | 未声称它所有求根接口都不可能做类似事情。已定向读取findroot_interval：要求端点包根的一维二分，返回单个RawMpf近似值；findroot2为有限差分Jacobian的二维Newton。未逐一运行全部接口，不宣称完全无重叠 |
 | [numsolve](https://github.com/noweizongqing/numsolve)，registry Apache-2.0 | Mooncakes元数据与缓存README说明数值求根、ODE、线性系统、插值 | 关注给定区域的可确认根数与不能判定的剩余区域，实际接口与场景公开 | 初次API读取404，随后成功读取当前源码包（25份源码/文档），roots.mbt有bisection和newton等数值接口。未全面运行其全部API，不断言绝无重合 |
 | [IntervalRootFinding.jl](https://juliaintervals.github.io/IntervalRootFinding.jl/latest/)，Julia | 多维区间求根、保证/未决状态，已存在完整成熟的同类方法 | 独立MoonBit实现、无外部数值运行时、typed/CLI/浏览器共享内核，精确有理数测试证据 | 不是方法首创或功能领先；初次元数据NOASSERTION；2026-11-11已读取上游LICENSE.md确认为MIT，无核心代码复制 |
-| [IBEX](https://ibex-lib.readthedocs.io/en/latest/)，LGPL-3.0 | 工业级区间约束、收缩器、系统求解与全局优化 | 聚焦有界多项式根域的独立小内核与跨目标集成 | 不具备其通用表达式、超越函数、全局优化与成熟工业规模能力 |
+| [IBEX](https://ibex-lib.readthedocs.io/en/latest/)，LGPL-3.0 | 工业级区间约束、收缩器、系统求解与全局优化 | 在有界非线性表达式上独立实现的区域求解内核：根分类、整盒可行与未决覆盖，跨 wasm/JS/CLI | 不具备其通用表达式、超越函数、全局优化与成熟工业规模能力 |
 
 检索词包括 interval arithmetic、interval Newton、Krawczyk、root isolation、root boxes、all roots、非线性、求根、区间。社区检索结果包含区间树、类型变量消去等无关命中，不能混作数值求解竞品。实际的相邻能力和成熟外语方案已经披露。
 
 ## 独立价值仍需要评审判断
 
-可确认的贡献是能运行的求解层和诚实的结果分类，不能仅靠名称、MoonBit语言或页面漂亮推出独立性。本工程不声称“全世界唯一”“与任何生态无重合”或“保证初审”。评委可能认为仅支持多项式和有限维度仍偏窄；目前没有真实用户采用或大型工业模型证据。优先改进方向是经许可的实际模型、病态系统与规模评测，不通过追加未实现承诺扩大申报范围。
+可确认的贡献是能运行的求解层和诚实的结果分类，不能仅靠名称、MoonBit语言或页面漂亮推出独立性。本工程不声称“全世界唯一”“与任何生态无重合”或“保证初审”。0.1/0.2 阶段只支持多项式，这一点初审意见已指出；0.3 起扩展到 13 种初等函数与非方约束，0.4 起加入组合语义。当前缺口是真实模型与高维/病态性能证据，不是表达式类型。优先改进方向是经许可的实际模型、病态系统与规模评测，不通过追加未实现承诺扩大申报范围。
 
 来源许可、AI辅助、无移植代码及旧工程关系见THIRD_PARTY_NOTICES.md与ORIGIN.md。
 

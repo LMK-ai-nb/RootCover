@@ -14,9 +14,7 @@
 | 非线性约束 | 非方等式、≤、≥、观测带；前向—反向传播、变量依赖 agenda、预条件区间 Gauss-Seidel 与坐标 Newton 联合收缩、SIVIA 内外包围 |
 | 输入上限 | 1…32 变量、1…128 约束，总 AST 节点 8192、深度 64；初始盒有限，预算有限 |
 
-**与 IntervalRootFinding.jl 0.7.2 的对照（节选）**：区域根包围与唯一性证书、13 种初等函数、区间 Newton 与联合收缩、前后向约束传播、非方约束与组合语义均为支持项；32 变量 / 128 约束是输入上限。完整覆盖与"明确不做"（任意精度、符号量词、全局优化、高维保证）见 [docs/PARITY.md](docs/PARITY.md)。
-
-![本地工作台](docs/assets/workbench.png)
+**与 IntervalRootFinding.jl 0.7.2 的对照（节选）**：区域根包围与唯一性证书、13 种初等函数、区间 Newton 与联合收缩、前后向约束传播、非方约束与组合语义均为支持项（其中传播与组合语义属基准之外的扩展，见 PARITY B 表，不计入对照）；32 变量 / 128 约束是输入上限（coupled32 为 32 变量可运行算例；128 约束无公开算例，仅为解析与校验上限）。完整覆盖与"明确不做"（任意精度、符号量词、全局优化、高维保证）见 [docs/PARITY.md](docs/PARITY.md)。
 
 ## 从源码运行
 
@@ -32,20 +30,11 @@ node bin/rootcover.mjs examples/mixed_process.json
 node bin/rootcover.mjs examples/robust_localization.json
 node bin/rootcover.mjs examples/design_alternatives.json
 node bin/rootcover.mjs examples/scaled_parameters.json
+node bin/rootcover.mjs examples/coupled32.json
 node scripts/serve.mjs
 ```
 
-浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列六个可行域示例退出 1 是预期结果。
-
-## 验收维护
-
-0.5 修复线程加载失败后的重试，普通浏览器验证的截图写入忽略的artifacts目录，不再改写文档图片。完整回归另包含真实Moon包的独立消费工程，每执行目标5项公开API检查；见[PACKAGE_CONSUMER](docs/PACKAGE_CONSUMER.md)。
-
-```text
-python scripts/consumer_check.py
-```
-
-[十一月规则复核](docs/RULES_2026-11-14.md)、[逐项工程验收记录](docs/ACCEPTANCE_2026-11-14.md)。源码维护与发布记录分开，不以本地开发代替官方审核。
+浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列六个可行域示例退出 1 是预期结果。Mooncakes 当前为 0.2.0，本轮不通过包索引分发，请按上述命令从源码运行。coupled32.json 是 32 变量链式系统，1 次评估得到 1 个唯一根包围、退出 0；用于证明输入上限可运行，不代表高维非线性难度。
 
 ## 本轮已实现
 
@@ -59,15 +48,6 @@ node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 -
 ```
 
 浏览器入口为 http://127.0.0.1:4188/session.html 。进度载入会复核轨迹，存在随记录增长的验证开销；当前不支持提高原预算或改变模型后沿用会话。
-
-
-| 能力 | 接口和范围 |
-| --- | --- |
-| 表达式 | `+ - * /`、括号、整数幂0…16及负整数幂；13种函数：sin/cos/tan/exp/log(ln)/sqrt/abs/atan/asin/acos/sinh/cosh/tanh |
-| 区间计算 | 向外舍入四则、带余项界的初等函数、区间自动Jacobian；显式定义域和光滑性状态 |
-| 区域求根 | Krawczyk唯一性证书、独立区间Newton收缩、传播与有界搜索；未决覆盖保留 |
-| 非线性约束 | 非方等式、≤、≥、观测带；前向—反向传播、变量依赖agenda、预条件区间Gauss-Seidel与坐标Newton联合收缩、SIVIA内外包围 |
-| 输入上限 | 1…32变量、1…128约束，总AST节点8192、深度64；初始盒有限，预算有限 |
 
 新调用使用`parse_expression`；`parse_polynomial`保持旧严格语法。`Constraint.polynomial`字段名为0.2兼容保留，其值可以是完整非线性Expr。`interval_newton`、`contract_constraints`可单独调用，返回收缩盒/空、调用次数和固定点预算状态，不单独声称可行或唯一。可执行例子见[API.mbt.md](API.mbt.md)。
 
@@ -114,9 +94,29 @@ python scripts/verify.py --browser
 
 mpmath1.3.0仅用于100位独立验证。浏览器测试另需`pip install playwright`、`python -m playwright install chromium`；可把PLAYWRIGHT_BROWSERS_PATH设在本工程work。具备本机C工具链可加`--native`。脚本记录实际命令/退出码，报告见[VALIDATION](docs/VALIDATION.md)；当前远程结果以[CI工作流](https://github.com/LMK-ai-nb/RootCover/actions/workflows/ci.yml)为准。
 
+### 回归与消费检查
+
+0.5 修复线程加载失败后的重试，普通浏览器验证的截图写入忽略的artifacts目录，不再改写文档图片。完整回归另包含真实Moon包的独立消费工程，每执行目标5项公开API检查；见[PACKAGE_CONSUMER](docs/PACKAGE_CONSUMER.md)。
+
+```text
+python scripts/consumer_check.py
+```
+
+[十一月规则复核](docs/RULES_2026-11-14.md)、[逐项工程验收记录](docs/ACCEPTANCE_2026-11-14.md)。源码维护与发布记录分开，不以本地开发代替官方审核。
+
+### 基准与测试口径
+
 实际运行Julia1.13.3 / IntervalRootFinding.jl0.7.2：20模型、Newton和Krawczyk共40次；16常规模型唯一根数量吻合，3奇异/边界模型均未决，极点处理有一处已披露差异。不是全API兼容或速度排名。[基准与复现](docs/BASELINE.md)。
 
-当前wasm/wasm-gc/js各65项测试、25项原CLI及8项会话JS/CLI通过。旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；高精度函数/导数、134模型在三种机制下共402次收缩保留继续通过。正公式另有54模型、284份精确内盒证据、162次配置收缩及24组搜索策略验证；会话另有48模型、548份状态、9074次精确内盒核对及44791次可行样本覆盖检查。有限测试不是形式化证明。
+MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不折算为 195 个用例）；native 由 CI 的 verify.py --native 执行，本机无 MSVC，未本地实跑。另有 25 项原 CLI、8 项会话 JS/CLI 通过。旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；高精度函数/导数、134模型在三种机制下共402次收缩保留继续通过。正公式另有54模型、284份精确内盒证据、162次配置收缩及24组搜索策略验证；会话另有48模型、548份状态、9074次精确内盒核对及44791次可行样本覆盖检查。有限测试不是形式化证明。
+
+## 为什么不直接调用 Julia / IBEX
+
+- 运行环境：核心是 MoonBit，可编到 wasm 在浏览器内运行，CLI 与网页共用同一内核；不需要 Julia 或 JVM 运行时。
+- 证据形态：内盒、未决、唯一性证书和预算语义由本库定义并可随结果导出，评审可以逐盒复核；直接调外部求解器需要在宿主侧另建一层证据映射。
+- 许可证与集成：IBEX 为 LGPL-3.0，链接进分发物有额外义务；Julia 方案要求使用方部署 Julia 环境。
+- 边界：如果使用方已在 Python/Julia 环境、需要任意精度或全局优化，直接用 IntervalRootFinding.jl 或 IBEX 更合适；本库不声称在这些场景更强（完整边界见下节）。
+- 因此本项目的定位是“MoonBit 生态内的可行域求解组件”，不是替代上述成熟实现。
 
 ## 边界与来源
 
