@@ -18,9 +18,20 @@ for case,got in zip(baseline['cases'],answers):
     is_regular=all(r['unknown']==0 for r in runs)
     if is_regular:
         assert got['complete'] and all(got['root_count']==r['unique'] for r in runs),(case['name'],got,runs)
-        for root in got['roots']:
-            for run in runs:
-                assert any(all(max(a,c)<=min(b,d) for (a,b),(c,d) in zip(root['enclosure'],cell['box'])) for cell in run['cells']),(case['name'],root,run)
+        width_ratios=[];max_width=0.0
+        for run in runs:
+            owners={i:[] for i in range(len(got['roots']))}
+            for cell in run['cells']:
+                hits=[i for i,root in enumerate(got['roots'])
+                      if all(max(root['enclosure'][d][0],cell['box'][d][0])-1e-12<=min(root['enclosure'][d][1],cell['box'][d][1])
+                             for d in range(len(cell['box'])))]
+                assert len(hits)==1,('cell-not-uniquely-contained',case['name'],run['method'],cell['box'],hits)
+                owners[hits[0]].append(cell)
+            assert all(owners.values()),('root-without-cell',case['name'],run['method'],[i for i,v in owners.items() if not v])
+            for i,root in enumerate(got['roots']):
+                w=max(hi-lo for lo,hi in root['enclosure']);max_width=max(max_width,w)
+                cw=max(c['box'][d][1]-c['box'][d][0] for c in owners[i] for d in range(len(c['box'])))
+                if cw>0:width_ratios.append(w/cw)
         regular+=1
     elif case['name']=='pole_without_root':
         # 1/x cannot be zero at any defined point. HC4 rejects numerator 1
@@ -31,10 +42,15 @@ for case,got in zip(baseline['cases'],answers):
         assert not got['complete'] and got['root_count']==0 and got['unresolved'],(case['name'],got)
         singular+=1
     rows.append({'name':case['name'],'rootcover_unique':got['root_count'],'rootcover_unresolved':len(got['unresolved']),'rootcover_complete':got['complete'],
+                 'matched_cells':sum(len(v) for v in owners.values()),
+                 'max_root_width':max_width,
+                 'median_width_ratio':sorted(width_ratios)[len(width_ratios)//2] if width_ratios else None,
                  'julia':[{'method':r['method'],'unique':r['unique'],'unknown':r['unknown']} for r in runs]})
 report={'passed':True,'julia_version':baseline['julia_version'],'intervalrootfinding_version':baseline['intervalrootfinding_version'],'models':len(rows),
         'julia_method_runs':sum(len(c['reference']) for c in baseline['cases']),'regular_models_matching_both_methods':regular,
         'shared_singular_unresolved_models':singular,'semantic_differences':differences,'cases':rows,
         'scope':'finite functional regression, no full-API parity, performance or formal-correctness claim'}
-(ROOT/'artifacts/intervalrootfinding-comparison.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+payload=json.dumps(report,indent=2)
+(ROOT/'artifacts/intervalrootfinding-comparison.json').write_text(payload,encoding='utf-8')
+(ROOT/'docs/evidence/intervalrootfinding-comparison.json').write_text(payload+'\n',encoding='utf-8')
 print(json.dumps({k:v for k,v in report.items() if k!='cases'}))

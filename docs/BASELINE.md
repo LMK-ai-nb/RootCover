@@ -4,12 +4,13 @@
 
 2026-11-11本地实际运行：Windows，Julia **1.13.3**、IntervalRootFinding.jl **0.7.2**、JSON3 **1.14.4**（仅参考适配器）。Julia二进制来自官方versions.json并核对SHA256；环境保存在work，不随本库分发。
 
-原始输出：`evidence/intervalrootfinding-reference.json`；实际比较：`evidence/intervalrootfinding-comparison.json`。不代表全API覆盖或性能排名。
+原始输出：`evidence/intervalrootfinding-reference.json`；实际比较：`evidence/intervalrootfinding-comparison.json`；逐模型表见 [BASELINE_TABLE](BASELINE_TABLE.md)。不代表全API覆盖或性能排名。
 
 ## 结果
 
-- 20模型各用Julia Newton/Krawczyk，40次实际调用，再运行本地RootCover相同请求。16常规模型双方完成分类，唯一根数量与两个方法相同、包围逐一相交。覆盖初等函数、二维三角、双连杆、12/32变量耦合系统。
-- abs尖点、sqrt边界、log平方重根共3模型均未决；划分不同，不比较未决盒个数。
+- 20模型各用Julia Newton/Krawczyk，40次实际调用，再运行本地RootCover相同请求。16常规模型双方完成分类，唯一根数量与两个方法相同，且包围与 Julia 细胞一一匹配（每个细胞恰好命中一个包围，无重复、无漏配）。覆盖初等函数、二维三角、双连杆、12/32变量耦合系统。
+- abs尖点、sqrt边界、log平方重根共3模型均未决；划分不同，不比较未决盒个数。这三类属于不可证情形（非光滑、定义域边界、重根），未决不是预算耗尽的委婉说法，也不宣称加大预算即可转为确定。
+- 逐模型表同时给出最大包围宽与宽度比中位数。宽度比主要反映停止精度差异（本库 tolerance 1e-7，Julia 细胞约 1e-13），不是误差指标；可核对的是根数、一一匹配与真实根落在包围内。
 - `1/x=0`跨0域有一处差异：Julia保留极点未决；RootCover反向乘积传播证明定义点上分子1不可能为0，排除所有零点。不是在证明函数在0有定义，也不据此宣称整体更强。
 
 ## 当前0.5对应与缺口

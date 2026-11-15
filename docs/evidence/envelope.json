@@ -1,0 +1,77 @@
+{
+  "cases": [
+    {
+      "case": "robot_workspace",
+      "exit": 1,
+      "inside_boxes": 2,
+      "unresolved_boxes": 21,
+      "assessments": 59,
+      "inside_volume_ratio": 2.6e-05,
+      "envelope_volume_ratio": 0.000459,
+      "reasons": {
+        "resolution reached without whole-box classification": 21
+      }
+    },
+    {
+      "case": "thermal_parameters",
+      "exit": 1,
+      "inside_boxes": 537,
+      "unresolved_boxes": 2974,
+      "assessments": 10277,
+      "inside_volume_ratio": 0.001232,
+      "envelope_volume_ratio": 0.00479,
+      "reasons": {
+        "resolution reached without whole-box classification": 2974
+      }
+    },
+    {
+      "case": "mixed_process",
+      "exit": 1,
+      "inside_boxes": 5,
+      "unresolved_boxes": 45,
+      "assessments": 149,
+      "inside_volume_ratio": 0.000107,
+      "envelope_volume_ratio": 0.000854,
+      "reasons": {
+        "resolution reached without whole-box classification": 45
+      }
+    },
+    {
+      "case": "robust_localization",
+      "exit": 1,
+      "inside_boxes": 15,
+      "unresolved_boxes": 38,
+      "assessments": 127,
+      "inside_volume_ratio": 0.001328,
+      "envelope_volume_ratio": 0.002678,
+      "reasons": {
+        "resolution reached without whole-formula classification": 38
+      }
+    },
+    {
+      "case": "design_alternatives",
+      "exit": 1,
+      "inside_boxes": 184,
+      "unresolved_boxes": 204,
+      "assessments": 1001,
+      "inside_volume_ratio": 0.034292,
+      "envelope_volume_ratio": 0.053362,
+      "reasons": {
+        "resolution reached without whole-formula classification": 204
+      }
+    },
+    {
+      "case": "design_window6",
+      "exit": 1,
+      "inside_boxes": 750,
+      "unresolved_boxes": 1798,
+      "assessments": 5191,
+      "inside_volume_ratio": 0.611412,
+      "envelope_volume_ratio": 0.986878,
+      "reasons": {
+        "resolution reached without whole-formula classification": 1798
+      }
+    }
+  ],
+  "note": "Volume ratios use axis-aligned box volumes; inside and unresolved boxes are disjoint by construction. Ratios are evidence of coverage, not a performance claim."
+}

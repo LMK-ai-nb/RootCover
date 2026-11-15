@@ -182,3 +182,10 @@ test('six-variable combined feasible set matches its recorded paving',()=>{
   assert.equal(r.inside.length,750);assert.equal(r.unresolved.length,1798);
   assert.equal(r.stats.assessments,5191);
 });
+
+test('identical requests produce byte-identical results',()=>{
+  const q=JSON.stringify(load('bratu25'));
+  assert.equal(run_request(q),run_request(q));
+  const p=JSON.stringify(load('design_window6'));
+  assert.equal(run_request(p),run_request(p));
+});

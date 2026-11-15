@@ -18,6 +18,9 @@
       "rootcover_unique": 4,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 4,
+      "max_root_width": 4.217566740294387e-09,
+      "median_width_ratio": 822.8578326180258,
       "julia": [
         {
           "method": "Newton",
@@ -36,6 +39,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 3.801427950200775e-09,
+      "median_width_ratio": 314130.4495412844,
       "julia": [
         {
           "method": "Newton",
@@ -54,6 +60,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 1.0616052481537963e-10,
+      "median_width_ratio": 45.70351782812351,
       "julia": [
         {
           "method": "Newton",
@@ -72,6 +81,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 1.5484280524447058e-11,
+      "median_width_ratio": 4.672831440345764,
       "julia": [
         {
           "method": "Newton",
@@ -90,6 +102,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 1.5987211554602254e-14,
+      "median_width_ratio": 0.01128526645768025,
       "julia": [
         {
           "method": "Newton",
@@ -108,6 +123,9 @@
       "rootcover_unique": 2,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 2,
+      "max_root_width": 8.408829188510936e-13,
+      "median_width_ratio": 1.5858458961474038,
       "julia": [
         {
           "method": "Newton",
@@ -126,6 +144,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 9.135641576563103e-09,
+      "median_width_ratio": 36458.37128932211,
       "julia": [
         {
           "method": "Newton",
@@ -144,6 +165,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 4.189834784673607e-09,
+      "median_width_ratio": 1.6242915573872827,
       "julia": [
         {
           "method": "Newton",
@@ -162,6 +186,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 9.658940314238862e-15,
+      "median_width_ratio": 0.0045666894126292585,
       "julia": [
         {
           "method": "Newton",
@@ -180,6 +207,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 1.3133938381315602e-12,
+      "median_width_ratio": 0.22143605870020963,
       "julia": [
         {
           "method": "Newton",
@@ -198,6 +228,9 @@
       "rootcover_unique": 2,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 2,
+      "max_root_width": 2.6980056633263416e-08,
+      "median_width_ratio": 5033.0705596107055,
       "julia": [
         {
           "method": "Newton",
@@ -216,6 +249,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 1.3594902981139967e-11,
+      "median_width_ratio": 2401.0196078431372,
       "julia": [
         {
           "method": "Newton",
@@ -234,6 +270,9 @@
       "rootcover_unique": 0,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 1.3594902981139967e-11,
+      "median_width_ratio": 2401.0196078431372,
       "julia": [
         {
           "method": "Newton",
@@ -252,6 +291,9 @@
       "rootcover_unique": 0,
       "rootcover_unresolved": 1,
       "rootcover_complete": false,
+      "matched_cells": 1,
+      "max_root_width": 1.3594902981139967e-11,
+      "median_width_ratio": 2401.0196078431372,
       "julia": [
         {
           "method": "Newton",
@@ -270,6 +312,9 @@
       "rootcover_unique": 0,
       "rootcover_unresolved": 1,
       "rootcover_complete": false,
+      "matched_cells": 1,
+      "max_root_width": 1.3594902981139967e-11,
+      "median_width_ratio": 2401.0196078431372,
       "julia": [
         {
           "method": "Newton",
@@ -288,6 +333,9 @@
       "rootcover_unique": 0,
       "rootcover_unresolved": 1,
       "rootcover_complete": false,
+      "matched_cells": 1,
+      "max_root_width": 1.3594902981139967e-11,
+      "median_width_ratio": 2401.0196078431372,
       "julia": [
         {
           "method": "Newton",
@@ -306,6 +354,9 @@
       "rootcover_unique": 2,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 2,
+      "max_root_width": 7.511991029218734e-12,
+      "median_width_ratio": 11277.0,
       "julia": [
         {
           "method": "Newton",
@@ -324,6 +375,9 @@
       "rootcover_unique": 2,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 2,
+      "max_root_width": 6.373546135307606e-11,
+      "median_width_ratio": 7418.733333333334,
       "julia": [
         {
           "method": "Newton",
@@ -342,6 +396,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 1.84297022087776e-14,
+      "median_width_ratio": null,
       "julia": [
         {
           "method": "Newton",
@@ -360,6 +417,9 @@
       "rootcover_unique": 1,
       "rootcover_unresolved": 0,
       "rootcover_complete": true,
+      "matched_cells": 1,
+      "max_root_width": 4.063416270128073e-14,
+      "median_width_ratio": null,
       "julia": [
         {
           "method": "Newton",
