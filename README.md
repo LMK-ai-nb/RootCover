@@ -145,6 +145,7 @@ MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不�
 - 边界：如果使用方已在 Python/Julia 环境、需要任意精度或全局优化，直接用 IntervalRootFinding.jl 或 IBEX 更合适；本库不声称在这些场景更强（完整边界见下节）。
 - 不移植 IBEX/Codac：其 LGPL-3.0 与 MIT 分发不兼容；C++ 实现不能作为 MoonBit 包直接消费，进浏览器还需额外 wasm 构建与许可义务。等价性改用 20 模型对照与独立 100 位核对来证明，而不是搬运代码。
 - 因此本项目的定位是“MoonBit 生态内的可行域求解组件”，不是替代上述成熟实现。
+- 迁移成本与会失去什么、什么情况下不该迁移，见 [docs/MIGRATION.md](docs/MIGRATION.md)；Krawczyk / SIVIA / IEEE 1788 的假设到代码映射见 [docs/STANDARDS.md](docs/STANDARDS.md)。
 
 ## 边界与来源
 

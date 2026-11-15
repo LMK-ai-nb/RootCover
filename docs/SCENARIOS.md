@@ -26,6 +26,22 @@
 - 结果：5内盒、45未决，保留(1,0.7)，分辨率1/64；无效定义域不能标为整盒可行。
 - 验证：域/光滑性单测、独立函数与导数、高精度可行点覆盖、机制切换CLI和真实浏览器。
 
+## 四、二维 Bratu 边值问题的离散系统
+
+- 使用者/问题：科学计算开发者需要确认五点差分离散后的非线性系统在给定盒内只有一个解。
+- 输入：`examples/bratu25.json`；单位方形 7×7 网格（h=1/6），内部 5×5=25 个节点，`(u_up+u_down+u_left+u_right-4u)/h²+exp(u)=0`，边界为零，盒 `[0,2]^25`。
+- 操作：`node bin/rootcover.mjs examples/bratu25.json`。
+- 结果：4 次评估后给出唯一根证书（Krawczyk 收缩界 q≈0.0150），无未决，退出 0。
+- 验证：`tests/cli.test.mjs` 固定 4 次评估与 q 区间；本结果只声明该盒内唯一，盒外的另一支解不在声明范围内。
+
+## 五、六参数五项约束的组合可行域
+
+- 使用者/问题：设计开发者有 6 个参数、5 条非方约束，业务上要求至少 4 条成立，而不是全部成立。
+- 输入：`examples/design_window6.json`；x0…x5∈[0,1]；约束为和、乘积、平方、交叉项与指数五类，`formula=at_least(4 of 5)`，tolerance 0.3。
+- 操作：`node bin/rootcover.mjs examples/design_window6.json`。
+- 结果：750 内盒、1798 未决、5191 次评估，resolution_met=true，退出 1（仍有未决）。
+- 验证：`tests/cli.test.mjs` 固定三项计数；逐原子证据显示被判 true 的盒内该原子确实成立。
+
 ## 保留与扩展回归
 
 旧geometry/calibration/equilibrium/localization/coupled6示例继续运行；singular明确展示重根未决。0.3联合机制使旧noisy_localization为17内盒/38未决、calibration_band为33内盒/6未决，与0.2纯细分数量不同，覆盖语义相同。另有12/32变量耦合系统测试，输入上限不是高维完成保证。
