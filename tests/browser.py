@@ -6,8 +6,20 @@ ROOT=Path(__file__).resolve().parents[1]
 (ROOT/'artifacts').mkdir(exist_ok=True)
 SHOTS=ROOT/('docs/assets' if os.environ.get('ROOTCOVER_UPDATE_SCREENSHOTS')=='1' else 'artifacts')
 SHOTS.mkdir(parents=True,exist_ok=True)
+def launch(p):
+    """Prefer Playwright's bundled Chromium; fall back to an installed Chrome/Edge."""
+    try:
+        return p.chromium.launch(headless=True)
+    except Exception:
+        last=None
+        for channel in ('chrome','msedge'):
+            try:
+                return p.chromium.launch(headless=True, channel=channel)
+            except Exception as error:
+                last=error
+        raise last
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True)
+    browser=launch(p)
     page=browser.new_page(viewport={'width':1440,'height':1200});errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:4188')
@@ -37,6 +49,23 @@ with sync_playwright() as p:
         page.locator(f'[data-case="{sample}"]').click()
         expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
         assert int(page.locator('#root-count').inner_text())>0
+    page.locator('[data-case="bratu25"]').click()
+    expect(page.locator('#status')).to_have_text('区域已解析',timeout=30000)
+    expect(page.locator('#root-count')).to_have_text('1')
+    expect(page.locator('#primary-label')).to_have_text('已确认唯一解')
+    with page.expect_download() as event:page.locator('#download').click()
+    event.value.save_as(ROOT/'artifacts/bratu-browser-report.json')
+    bratu=json.loads((ROOT/'artifacts/bratu-browser-report.json').read_text(encoding='utf-8'))
+    assert bratu['result']['root_count']==1 and bratu['result']['complete'] is True
+    page.locator('[data-case="design_window6"]').click()
+    expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决',timeout=30000)
+    expect(page.locator('#root-count')).to_have_text('750')
+    expect(page.locator('#unknown-count')).to_have_text('1798')
+    with page.expect_download() as event:page.locator('#download').click()
+    event.value.save_as(ROOT/'artifacts/design-window-browser-report.json')
+    window=json.loads((ROOT/'artifacts/design-window-browser-report.json').read_text(encoding='utf-8'))
+    assert window['result']['resolution_met'] is True and len(window['result']['inside'])==750
+    assert len(window['result']['unresolved'])==1798
     page.locator('[data-case="mixed_process"]').click()
     expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
     page.locator('#contractors').select_option('none')
