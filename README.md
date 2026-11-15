@@ -32,10 +32,12 @@ node bin/rootcover.mjs examples/design_alternatives.json
 node bin/rootcover.mjs examples/scaled_parameters.json
 node bin/rootcover.mjs examples/coupled32.json
 node bin/rootcover.mjs examples/nonlinear8.json
+node bin/rootcover.mjs examples/bratu25.json
+node bin/rootcover.mjs examples/design_window6.json
 node scripts/serve.mjs
 ```
 
-浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列六个可行域示例退出 1 是预期结果。Mooncakes 当前为 0.2.0，本轮不通过包索引分发，请按上述命令从源码运行。coupled32.json 是 32 变量链式系统，1 次评估得到 1 个唯一根包围、退出 0；nonlinear8.json 是 8 变量三角耦合系统，1 个唯一根、无未决、退出 0。两者用于证明上限附近可运行，不代表高维非线性难度。
+浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列可行域示例中 robot_workspace、thermal_parameters、mixed_process、robust_localization、design_alternatives、scaled_parameters、design_window6 退出 1 是预期结果，robot_roots、coupled32、nonlinear8、bratu25 退出 0。Mooncakes 当前为 0.2.0，本轮不通过包索引分发，请按上述命令从源码运行。coupled32.json 是 32 变量链式系统，1 次评估得到 1 个唯一根包围、退出 0；nonlinear8.json 是 8 变量三角耦合系统，1 个唯一根、无未决、退出 0；bratu25.json 是 5×5 Bratu 边值问题的二维五点耦合离散（25 变量 25 方程），4 次评估给出唯一性证书；design_window6.json 是 6 变量、5 条非方约束、至少 4 条成立的组合可行域，750 内盒 / 1798 未决。它们都是合成模型，不代表稠密或工业规模。
 
 ## 能力与版本说明
 
@@ -59,6 +61,7 @@ node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 -
 | 机构计算开发者求双连杆逆解及位置误差允许的关节角范围 | robot_roots.json、robot_workspace.json；三角关系和关节约束 | 精确问题两组唯一逆解；容差问题2个内盒、21个未决盒，分辨率0.02 |
 | 参数估计开发者反演指数响应 `a*exp(-k*t)+b` | thermal_parameters.json；3变量、5观测/非负约束 | 537个内盒、2974个未决盒；保留(2,0.5,0.25)，分辨率1/64 |
 | 科学模型开发者联立对数、根式和非线性不等式 | mixed_process.json；跨定义域初始范围 | 5个内盒、45个未决盒；保留(1,0.7)，分辨率1/64 |
+| 科学计算开发者离散二维 Bratu 边值问题 | bratu25.json；5×5 内部节点、25 变量、五点耦合、exp(u) 非线性 | 4 次评估得唯一根证书 q≈0.0150，退出 0；结构化稀疏系统，不代表稠密规模 |
 
 均为合成模型，不声称真实设备采用、统计置信度或机械安全认证。完整用户、输入、操作、输出与验证见[SCENARIOS](docs/SCENARIOS.md)。旧几何/标定/稳态/测距/六元64根示例保留。
 
@@ -69,6 +72,7 @@ node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 -
 | 测量开发者在四条观测至少三条成立时定位，并保留必选边界 | robust_localization.json；嵌套all/at_least | 15内盒、38未决；保留(1,1)；严格全部满足的对照可证明空 |
 | 设计开发者在指数/根式两个设计中保留任一可行方案 | design_alternatives.json；all/any与公共资源约束 | 184内盒、204未决；保留两分支，间隙不当作内盒 |
 | 参数开发者分别控制百万量级偏置与千分之一增益的精度 | scaled_parameters.json；BFS、逐变量绝对/相对精度 | 226内盒、277未决；分辨率达到不代表未决可行 |
+| 设计开发者在 6 个参数上要求 5 条约束至少 4 条成立 | design_window6.json；非方约束 + at_least 组合，tolerance 0.3 | 750 内盒、1798 未决、5191 次评估，resolution_met；退出 1 属预期 |
 
 完整输入、操作与独立验证见[SET_ALGEBRA](docs/SET_ALGEBRA.md)。
 
@@ -125,9 +129,9 @@ MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不�
 
 | 约束 | 实测 |
 | --- | --- |
-| 运行形态 | 同一 MoonBit 内核编为 wasm-gc，浏览器单文件 web/engine.js 577 KB（gzip 89 KB）；CLI 与网页共用该内核 |
+| 运行形态 | 浏览器与 CLI 使用同一 MoonBit 内核，当前以 --target js 构建：web/engine.js 590,178 B（约 576 KiB），gzip 87,941 B（约 86 KiB），不含 WebAssembly、无外部 import/require/fetch；同一内核另有 wasm / wasm-gc / native 目标用于测试与包消费 |
 | 外部运行时 | 无 Julia、无 JVM、无 BLAS/LAPACK、无网络；只依赖 MoonBit 标准库与 Node/浏览器 |
-| 启动与求解 | coupled32 约 0.13 s、nonlinear8 约 0.12 s、thermal_parameters 约 0.49 s（均含 Node 启动） |
+| 启动与求解 | coupled32 约 0.14 s、nonlinear8 约 0.13 s、bratu25 约 0.16 s、design_window6 约 0.28 s、thermal_parameters 约 0.43 s（均含 Node 启动） |
 | 资源上限 | 1…32 变量、1…128 约束、AST 8192 节点、深度 64；预算耗尽返回未决，不返回错误结果 |
 | 确定性 | 同输入、同预算、同输出；证据以 JSON 导出，逐盒可复核 |
 
@@ -139,7 +143,7 @@ MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不�
 - 证据形态：内盒、未决、唯一性证书和预算语义由本库定义并可随结果导出，评审可以逐盒复核；直接调外部求解器需要在宿主侧另建一层证据映射。
 - 许可证与集成：IBEX 为 LGPL-3.0，链接进分发物有额外义务；Julia 方案要求使用方部署 Julia 环境。
 - 边界：如果使用方已在 Python/Julia 环境、需要任意精度或全局优化，直接用 IntervalRootFinding.jl 或 IBEX 更合适；本库不声称在这些场景更强（完整边界见下节）。
-- 不移植 IBEX/Codac：其 LGPL-3.0 与 MIT 分发不兼容，C++ 实现也无法直接编到 wasm-gc；等价性改用 20 模型对照与独立 100 位核对来证明，而不是搬运代码。
+- 不移植 IBEX/Codac：其 LGPL-3.0 与 MIT 分发不兼容；C++ 实现不能作为 MoonBit 包直接消费，进浏览器还需额外 wasm 构建与许可义务。等价性改用 20 模型对照与独立 100 位核对来证明，而不是搬运代码。
 - 因此本项目的定位是“MoonBit 生态内的可行域求解组件”，不是替代上述成熟实现。
 
 ## 边界与来源

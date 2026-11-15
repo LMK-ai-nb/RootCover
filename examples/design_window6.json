@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "mode": "feasibility",
+  "variables": [
+    "x0",
+    "x1",
+    "x2",
+    "x3",
+    "x4",
+    "x5"
+  ],
+  "formula": {
+    "at_least": {
+      "count": 4,
+      "of": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  "box": [
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      1
+    ]
+  ],
+  "constraints": [
+    {
+      "expression": "x0+x1+x2",
+      "relation": "<=",
+      "rhs": 2.4
+    },
+    {
+      "expression": "x3*x4",
+      "relation": "<=",
+      "rhs": 0.3
+    },
+    {
+      "expression": "x5^2",
+      "relation": "<=",
+      "rhs": 0.7
+    },
+    {
+      "expression": "x0*x3+x2*x4",
+      "relation": "<=",
+      "rhs": 1.0
+    },
+    {
+      "expression": "exp(x1)+x5",
+      "relation": "<=",
+      "rhs": 3.0
+    }
+  ],
+  "search": {
+    "strategy": "bfs",
+    "split": "scaled"
+  },
+  "options": {
+    "tolerance": 0.3,
+    "max_assessments": 20000
+  }
+}
