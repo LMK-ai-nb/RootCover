@@ -31,7 +31,7 @@
 
 ## 验证边界
 
-本机未配置MSVC/Windows SDK，native只有静态check，未实际build/run；不将0.2远程native成功挪作新版证据。未来CI配置已加入新检查，但本轮没有触发。
+本机未配置MSVC/Windows SDK，未本地 build/run native，只有静态 check；远程 CI 已在 `baf8f20` 上执行 `verify.py --native`，native 口径以该 run 为准，不把 0.2 的远程 native 成功当作新版证据。
 
 原Fraction参考不复用MoonBit实现；100位参考独立解析AST、使用解析AD，避免用有限差分在极大/极小尺度产生假零导数。正公式参考用Fraction计算区间/点值与组合真值；高精度场景参考沿用独立解析器。采样在高精度域构造，避免次正规区间的插值点下溢跑出输入范围。它们仍是有限回归，不是形式化证明或所有模型的可靠性保证。
 

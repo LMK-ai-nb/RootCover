@@ -2,9 +2,9 @@
 
 ## 0.5.0（2026-11-15，本地提交）
 
-- 0.5.0 提交在 `baf8f20` 之后，仅改 moon.mod/package.json 版本号、README 与 CHANGELOG，数值内核未改。
-- 远程 main 当前为 `baf8f20`（0.5.0-dev.3）；0.5.0 因网络问题尚未推送，推送后再替换为实际 run 记录。
-- 最近一次成功的远程 CI 为 [43720864837](https://github.com/LMK-ai-nb/RootCover/actions/runs/43720864837)，对应 `baf8f20`，覆盖相同内核。
+- 0.5.0 提交在 `baf8f20` 之后，改动包括版本号、README/文档定位、PARITY 拆分与新增 `examples/coupled32.json`；数值内核未改（65 项测试原样通过）。
+- 远程 main 在推送前为 `baf8f20`（0.5.0-dev.3）；本节所述 0.5.0 内容以推送后的 main 与对应 Actions run 为准。
+- 推送前最后一次成功的远程 CI 为 [43720864837](https://github.com/LMK-ai-nb/RootCover/actions/runs/43720864837)，对应 `baf8f20`；推送后以新 run 为准。
 - 工作区另有一组未提交改动（浏览器会话与测试相关），不属于本次送审范围，由作者处理。
 - Mooncakes 仍为 0.2.0；本轮不执行发布。
 

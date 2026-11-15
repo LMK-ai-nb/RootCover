@@ -36,11 +36,11 @@ node scripts/serve.mjs
 
 浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列六个可行域示例退出 1 是预期结果。Mooncakes 当前为 0.2.0，本轮不通过包索引分发，请按上述命令从源码运行。coupled32.json 是 32 变量链式系统，1 次评估得到 1 个唯一根包围、退出 0；用于证明输入上限可运行，不代表高维非线性难度。
 
-## 本轮已实现
+## 能力与版本说明
 
 0.4新增正公式all/any/at_least、异常观测共识、逐变量绝对/相对精度、BFS与归一化/Jacobian影响划分。完整[同类检索与取舍](docs/LANDSCAPE_2026-11-13.md)、[语义和例子](docs/SET_ALGEBRA.md)。
 
-0.5新增可行域会话：分步推进、保存/核验/恢复，保留累计预算、深度与精度，覆盖普通约束和正公式。类型化API、CLI和[浏览器分步工作台](web/session.html)共享MoonBit实现；求根恢复尚未实现。详见[SESSIONS](docs/SESSIONS.md)。
+0.5新增可行域会话：分步推进、保存/核验/恢复，保留累计预算、深度与精度，覆盖普通约束和正公式。类型化API、CLI和[浏览器分步工作台](web/session.html)共享MoonBit实现；求根模式不提供会话恢复（范围选择，见边界）。详见[SESSIONS](docs/SESSIONS.md)。
 
 ```text
 node bin/rootcover.mjs examples/robust_localization.json --steps 10 --checkpoint robust.rootcover-checkpoint.json
