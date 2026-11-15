@@ -2,8 +2,8 @@
 
 ## 0.5.0（2026-11-15）
 
-- 已推送至 main（提交 `7c01833`）。相对 `baf8f20` 的改动包括版本号、README/文档定位、PARITY A/B 拆分、浏览器产物表述改正（--target js），以及 `coupled32` / `nonlinear8` / `bratu25` / `design_window6` 四个新算例；数值内核未改（65 项测试原样通过）。
-- CI 记录：[43727387462](https://github.com/LMK-ai-nb/RootCover/actions/runs/43727387462)，三平台 success。
+- 已推送至 main（最终提交 `40415e4`；内容提交 `7c01833`）。相对 `baf8f20` 的改动包括版本号、README/文档定位、PARITY A/B 拆分、浏览器产物表述改正（--target js），以及 `coupled32` / `nonlinear8` / `bratu25` / `design_window6` 四个新算例；数值内核未改（65 项测试原样通过）。
+- CI 记录：[43729043893](https://github.com/LMK-ai-nb/RootCover/actions/runs/43729043893)，三平台 success。
 - 工作区另有一组未提交改动（浏览器会话与测试相关），不属于本次送审范围，由作者处理。
 - Mooncakes 仍为 0.2.0；本轮不执行发布。
 
