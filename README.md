@@ -63,7 +63,7 @@ node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 -
 | 科学模型开发者联立对数、根式和非线性不等式 | mixed_process.json；跨定义域初始范围 | 5个内盒、45个未决盒；保留(1,0.7)，分辨率1/64 |
 | 科学计算开发者离散二维 Bratu 边值问题 | bratu25.json；5×5 内部节点、25 变量、五点耦合、exp(u) 非线性 | 4 次评估得唯一根证书 q≈0.0150，退出 0；结构化稀疏系统，不代表稠密规模 |
 
-均为合成模型，不声称真实设备采用、统计置信度或机械安全认证。完整用户、输入、操作、输出与验证见[SCENARIOS](docs/SCENARIOS.md)。旧几何/标定/稳态/测距/六元64根示例保留。
+均为合成模型，不声称真实设备采用、统计置信度或机械安全认证。完整用户、输入、操作、输出与验证见[SCENARIOS](docs/SCENARIOS.md)。旧几何/标定/稳态/测距/重根未决/六元64根示例保留。
 
 ## 组合与精度场景
 
@@ -129,17 +129,17 @@ MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不�
 
 | 约束 | 实测 |
 | --- | --- |
-| 运行形态 | 浏览器与 CLI 使用同一 MoonBit 内核，当前以 --target js 构建：web/engine.js 590,178 B（约 576 KiB），gzip 87,941 B（约 86 KiB），不含 WebAssembly、无外部 import/require/fetch；同一内核另有 wasm / wasm-gc / native 目标用于测试与包消费 |
+| 运行形态 | 浏览器与 CLI 使用同一 MoonBit 内核，当前以 --target js 构建：web/engine.js 590,178 B（约 576 KiB），gzip 87,941 B（约 86 KiB，Node zlib 默认级别），不含 WebAssembly、无外部 import/require/fetch；同一内核另有 wasm / wasm-gc / native 目标用于测试与包消费 |
 | 外部运行时 | 无 Julia、无 JVM、无 BLAS/LAPACK、无网络；只依赖 MoonBit 标准库与 Node/浏览器 |
 | 启动与求解 | coupled32 约 0.14 s、nonlinear8 约 0.13 s、bratu25 约 0.16 s、design_window6 约 0.28 s、thermal_parameters 约 0.43 s（均含 Node 启动） |
 | 资源上限 | 1…32 变量、1…128 约束、AST 8192 节点、深度 64；预算耗尽返回未决，不返回错误结果 |
 | 确定性 | 同输入、同预算、同输出；证据以 JSON 导出，逐盒可复核 |
 
-这些数字说明"能部署到 wasm/浏览器并给出可复核结果"，不是性能排名；与 Julia 实现的对照只比分类与包围，不比速度。
+这些数字说明"浏览器与 CLI 用同一内核、可给出可复核结果"，不是性能排名；与 Julia 实现的对照只比分类与包围，不比速度。
 
 ## 为什么不直接调用 Julia / IBEX
 
-- 运行环境：核心是 MoonBit，可编到 wasm 在浏览器内运行，CLI 与网页共用同一内核；不需要 Julia 或 JVM 运行时。
+- 运行环境：核心是 MoonBit，同一内核编到 wasm / wasm-gc / js / native 用于测试与包消费；浏览器与 CLI 当前使用 js 产物，不需要 Julia 或 JVM 运行时。
 - 证据形态：内盒、未决、唯一性证书和预算语义由本库定义并可随结果导出，评审可以逐盒复核；直接调外部求解器需要在宿主侧另建一层证据映射。
 - 许可证与集成：IBEX 为 LGPL-3.0，链接进分发物有额外义务；Julia 方案要求使用方部署 Julia 环境。
 - 边界：如果使用方已在 Python/Julia 环境、需要任意精度或全局优化，直接用 IntervalRootFinding.jl 或 IBEX 更合适；本库不声称在这些场景更强（完整边界见下节）。
