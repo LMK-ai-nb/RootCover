@@ -31,10 +31,11 @@ node bin/rootcover.mjs examples/robust_localization.json
 node bin/rootcover.mjs examples/design_alternatives.json
 node bin/rootcover.mjs examples/scaled_parameters.json
 node bin/rootcover.mjs examples/coupled32.json
+node bin/rootcover.mjs examples/nonlinear8.json
 node scripts/serve.mjs
 ```
 
-浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列六个可行域示例退出 1 是预期结果。Mooncakes 当前为 0.2.0，本轮不通过包索引分发，请按上述命令从源码运行。coupled32.json 是 32 变量链式系统，1 次评估得到 1 个唯一根包围、退出 0；用于证明输入上限可运行，不代表高维非线性难度。
+浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列六个可行域示例退出 1 是预期结果。Mooncakes 当前为 0.2.0，本轮不通过包索引分发，请按上述命令从源码运行。coupled32.json 是 32 变量链式系统，1 次评估得到 1 个唯一根包围、退出 0；nonlinear8.json 是 8 变量三角耦合系统，1 个唯一根、无未决、退出 0。两者用于证明上限附近可运行，不代表高维非线性难度。
 
 ## 能力与版本说明
 
@@ -110,12 +111,35 @@ python scripts/consumer_check.py
 
 MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不折算为 195 个用例）；native 由 CI 的 verify.py --native 执行，本机无 MSVC，未本地实跑。另有 25 项原 CLI、8 项会话 JS/CLI 通过。旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；高精度函数/导数、134模型在三种机制下共402次收缩保留继续通过。正公式另有54模型、284份精确内盒证据、162次配置收缩及24组搜索策略验证；会话另有48模型、548份状态、9074次精确内盒核对及44791次可行样本覆盖检查。有限测试不是形式化证明。
 
+## 技术路线为什么能解决这个问题
+
+三种常见做法各自会在哪里失效，以及本库对应的机制：
+
+- 只做区间二分：能排除，但不能证明；重根与边界会无限细分。→ Krawczyk 唯一性证书，加未决覆盖，把"解"与"不能判定"分开。
+- 只做 Newton：在区间上可能收缩为空集或发散，非方约束也无法直接套用。→ 预条件区间 Gauss-Seidel / 坐标 Newton，配合前后向传播与联合收缩，先把盒压小再判定。
+- 只做盒判定：变量耦合会让盒数迅速膨胀。→ 变量依赖 agenda、传播与 SIVIA 内外包围，把"整盒可行"与"未决"分层输出。
+
+因此它面对的是"有界非线性约束的可行域与根包围"这一类问题，而不是某个模型的一次计算；明确不做的能力列在 [docs/PARITY.md](docs/PARITY.md)。
+
+## 目标平台与部署约束
+
+| 约束 | 实测 |
+| --- | --- |
+| 运行形态 | 同一 MoonBit 内核编为 wasm-gc，浏览器单文件 web/engine.js 577 KB（gzip 89 KB）；CLI 与网页共用该内核 |
+| 外部运行时 | 无 Julia、无 JVM、无 BLAS/LAPACK、无网络；只依赖 MoonBit 标准库与 Node/浏览器 |
+| 启动与求解 | coupled32 约 0.13 s、nonlinear8 约 0.12 s、thermal_parameters 约 0.49 s（均含 Node 启动） |
+| 资源上限 | 1…32 变量、1…128 约束、AST 8192 节点、深度 64；预算耗尽返回未决，不返回错误结果 |
+| 确定性 | 同输入、同预算、同输出；证据以 JSON 导出，逐盒可复核 |
+
+这些数字说明"能部署到 wasm/浏览器并给出可复核结果"，不是性能排名；与 Julia 实现的对照只比分类与包围，不比速度。
+
 ## 为什么不直接调用 Julia / IBEX
 
 - 运行环境：核心是 MoonBit，可编到 wasm 在浏览器内运行，CLI 与网页共用同一内核；不需要 Julia 或 JVM 运行时。
 - 证据形态：内盒、未决、唯一性证书和预算语义由本库定义并可随结果导出，评审可以逐盒复核；直接调外部求解器需要在宿主侧另建一层证据映射。
 - 许可证与集成：IBEX 为 LGPL-3.0，链接进分发物有额外义务；Julia 方案要求使用方部署 Julia 环境。
 - 边界：如果使用方已在 Python/Julia 环境、需要任意精度或全局优化，直接用 IntervalRootFinding.jl 或 IBEX 更合适；本库不声称在这些场景更强（完整边界见下节）。
+- 不移植 IBEX/Codac：其 LGPL-3.0 与 MIT 分发不兼容，C++ 实现也无法直接编到 wasm-gc；等价性改用 20 模型对照与独立 100 位核对来证明，而不是搬运代码。
 - 因此本项目的定位是“MoonBit 生态内的可行域求解组件”，不是替代上述成熟实现。
 
 ## 边界与来源
