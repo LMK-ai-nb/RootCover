@@ -42,10 +42,6 @@
 - 结果：750 内盒、1798 未决、5191 次评估，resolution_met=true，退出 1（仍有未决）。
 - 验证：`tests/cli.test.mjs` 固定三项计数；逐原子证据显示被判 true 的盒内该原子确实成立。
 
-## 保留与扩展回归
-
-旧geometry/calibration/equilibrium/localization/coupled6示例继续运行；singular明确展示重根未决。0.3联合机制使旧noisy_localization为17内盒/38未决、calibration_band为33内盒/6未决，与0.2纯细分数量不同，覆盖语义相同。另有12/32变量耦合系统测试，输入上限不是高维完成保证。
-
 ## 六、含异常观测的区域定位
 
 - 使用者/问题：测量融合开发者有四条带误差测距，其中一条可能异常，要求至少三条成立，同时必选边界不可放松。
@@ -53,3 +49,7 @@
 - 操作：`node bin/rootcover.mjs examples/robust_localization.json`；网页场景 08。
 - 结果：15 内盒、38 未决，resolution_met=true，保留 (1,1)；退出 1 表示仍有未决。
 - 验证：删除 formula 改为严格 AND 后可证明为空；逐原子证据显示异常观测不成立而整体公式仍成立。不是宣称找出了真实故障传感器。
+
+## 保留与扩展回归
+
+旧geometry/calibration/equilibrium/localization/coupled6示例继续运行；singular明确展示重根未决。0.3联合机制使旧noisy_localization为17内盒/38未决、calibration_band为33内盒/6未决，与0.2纯细分数量不同，覆盖语义相同。另有12/32变量耦合系统测试，输入上限不是高维完成保证。
