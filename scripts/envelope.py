@@ -18,6 +18,39 @@ def volume(box):
     return v
 
 
+def components(boxes, tol=1e-9):
+    n = len(boxes)
+    parent = list(range(n))
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    def union(i, j):
+        a, b = find(i), find(j)
+        if a != b:
+            parent[b] = a
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            if all(max(boxes[i]['box'][d][0], boxes[j]['box'][d][0]) - tol <=
+                   min(boxes[i]['box'][d][1], boxes[j]['box'][d][1])
+                   for d in range(len(boxes[i]['box']))):
+                union(i, j)
+    groups = {}
+    for i in range(n):
+        groups.setdefault(find(i), []).append(i)
+    parts = []
+    for idx in groups.values():
+        vol = sum(volume(boxes[i]['box']) for i in idx)
+        parts.append({'boxes': len(idx), 'volume': vol})
+    parts.sort(key=lambda x: x['volume'], reverse=True)
+    total = sum(p['volume'] for p in parts) or 1.0
+    return parts, total
+
+
 def run(name):
     p = subprocess.run(['node', 'bin/rootcover.mjs', f'examples/{name}.json'],
                        cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
@@ -28,9 +61,13 @@ def run(name):
     unresolved = data.get('unresolved', [])
     unknown = sum(volume(b['box']) for b in unresolved)
     reasons = Counter(b['reason'] for b in unresolved)
+    parts, total = components(data.get('inside', []))
     return {
         'case': name,
         'exit': p.returncode,
+        'components': len(parts),
+        'largest_component_boxes': parts[0]['boxes'] if parts else 0,
+        'largest_component_volume_share': round(parts[0]['volume'] / total, 4) if parts else 0.0,
         'inside_boxes': len(data.get('inside', [])),
         'unresolved_boxes': len(unresolved),
         'assessments': data.get('stats', {}).get('assessments'),
@@ -50,17 +87,18 @@ def main():
         '',
         '盒数不能说明"交付的是区域还是碎片"。下表用初始盒体积归一化，给出内盒体积占比与内盒∪未决的体积上界，并按 `unresolved[].reason` 分桶。',
         '',
-        '| 场景 | 内盒 | 未决 | 评估次数 | 内盒体积占比 | 上界占比 | 未决原因 |',
-        '| --- | --- | --- | --- | --- | --- | --- |',
+        '| 场景 | 内盒 | 连通分支 | 最大分支盒数 | 最大分支体积占比 | 未决 | 评估次数 | 内盒体积占比 | 上界占比 | 未决原因 |',
+        '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
     ]
     for r in rows:
         reasons = '；'.join(f'{k}×{v}' for k, v in r['reasons'].items()) or '—'
-        lines.append(f"| {r['case']} | {r['inside_boxes']} | {r['unresolved_boxes']} | {r['assessments']} | "
+        lines.append(f"| {r['case']} | {r['inside_boxes']} | {r['components']} | {r['largest_component_boxes']} | "
+                     f"{r['largest_component_volume_share']:.4f} | {r['unresolved_boxes']} | {r['assessments']} | "
                      f"{r['inside_volume_ratio']:.4f} | {r['envelope_volume_ratio']:.4f} | {reasons} |")
     lines += [
         '',
         '读法：内盒体积占比是"已证明可行"的下界，上界占比是"可行点必定落在这里"的外包围；两者之差即未决部分。',
-        '未决原因目前只有一类文案（分辨率到达但整盒未分类），预算耗尽与深度上限都会落到同一文案，因此不区分"算不动"与"已到 ε"。',
+        '未决原因有四类文案：`resolution reached without whole-box classification`、`assessment budget exhausted`、`depth limit reached`、`no representable interior split point`。本次六个场景只触发第一类；预算耗尽与深度上限在代码中是分开的，不由文案合并。',
         '',
         '复现：`python scripts/envelope.py`（数据写入 `docs/evidence/envelope.json`）。合成模型，不代表工业规模。',
     ]

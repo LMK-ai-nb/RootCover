@@ -3,6 +3,9 @@
     {
       "case": "robot_workspace",
       "exit": 1,
+      "components": 1,
+      "largest_component_boxes": 2,
+      "largest_component_volume_share": 1.0,
       "inside_boxes": 2,
       "unresolved_boxes": 21,
       "assessments": 59,
@@ -15,6 +18,9 @@
     {
       "case": "thermal_parameters",
       "exit": 1,
+      "components": 1,
+      "largest_component_boxes": 537,
+      "largest_component_volume_share": 1.0,
       "inside_boxes": 537,
       "unresolved_boxes": 2974,
       "assessments": 10277,
@@ -27,6 +33,9 @@
     {
       "case": "mixed_process",
       "exit": 1,
+      "components": 1,
+      "largest_component_boxes": 5,
+      "largest_component_volume_share": 1.0,
       "inside_boxes": 5,
       "unresolved_boxes": 45,
       "assessments": 149,
@@ -39,6 +48,9 @@
     {
       "case": "robust_localization",
       "exit": 1,
+      "components": 1,
+      "largest_component_boxes": 15,
+      "largest_component_volume_share": 1.0,
       "inside_boxes": 15,
       "unresolved_boxes": 38,
       "assessments": 127,
@@ -51,6 +63,9 @@
     {
       "case": "design_alternatives",
       "exit": 1,
+      "components": 2,
+      "largest_component_boxes": 95,
+      "largest_component_volume_share": 0.5059,
       "inside_boxes": 184,
       "unresolved_boxes": 204,
       "assessments": 1001,
@@ -63,6 +78,9 @@
     {
       "case": "design_window6",
       "exit": 1,
+      "components": 1,
+      "largest_component_boxes": 750,
+      "largest_component_volume_share": 1.0,
       "inside_boxes": 750,
       "unresolved_boxes": 1798,
       "assessments": 5191,

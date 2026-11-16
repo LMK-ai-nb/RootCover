@@ -219,6 +219,17 @@ fn result_json(request : Request, result : SolveResult) -> Json {
       request.options,
       request.system.names.length(),
     ),
+    "options": {
+      "tolerance": Json::number(request.options.tolerance),
+      "max_assessments": Json::number(request.options.max_assessments.to_double()),
+      "max_depth": Json::number(request.options.max_depth.to_double()),
+    },
+    "contractors": {
+      "propagation": Json::boolean(request.contractors.propagation),
+      "newton": Json::boolean(request.contractors.newton),
+      "max_steps": Json::number(request.contractors.max_steps.to_double()),
+      "max_rounds": Json::number(request.contractors.max_rounds.to_double()),
+    },
     "variables": Json::array(request.system.names.map(x => Json::string(x))),
     "initial_box": box_json(request.box),
     "complete": Json::boolean(result.complete),

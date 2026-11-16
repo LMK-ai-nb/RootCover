@@ -123,6 +123,13 @@ fn paving_json(request : FeasibilityRequest, result : PavingResult) -> Json {
     }
     value
   })
+  let mut pending_count = 0
+  for b in result.unresolved {
+    if b.reason == "assessment budget exhausted" ||
+      b.reason == "session paused with pending work" {
+      pending_count = pending_count + 1
+    }
+  }
   {
     "version": 1,
     "mode": "feasibility",
@@ -135,6 +142,33 @@ fn paving_json(request : FeasibilityRequest, result : PavingResult) -> Json {
     "initial_box": box_json(request.box),
     "complete": Json::boolean(result.complete),
     "resolution_met": Json::boolean(result.resolution_met),
+    "status": Json::string(
+      if result.complete && result.inside.is_empty() {
+        "unsatisfiable"
+      } else if result.complete {
+        "satisfied"
+      } else {
+        "unknown"
+      },
+    ),
+    "unresolved_count": Json::number(result.unresolved.length().to_double()),
+    "counts": {
+      "inside": Json::number(result.inside.length().to_double()),
+      "unknown": Json::number(result.unresolved.length().to_double()),
+      "pending": Json::number(pending_count.to_double()),
+      "excluded": Json::number(result.excluded.to_double()),
+    },
+    "options": {
+      "tolerance": Json::number(request.options.tolerance),
+      "max_assessments": Json::number(request.options.max_assessments.to_double()),
+      "max_depth": Json::number(request.options.max_depth.to_double()),
+    },
+    "contractors": {
+      "propagation": Json::boolean(request.contractors.propagation),
+      "newton": Json::boolean(request.contractors.newton),
+      "max_steps": Json::number(request.contractors.max_steps.to_double()),
+      "max_rounds": Json::number(request.contractors.max_rounds.to_double()),
+    },
     "definitely_empty": Json::boolean(
       result.complete && result.inside.is_empty(),
     ),

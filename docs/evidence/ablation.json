@@ -1,0 +1,163 @@
+{
+  "contractors": [
+    {
+      "case": "robot_workspace",
+      "on": {
+        "inside": 2,
+        "unresolved": 21,
+        "assessments": 59,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "off": {
+        "inside": 0,
+        "unresolved": 24,
+        "assessments": 223,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "assessment_ratio_off_over_on": 3.78
+    },
+    {
+      "case": "thermal_parameters",
+      "on": {
+        "inside": 537,
+        "unresolved": 2974,
+        "assessments": 10277,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "off": {
+        "inside": 433,
+        "unresolved": 2783,
+        "assessments": 9473,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "assessment_ratio_off_over_on": 0.92
+    },
+    {
+      "case": "mixed_process",
+      "on": {
+        "inside": 5,
+        "unresolved": 45,
+        "assessments": 149,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "off": {
+        "inside": 7,
+        "unresolved": 53,
+        "assessments": 327,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "assessment_ratio_off_over_on": 2.19
+    },
+    {
+      "case": "robust_localization",
+      "on": {
+        "inside": 15,
+        "unresolved": 38,
+        "assessments": 127,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "off": {
+        "inside": 19,
+        "unresolved": 40,
+        "assessments": 261,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "assessment_ratio_off_over_on": 2.06
+    },
+    {
+      "case": "design_alternatives",
+      "on": {
+        "inside": 184,
+        "unresolved": 204,
+        "assessments": 1001,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "off": {
+        "inside": 221,
+        "unresolved": 285,
+        "assessments": 1675,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "assessment_ratio_off_over_on": 1.67
+    },
+    {
+      "case": "design_window6",
+      "on": {
+        "inside": 750,
+        "unresolved": 1798,
+        "assessments": 5191,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "off": {
+        "inside": 750,
+        "unresolved": 1798,
+        "assessments": 5191,
+        "resolution_met": true,
+        "complete": false,
+        "exit": 1
+      },
+      "assessment_ratio_off_over_on": 1.0
+    }
+  ],
+  "tolerance_ladder": [
+    {
+      "tolerance": 0.4,
+      "inside": 750,
+      "unresolved": 1798,
+      "assessments": 5191,
+      "resolution_met": true,
+      "complete": false,
+      "exit": 1
+    },
+    {
+      "tolerance": 0.3,
+      "inside": 750,
+      "unresolved": 1798,
+      "assessments": 5191,
+      "resolution_met": true,
+      "complete": false,
+      "exit": 1
+    },
+    {
+      "tolerance": 0.2,
+      "inside": 1248,
+      "unresolved": 17311,
+      "assessments": 20000,
+      "resolution_met": false,
+      "complete": false,
+      "exit": 1
+    },
+    {
+      "tolerance": 0.1,
+      "inside": 1248,
+      "unresolved": 17311,
+      "assessments": 20000,
+      "resolution_met": false,
+      "complete": false,
+      "exit": 1
+    }
+  ],
+  "note": "Synthetic models. Assessment counts are deterministic; wall time is not recorded."
+}

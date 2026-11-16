@@ -189,3 +189,18 @@ test('identical requests produce byte-identical results',()=>{
   const p=JSON.stringify(load('design_window6'));
   assert.equal(run_request(p),run_request(p));
 });
+test('feasibility results expose a status and category counts',()=>{
+  const r=run(load('design_window6'));
+  assert.equal(r.status,'unknown');
+  assert.equal(r.counts.inside,r.inside.length);
+  assert.equal(r.counts.unknown,r.unresolved.length);
+  assert.equal(r.counts.pending,0);
+  assert.equal(r.unresolved_count,r.unresolved.length);
+  assert.equal(r.options.tolerance,0.3);
+  assert.equal(r.contractors.propagation,true);
+});
+test('root results echo the effective options',()=>{
+  const r=run(load('geometry'));
+  assert.equal(r.options.max_assessments,4096);
+  assert.equal(r.contractors.max_steps,256);
+});
