@@ -221,7 +221,9 @@ fn result_json(request : Request, result : SolveResult) -> Json {
     ),
     "options": {
       "tolerance": Json::number(request.options.tolerance),
-      "max_assessments": Json::number(request.options.max_assessments.to_double()),
+      "max_assessments": Json::number(
+        request.options.max_assessments.to_double(),
+      ),
       "max_depth": Json::number(request.options.max_depth.to_double()),
     },
     "contractors": {
