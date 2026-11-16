@@ -133,7 +133,7 @@ MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不�
 
 | 约束 | 实测 |
 | --- | --- |
-| 运行形态 | 浏览器与 CLI 使用同一 MoonBit 内核，当前以 --target js 构建：web/engine.js 590,178 B（约 576 KiB），gzip 87,941 B（约 86 KiB，Node zlib 默认级别），不含 WebAssembly、无外部 import/require/fetch；同一内核另有 wasm / wasm-gc / native 目标用于测试与包消费 |
+| 运行形态 | 浏览器与 CLI 使用同一 MoonBit 内核，当前以 --target js 构建：web/engine.js 598,278 B（约 584 KiB），gzip 89,215 B（约 87 KiB，Node zlib 默认级别），不含 WebAssembly、无外部 import/require/fetch；同一内核另有 wasm / wasm-gc / native 目标用于测试与包消费 |
 | 外部运行时 | 无 Julia、无 JVM、无 BLAS/LAPACK、无网络；只依赖 MoonBit 标准库与 Node/浏览器 |
 | 启动与求解 | coupled32 约 0.14 s、nonlinear8 约 0.13 s、bratu25 约 0.16 s、design_window6 约 0.28 s、thermal_parameters 约 0.43 s（均含 Node 启动） |
 | 资源上限 | 1…32 变量、1…128 约束、AST 8192 节点、深度 64；预算耗尽返回未决，不返回错误结果 |
