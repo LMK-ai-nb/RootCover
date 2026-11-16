@@ -34,5 +34,5 @@ lines += [
     '',
     '生成：`python scripts/compare_intervalrootfinding.py && python scripts/baseline_table.py`（数据在 `docs/evidence/intervalrootfinding-comparison.json`）。',
 ]
-(ROOT / 'docs/BASELINE_TABLE.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+(ROOT / 'docs/BASELINE_TABLE.md').write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
 print('rows', len(comp['cases']))

@@ -15,7 +15,7 @@ def run(name, patch=None, path=None):
         q.update(patch)
     tmp = ROOT / 'artifacts' / '_ablation_request.json'
     tmp.parent.mkdir(exist_ok=True)
-    tmp.write_text(json.dumps(q, ensure_ascii=False), encoding='utf-8')
+    tmp.write_text(json.dumps(q, ensure_ascii=False), encoding='utf-8', newline='\n')
     p = subprocess.run(['node', 'bin/rootcover.mjs', str(tmp)], cwd=ROOT,
                        capture_output=True, text=True, encoding='utf-8')
     data = json.loads(p.stdout)
@@ -45,7 +45,7 @@ def main():
 
     out = {'contractors': rows, 'tolerance_ladder': ladder,
            'note': 'Synthetic models. Assessment counts are deterministic; wall time is not recorded.'}
-    (ROOT / 'docs/evidence/ablation.json').write_text(json.dumps(out, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    (ROOT / 'docs/evidence/ablation.json').write_text(json.dumps(out, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
 
     lines = [
         '# 消融与精度阶梯',
@@ -78,13 +78,13 @@ def main():
 
     lines += [
         '',
-        '读法：0.3 是当前 20000 次预算下能达到 `resolution_met` 的精度；0.2 与 0.1 都耗尽预算，输出仍给出内盒与外包围，但 `resolution_met=false`。这不是"调参做出成功"，而是把可完成精度与预算一起报告；要更细的覆盖需要更高预算或更小维度。',
+        '读法：0.4 与 0.3 落在同一细分档位（盒宽 0.25），所以两行输出逐位相同，不是 tolerance 未生效。0.3 是当前 20000 次预算下可完成的最细档位（0.4 与它同档）；0.2 与 0.1 都耗尽预算，输出仍给出内盒与外包围，但 `resolution_met=false`。这不是"调参做出成功"，而是把可完成精度与预算一起报告；要更细的覆盖需要更高预算或更小维度。',
         '',
-        '收缩器的作用是结构相关的：在机构、观测、混合模型上减少 1.7–3.8 倍评估；在 `design_window6` 的 `at_least` 外包围上中性；在 `thermal_parameters` 上是"更多内盒、更多评估"的权衡。材料不再声称"联合收缩解决耦合"这类绝对结论。',
+        '收缩器的作用是结构相关的：在机构、观测、混合模型与多方案设计上减少 1.7–3.8 倍评估；在 `design_window6` 的 `at_least` 外包围上中性；在 `thermal_parameters` 上是"更多内盒、更多评估"的权衡。材料不再声称"联合收缩解决耦合"这类绝对结论。',
         '',
         '复现：`python scripts/ablation.py`（数据写入 `docs/evidence/ablation.json`）。',
     ]
-    (ROOT / 'docs/ABLATION.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    (ROOT / 'docs/ABLATION.md').write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
     print(json.dumps({'rows': rows, 'ladder': ladder}, ensure_ascii=False, indent=2))
 
 

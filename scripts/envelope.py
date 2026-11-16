@@ -84,7 +84,7 @@ def run(name):
 def main():
     rows = [run(name) for name in CASES]
     out = {'cases': rows, 'note': 'Volume ratios use axis-aligned box volumes; inside and unresolved boxes are disjoint by construction. Ratios are evidence of coverage, not a performance claim.'}
-    (ROOT / 'docs/evidence/envelope.json').write_text(json.dumps(out, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    (ROOT / 'docs/evidence/envelope.json').write_text(json.dumps(out, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
 
     lines = [
         '# 可行域覆盖与未决原因',
@@ -116,7 +116,7 @@ def main():
         '',
         '复现：`python scripts/envelope.py`（数据写入 `docs/evidence/envelope.json`）。合成模型，不代表工业规模。',
     ]
-    (ROOT / 'docs/ENVELOPE.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    (ROOT / 'docs/ENVELOPE.md').write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
     print(json.dumps(rows, ensure_ascii=False, indent=2))
 
 
