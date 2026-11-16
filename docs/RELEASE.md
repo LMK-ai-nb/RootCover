@@ -1,5 +1,11 @@
 # RootCover 实际发布记录
 
+## 0.5.1（未发布，2026-11-16）
+
+- 提交 `bef4702`，CI [43888102854](https://github.com/LMK-ai-nb/RootCover/actions/runs/43888102854) 三平台 success。
+- 结果契约：`status`、互斥的 `counts`、`unresolved_count`，根与可行域结果都回显 `options`/`contractors`。
+- 证据：ABLATION（收缩开关 × 6 场景、精度阶梯）、ENVELOPE（体积覆盖率、连通分支）、BASELINE_TABLE（逐模型一一匹配）。
+
 ## 0.5.0（2026-11-15）
 
 - 0.5.0 源码提交为 `8d28028`；内容提交 `7c01833`，其后为文档、测试与浏览器用例提交。相对 `baf8f20` 的改动包括版本号、README/文档定位、PARITY A/B 拆分、浏览器产物表述改正（--target js），以及 `coupled32` / `nonlinear8` / `bratu25` / `design_window6` 四个新算例；数值内核未改（65 项测试原样通过）。
