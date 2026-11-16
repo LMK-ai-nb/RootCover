@@ -80,7 +80,7 @@ node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 -
 
 `mode:"roots"`或省略mode求方形系统；`mode:"feasibility"`求一般约束。约束可用`{"expression":"log(x)+y","range":[0.68,0.72]}`，或`{"expression":"x^2+y^2","relation":"<=","rhs":2}`。range与relation/rhs二选一；range的下/上端点null表示下/上无界，结果区间同理，null不代表数值0。初始box仍须有限。可用formula组合全部/任一/至少k条，search选择dfs/bfs、widest/scaled/smear及逐变量精度；见SET_ALGEBRA。
 
-CLI 加 `--echo-request` 会在结果里附上原始 `request` 与 `request_sha256`；摘要按输入文件的原始字节计算，缩进或空白不同则摘要不同。
+CLI 支持 `--echo-request`（附原始 `request` 与按输入字节计算的 `request_sha256`）、`--timing`（把 `elapsed_ms` 写到 stderr，stdout 保持不变）与 `--timeout-ms N`（超时退出码 3，错误码 `TIMEOUT`；走 Worker，可打断同步计算）。`--timeout-ms` 与 `--steps` 会话不可同时使用。
 
 可加 `"contractors":{"propagation":true,"newton":true,"max_steps":256,"max_rounds":4}`。max_steps由全查询共享；耗尽后回到区间判定/细分，不丢待处理区域。`options`中的tolerance、max_assessments、max_depth继续有效。重复键、未知字段、任意函数调用、严格不等式及越界资源拒绝。
 
@@ -115,7 +115,7 @@ python scripts/consumer_check.py
 
 实际运行Julia1.13.3 / IntervalRootFinding.jl0.7.2：20模型、Newton和Krawczyk共40次；16常规模型唯一根数量吻合，3奇异/边界模型均未决，极点处理有一处已披露差异。不是全API兼容或速度排名。[基准与复现](docs/BASELINE.md)。
 
-MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不折算为 195 个用例）；native 由 CI 的 verify.py --native 执行，本机无 MSVC，未本地实跑。另有 33 项 CLI、8 项会话 JS/CLI 通过。旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；高精度函数/导数、134模型在三种机制下共402次收缩保留继续通过。正公式另有54模型、284份精确内盒证据、162次配置收缩及24组搜索策略验证；会话另有48模型、548份状态、9074次精确内盒核对及44791次可行样本覆盖检查。有限测试不是形式化证明。
+MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不折算为 195 个用例）；native 由 CI 的 verify.py --native 执行，本机无 MSVC，未本地实跑。另有 35 项 CLI、8 项会话 JS/CLI 通过。旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；高精度函数/导数、134模型在三种机制下共402次收缩保留继续通过。正公式另有54模型、284份精确内盒证据、162次配置收缩及24组搜索策略验证；会话另有48模型、548份状态、9074次精确内盒核对及44791次可行样本覆盖检查。有限测试不是形式化证明。
 
 ## 技术路线为什么能解决这个问题
 

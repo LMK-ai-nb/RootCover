@@ -227,3 +227,15 @@ test('every demo case has a description',()=>{
   const keys=[...new Set([...block.matchAll(/^\s{2}([a-z0-9_]+):/gm)].map(m=>m[1]))].sort();
   assert.deepEqual(keys,cases);
 });
+test('CLI timeout returns exit 3 with a TIMEOUT code',()=>{
+  const p=spawnSync(process.execPath,['bin/rootcover.mjs','examples/thermal_parameters.json','--timeout-ms','50'],{encoding:'utf8'});
+  assert.equal(p.status,3);
+  assert.equal(JSON.parse(p.stdout).error.code,'TIMEOUT');
+  assert(JSON.parse(p.stderr.trim()).elapsed_ms>=0);
+});
+test('CLI timing reports elapsed on stderr and leaves stdout intact',()=>{
+  const p=spawnSync(process.execPath,['bin/rootcover.mjs','examples/geometry.json','--timing'],{encoding:'utf8'});
+  assert.equal(p.status,0);
+  assert.equal(JSON.parse(p.stdout).root_count,2);
+  assert(JSON.parse(p.stderr.trim()).elapsed_ms>=0);
+});
