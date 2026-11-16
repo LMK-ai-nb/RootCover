@@ -2,7 +2,7 @@
 
 ## 0.5.1（未发布，2026-11-16）
 
-- 内容提交 `653cadb`，后续测试与文档修补至 `2ea3f19`，CI [43902336073](https://github.com/LMK-ai-nb/RootCover/actions/runs/43902336073) 三平台 success。
+- 最终提交 `cee3722`，CI [43909492122](https://github.com/LMK-ai-nb/RootCover/actions/runs/43909492122) 三平台 success；此前 `2ea3f19` 的 CI 为 [43902336073](https://github.com/LMK-ai-nb/RootCover/actions/runs/43902336073)。
 - 说明：`6866127` 的 macOS 作业因浏览器测试逐场景点击超过 15 分钟被取消（ubuntu/windows 通过）；`2ea3f19` 改为静态键匹配后三平台通过。
 - 结果契约：可行域结果新增 `status`、互斥的 `counts`、`unresolved_count`；根与可行域结果都回显 `options`/`contractors`。
 - 宿主：CLI `--timing`（stderr 耗时）与 `--timeout-ms`（Worker 超时，退出码 3）；不改变内核确定性。
