@@ -4,7 +4,7 @@
 
 - 提交 `bef4702`，CI [43888102854](https://github.com/LMK-ai-nb/RootCover/actions/runs/43888102854) 三平台 success。
 - 结果契约：`status`、互斥的 `counts`、`unresolved_count`，根与可行域结果都回显 `options`/`contractors`。
-- 证据：ABLATION（收缩开关 × 6 场景、精度阶梯）、ENVELOPE（体积覆盖率、连通分支）、BASELINE_TABLE（逐模型一一匹配）。
+- 证据：ABLATION（收缩开关 × 6 场景、精度阶梯）、ENVELOPE（体积覆盖率、连通分支）、BASELINE_TABLE（逐模型一一匹配）、SIVIA_CROSSCHECK（与手写 Julia SIVIA 的体积比对照）。
 
 ## 0.5.0（2026-11-15）
 
