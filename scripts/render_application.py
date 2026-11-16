@@ -9,13 +9,16 @@ from playwright.sync_api import sync_playwright
 CSS = """
 *{box-sizing:border-box}
 body{margin:0;background:#eee;color:#111;font-family:"Microsoft YaHei","PingFang SC",sans-serif}
-article{background:#fff;width:210mm;min-height:297mm;padding:14mm 15mm;font-size:10.5pt;line-height:1.5}
+article{background:#fff;width:210mm;min-height:297mm;padding:12mm 13mm;font-size:9.6pt;line-height:1.42}
 h1{font-size:17pt;margin:0 0 10px}
 h2{font-size:12pt;margin:14px 0 6px}
 p{margin:0 0 7px}
 ul,ol{margin:0 0 8px;padding-left:20px}
 li{margin:0 0 4px}
 table{border-collapse:collapse;width:100%;margin:6px 0 10px;font-size:9.5pt}
+thead{display:table-header-group}
+tr{break-inside:avoid}
+p.section{break-after:avoid;margin-top:12px}
 th,td{border:1px solid #999;padding:3px 5px;text-align:left;vertical-align:top}
 th{background:#f0f0f0}
 code{font-family:Consolas,monospace;font-size:9pt;background:#f4f4f4;padding:0 2px}
@@ -46,10 +49,11 @@ def convert(md: str) -> str:
             rows = [[c.strip() for c in r.strip().strip("|").split("|")] for r in block]
             rows = [r for r in rows if not all(set(c) <= set("-: ") for c in r)]
             out.append("<table>")
-            for n, row in enumerate(rows):
-                tag = "th" if n == 0 else "td"
-                out.append("<tr>" + "".join(f"<{tag}>{inline(c)}</{tag}>" for c in row) + "</tr>")
-            out.append("</table>")
+            if rows:
+                out.append("<thead><tr>" + "".join(f"<th>{inline(c)}</th>" for c in rows[0]) + "</tr></thead><tbody>")
+            for row in rows[1:]:
+                out.append("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in row) + "</tr>")
+            out.append("</tbody></table>")
             continue
         if re.match(r"^\d+\.\s", line):
             items = []
@@ -73,13 +77,17 @@ def convert(md: str) -> str:
             para.append(line)
         else:
             if para:
-                out.append("<p>" + "<br>".join(inline(x.rstrip()) for x in para) + "</p>")
+                joined = "<br>".join(inline(x.rstrip()) for x in para)
+                cls = ' class="section"' if len(para) == 1 and re.fullmatch(r"\*\*.+\*\*", para[0].strip()) else ""
+                out.append(f"<p{cls}>" + joined + "</p>")
                 para = []
         i += 1
     if para:
-        out.append("<p>" + "<br>".join(inline(x.rstrip()) for x in para) + "</p>")
+        joined = "<br>".join(inline(x.rstrip()) for x in para)
+        cls = ' class="section"' if len(para) == 1 and re.fullmatch(r"\*\*.+\*\*", para[0].strip()) else ""
+        out.append(f"<p{cls}>" + joined + "</p>")
     body = "\n".join(out)
-    return f'<!doctype html><html lang="zh-CN"><meta charset="UTF-8"><title>RootCover 项目申报书</title><style>{CSS}</style><article>{body}</article></html>'
+    return f'<!doctype html><html lang="zh-CN"><meta charset="UTF-8"><title>RootCover：MoonBit 非线性约束可行域求解库</title><style>{CSS}</style><article>{body}</article></html>'
 
 
 def main() -> None:
@@ -103,7 +111,7 @@ def main() -> None:
         page = browser.new_page()
         page.goto(html_path.resolve().as_uri())
         page.pdf(path=str(pdf_path), format="A4", print_background=True,
-                 margin={"top": "14mm", "bottom": "14mm", "left": "15mm", "right": "15mm"})
+                 margin={"top": "12mm", "bottom": "12mm", "left": "13mm", "right": "13mm"})
         browser.close()
     print(f"html={html_path} pdf={pdf_path}")
 

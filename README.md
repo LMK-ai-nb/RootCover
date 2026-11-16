@@ -39,7 +39,7 @@ node bin/rootcover.mjs examples/design_window6.json
 node scripts/serve.mjs
 ```
 
-浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列可行域示例中 robot_workspace、thermal_parameters、mixed_process、robust_localization、design_alternatives、scaled_parameters、design_window6 退出 1 是预期结果，robot_roots、coupled32、nonlinear8、bratu25 退出 0。Mooncakes 当前为 0.2.0，本轮不通过包索引分发，请按上述命令从源码运行。coupled32.json 是 32 变量链式系统，1 次评估得到 1 个唯一根包围、退出 0；nonlinear8.json 是 8 变量三角耦合系统，1 个唯一根、无未决、退出 0；bratu25.json 是 5×5 Bratu 边值问题的二维五点耦合离散（25 变量 25 方程），4 次评估给出唯一性证书；design_window6.json 是 6 变量、5 条非方约束、至少 4 条成立的组合可行域，750 内盒 / 1798 未决。它们都是合成模型，不代表稠密或工业规模。
+浏览器打开 http://127.0.0.1:4188 。网页、CLI 和 typed API 共享内核；Worker 计算支持停止、编辑请求、导出及传播/Newton/联合机制切换。CLI 退出码 0 表示全部分类，1 表示仍有未决，2 表示错误；上列可行域示例中 robot_workspace、thermal_parameters、mixed_process、robust_localization、design_alternatives、scaled_parameters、design_window6 退出 1 是预期结果，robot_roots、coupled32、nonlinear8、bratu25 退出 0。Mooncakes 当前为 0.5.0：`moon add LMK-ai-nb/rootcover@0.5.0`；也可按上述命令从源码运行。coupled32.json 是 32 变量链式系统，1 次评估得到 1 个唯一根包围、退出 0；nonlinear8.json 是 8 变量三角耦合系统，1 个唯一根、无未决、退出 0；bratu25.json 是 5×5 Bratu 边值问题的二维五点耦合离散（25 变量 25 方程），4 次评估给出唯一性证书；design_window6.json 是 6 变量、5 条非方约束、至少 4 条成立的组合可行域，750 内盒 / 1798 未决。它们都是合成模型，不代表稠密或工业规模。
 
 ## 能力与版本说明
 

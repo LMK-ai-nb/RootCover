@@ -13,7 +13,7 @@
 - 0.5.0 源码提交为 `8d28028`；内容提交 `7c01833`，其后为文档、测试与浏览器用例提交。相对 `baf8f20` 的改动包括版本号、README/文档定位、PARITY A/B 拆分、浏览器产物表述改正（--target js），以及 `coupled32` / `nonlinear8` / `bratu25` / `design_window6` 四个新算例；数值内核未改（65 项测试原样通过）。
 - CI 记录：[43732000096](https://github.com/LMK-ai-nb/RootCover/actions/runs/43732000096)（对应 `8d28028`，verify ubuntu/macos/windows 全 success）；Pages 部署是另一个 workflow（[43732000103](https://github.com/LMK-ai-nb/RootCover/actions/runs/43732000103)），不充当测试证据。
 - 工作区另有一组未提交改动（浏览器会话与测试相关），不属于本次送审范围，由作者处理。
-- Mooncakes 仍为 0.2.0；本轮不执行发布。
+- Mooncakes 0.5.0 已于 2026-11-17 发布（`moon publish` 返回 200 OK）；`moon add LMK-ai-nb/rootcover@0.5.0` 实测可下载。
 
 ## 0.5.0-dev.2 维护记录（已并入0.5.0）
 
@@ -25,7 +25,7 @@
 
 - 本地三个执行目标各65项MoonBit测试、35项CLI、8项会话JS/CLI及23步完整检查通过；见VALIDATION.md。
 - 当前源码以[main分支](https://github.com/LMK-ai-nb/RootCover/tree/main)为准；远程结果见[CI工作流](https://github.com/LMK-ai-nb/RootCover/actions/workflows/ci.yml)与[Pages工作流](https://github.com/LMK-ai-nb/RootCover/actions/workflows/pages.yml)。没有把旧版远程成功冒充新版检查。
-- Mooncakes仍只发布到0.2.0；本次推送不执行新版moon publish，源码功能不能由旧包取得。源码与包版本分别记录。
+- Mooncakes 0.5.0 已发布；0.2.0 为历史版本，其包文档是发布时快照。
 - [完整工作台](https://lmk-ai-nb.github.io/RootCover/)与[分步工作台](https://lmk-ai-nb.github.io/RootCover/session.html)的当前可用性以实际Pages部署结果为准。
 
 以下CI/包下载记录属于0.1/0.2的历史发布，不能替代0.5的远程验证。
