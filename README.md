@@ -6,6 +6,8 @@
 
 核心、解析、区间导数、收缩与搜索均为 MoonBit 独立实现，不依赖 Julia、外部数值引擎或网络服务运行；成熟实现、来源与重合边界如实披露，不主张算法首创或全面超越已有求解器。
 
+**与生态内已有项目的关系**：不是区间算术库、不是单点求根库、不是 CAD 约束求解器。只需要区间四则/decorations 用 floating；只需要单点求根用 mbmath/numsolve；需要 CAD 草图约束用 cad_sketch；需要 δ-complete/SMT 用 dReal。本库的差异在"区域内可行集合 + 至少 k 条观测 + 未决覆盖 + MoonBit/wasm 内嵌"；重合的区间四则与求根分类不主张首创，逐项证据见 [EVIDENCE_MATRIX](docs/EVIDENCE_MATRIX.md)，同类调查见 [LANDSCAPE](docs/LANDSCAPE_2026-11-13.md)，来源与许可见 [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md)。
+
 | 能力 | 接口与范围 |
 | --- | --- |
 | 表达式 | `+ - * /`、括号、整数幂 0…16 及负整数幂；13 种函数：sin/cos/tan/exp/log(ln)/sqrt/abs/atan/asin/acos/sinh/cosh/tanh |
