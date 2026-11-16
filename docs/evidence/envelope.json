@@ -6,6 +6,32 @@
       "components": 1,
       "largest_component_boxes": 2,
       "largest_component_volume_share": 1.0,
+      "largest_component_hull": [
+        [
+          -0.00822165587889911,
+          0.002224473397348053
+        ],
+        [
+          1.562553743125342,
+          1.5830244683936618
+        ]
+      ],
+      "component_detail": [
+        {
+          "boxes": 2,
+          "volume": 0.00021383984253140837,
+          "hull": [
+            [
+              -0.00822165587889911,
+              0.002224473397348053
+            ],
+            [
+              1.562553743125342,
+              1.5830244683936618
+            ]
+          ]
+        }
+      ],
       "inside_boxes": 2,
       "unresolved_boxes": 21,
       "assessments": 59,
@@ -21,6 +47,40 @@
       "components": 1,
       "largest_component_boxes": 537,
       "largest_component_volume_share": 1.0,
+      "largest_component_hull": [
+        [
+          1.72509172958,
+          2.270721914
+        ],
+        [
+          0.4045474579648272,
+          0.635299818027723
+        ],
+        [
+          0,
+          0.5
+        ]
+      ],
+      "component_detail": [
+        {
+          "boxes": 537,
+          "volume": 0.001109192594906733,
+          "hull": [
+            [
+              1.72509172958,
+              2.270721914
+            ],
+            [
+              0.4045474579648272,
+              0.635299818027723
+            ],
+            [
+              0,
+              0.5
+            ]
+          ]
+        }
+      ],
       "inside_boxes": 537,
       "unresolved_boxes": 2974,
       "assessments": 10277,
@@ -36,6 +96,32 @@
       "components": 1,
       "largest_component_boxes": 5,
       "largest_component_volume_share": 1.0,
+      "largest_component_hull": [
+        [
+          0.9808727063338939,
+          1.0308476503602904
+        ],
+        [
+          0.6720614156470377,
+          0.719334104209886
+        ]
+      ],
+      "component_detail": [
+        {
+          "boxes": 5,
+          "volume": 0.0006430773412969968,
+          "hull": [
+            [
+              0.9808727063338939,
+              1.0308476503602904
+            ],
+            [
+              0.6720614156470377,
+              0.719334104209886
+            ]
+          ]
+        }
+      ],
       "inside_boxes": 5,
       "unresolved_boxes": 45,
       "assessments": 149,
@@ -51,6 +137,32 @@
       "components": 1,
       "largest_component_boxes": 15,
       "largest_component_volume_share": 1.0,
+      "largest_component_hull": [
+        [
+          0.95488667582147,
+          1.0538308456766985
+        ],
+        [
+          0.9491632725652457,
+          1.0515635048545373
+        ]
+      ],
+      "component_detail": [
+        {
+          "boxes": 15,
+          "volume": 0.005313360208249149,
+          "hull": [
+            [
+              0.95488667582147,
+              1.0538308456766985
+            ],
+            [
+              0.9491632725652457,
+              1.0515635048545373
+            ]
+          ]
+        }
+      ],
       "inside_boxes": 15,
       "unresolved_boxes": 38,
       "assessments": 127,
@@ -66,6 +178,46 @@
       "components": 2,
       "largest_component_boxes": 95,
       "largest_component_volume_share": 0.5059,
+      "largest_component_hull": [
+        [
+          1.8,
+          2.8
+        ],
+        [
+          1.2653825896134199,
+          1.7455616871479784
+        ]
+      ],
+      "component_detail": [
+        {
+          "boxes": 95,
+          "volume": 0.15614446120615955,
+          "hull": [
+            [
+              1.8,
+              2.8
+            ],
+            [
+              1.2653825896134199,
+              1.7455616871479784
+            ]
+          ]
+        },
+        {
+          "boxes": 89,
+          "volume": 0.15248045522285553,
+          "hull": [
+            [
+              0.2,
+              1.2
+            ],
+            [
+              1.0341014000465067,
+              1.8815720818533608
+            ]
+          ]
+        }
+      ],
       "inside_boxes": 184,
       "unresolved_boxes": 204,
       "assessments": 1001,
@@ -81,6 +233,64 @@
       "components": 1,
       "largest_component_boxes": 750,
       "largest_component_volume_share": 1.0,
+      "largest_component_hull": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "component_detail": [
+        {
+          "boxes": 750,
+          "volume": 0.611411979029464,
+          "hull": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              1
+            ]
+          ]
+        }
+      ],
       "inside_boxes": 750,
       "unresolved_boxes": 1798,
       "assessments": 5191,

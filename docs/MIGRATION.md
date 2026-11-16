@@ -102,7 +102,7 @@ node bin/rootcover.mjs examples/robot_roots.json
 
 # 3) 跑 CLI 与会话测试
 node --test tests/cli.test.mjs tests/session.test.mjs
-# 期望：36 pass，0 fail
+# 期望：39 pass，0 fail（HEAD；工作区若有未提交的会话测试则为 40）
 ```
 
 标准对齐部分的函数与行号可用 `grep -n` 直接复核，例如：

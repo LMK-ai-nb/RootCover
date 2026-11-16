@@ -49,8 +49,10 @@ with sync_playwright() as p:
         page.locator(f'[data-case="{sample}"]').click()
         expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决')
         assert int(page.locator('#root-count').inner_text())>0
+    assert page.locator('[data-case]').count()==12,'twelve demo cases expected'
     page.locator('[data-case="bratu25"]').click()
     expect(page.locator('#status')).to_have_text('区域已解析',timeout=30000)
+    assert page.locator('#case-description').inner_text().strip()!='','description must not be empty'
     expect(page.locator('#root-count')).to_have_text('1')
     expect(page.locator('#primary-label')).to_have_text('已确认唯一解')
     with page.expect_download() as event:page.locator('#download').click()
@@ -59,6 +61,7 @@ with sync_playwright() as p:
     assert bratu['result']['root_count']==1 and bratu['result']['complete'] is True
     page.locator('[data-case="design_window6"]').click()
     expect(page.locator('#status')).to_have_text('分辨率已达 · 有未决',timeout=30000)
+    assert page.locator('#case-description').inner_text().strip()!='','description must not be empty'
     expect(page.locator('#root-count')).to_have_text('750')
     expect(page.locator('#unknown-count')).to_have_text('1798')
     with page.expect_download() as event:page.locator('#download').click()

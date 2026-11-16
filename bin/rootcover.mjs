@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import {readFileSync,existsSync,openSync,writeFileSync,closeSync,renameSync,unlinkSync} from 'node:fs';
 import {resolve} from 'node:path';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
 const args=process.argv.slice(2);
 if(args.length===0||args.includes('--help')){
   console.log('Usage: node bin/rootcover.mjs REQUEST.json|-\n       node bin/rootcover.mjs REQUEST.json --steps 100 --checkpoint STATE.json\n       node bin/rootcover.mjs --resume STATE.json --steps 100 --checkpoint NEXT.json\nSessions support feasibility mode. Steps add work within the original total budget.\nExit: 0 complete; 1 unresolved regions; 2 invalid input or runtime error.');
@@ -29,9 +29,10 @@ function saveCheckpoint(path,checkpoint,input,resuming){
 }
 try{
   const {run_request,run_session}=await import('../dist/engine.js');
-  let input,resume,checkpoint,steps;
+  let input,resume,checkpoint,steps,echoRequest=false;
   for(let i=0;i<args.length;i++){
     const arg=args[i];
+    if(arg==='--echo-request'){echoRequest=true;continue;}
     if(['--resume','--checkpoint','--steps'].includes(arg)){
       const value=args[++i];if(!value||value.startsWith('--'))throw new Error('Missing option value.');
       if(arg==='--resume'){if(resume!==undefined)throw new Error('Duplicate --resume.');resume=value;}
@@ -53,6 +54,7 @@ try{
   const envelope=session?JSON.parse(run_session(raw,steps,resume!==undefined?'restore':'start')):null;
   const result=session?(envelope.error?envelope:envelope.result):JSON.parse(run_request(raw));
   if(session&&!result.error)saveCheckpoint(checkpoint,envelope.checkpoint,input,resume!==undefined);
+  if(echoRequest&&!result.error){result.request=JSON.parse(raw);result.request_sha256=createHash('sha256').update(raw).digest('hex');}
   console.log(JSON.stringify(result,null,2));
   process.exitCode=result.error?2:result.complete?0:1;
 }catch(error){

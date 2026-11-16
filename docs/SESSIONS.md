@@ -69,3 +69,5 @@ JS桥接的start/advance使用同一内存会话；load只核验载入，restore
 有限回归不是形式化证明、任意篡改检测或工业可靠性保证。完整命令见VALIDATION.md。
 
 可继续搜索、pending/unknown及覆盖状态参考[IBEX策略/COV](https://ibex-team.github.io/ibex-lib/strategy.html)与[IntervalRootFinding搜索对象](https://juliaintervals.github.io/IntervalRootFinding.jl/latest/internals/)。没有复制上游实现；覆盖轨迹与核验路径独立编写，不主张上述数值思想首创。
+
+暂停时尚未处理的盒在结果 JSON 中同样标为 `status=pending`，与预算耗尽同类。

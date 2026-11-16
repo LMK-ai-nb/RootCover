@@ -16,9 +16,10 @@ for case,got in zip(baseline['cases'],answers):
     assert 'error' not in got,(case['name'],got)
     runs=case['reference'];assert all('error' not in r for r in runs),case
     is_regular=all(r['unknown']==0 for r in runs)
+    width_ratios=[];max_width=None;owners={}
     if is_regular:
         assert got['complete'] and all(got['root_count']==r['unique'] for r in runs),(case['name'],got,runs)
-        width_ratios=[];max_width=0.0
+        max_width=0.0
         for run in runs:
             owners={i:[] for i in range(len(got['roots']))}
             for cell in run['cells']:
@@ -42,10 +43,13 @@ for case,got in zip(baseline['cases'],answers):
         assert not got['complete'] and got['root_count']==0 and got['unresolved'],(case['name'],got)
         singular+=1
     rows.append({'name':case['name'],'rootcover_unique':got['root_count'],'rootcover_unresolved':len(got['unresolved']),'rootcover_complete':got['complete'],
-                 'matched_cells':sum(len(v) for v in owners.values()),
-                 'max_root_width':max_width,
-                 'median_width_ratio':sorted(width_ratios)[len(width_ratios)//2] if width_ratios else None,
+                 'matched_cells':sum(len(v) for v in owners.values()) if is_regular else None,
+                 'max_root_width':max_width if is_regular else None,
+                 'median_width_ratio':sorted(width_ratios)[len(width_ratios)//2] if is_regular and width_ratios else None,
                  'julia':[{'method':r['method'],'unique':r['unique'],'unknown':r['unknown']} for r in runs]})
+for row in rows:
+    if row['rootcover_complete'] is False and row['rootcover_unique']==0:
+        assert row['matched_cells'] is None and row['max_root_width'] is None,row
 report={'passed':True,'julia_version':baseline['julia_version'],'intervalrootfinding_version':baseline['intervalrootfinding_version'],'models':len(rows),
         'julia_method_runs':sum(len(c['reference']) for c in baseline['cases']),'regular_models_matching_both_methods':regular,
         'shared_singular_unresolved_models':singular,'semantic_differences':differences,'cases':rows,

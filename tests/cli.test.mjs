@@ -212,3 +212,9 @@ test('pending and unknown are disjoint categories',()=>{
   assert.equal(r.counts.unknown,r.unresolved.length-r.counts.pending);
   assert.equal(r.unresolved_count,r.counts.unknown+r.counts.pending);
 });
+test('CLI can echo the request and its digest',()=>{
+  const p=spawnSync(process.execPath,['bin/rootcover.mjs','examples/geometry.json','--echo-request'],{encoding:'utf8'});
+  const r=JSON.parse(p.stdout);
+  assert.equal(r.request.variables.length,2);
+  assert.match(r.request_sha256,/^[0-9a-f]{64}$/);
+});

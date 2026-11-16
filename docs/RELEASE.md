@@ -3,7 +3,7 @@
 ## 0.5.1（未发布，2026-11-16）
 
 - 提交 `bef4702`，CI [43888102854](https://github.com/LMK-ai-nb/RootCover/actions/runs/43888102854) 三平台 success。
-- 结果契约：`status`、互斥的 `counts`、`unresolved_count`，根与可行域结果都回显 `options`/`contractors`。
+- 结果契约：可行域结果新增 `status`、互斥的 `counts`、`unresolved_count`；根与可行域结果都回显 `options`/`contractors`。
 - 证据：ABLATION（收缩开关 × 6 场景、精度阶梯）、ENVELOPE（体积覆盖率、连通分支）、BASELINE_TABLE（逐模型一一匹配）、SIVIA_CROSSCHECK（与手写 Julia SIVIA 的体积比对照）。
 
 ## 0.5.0（2026-11-15）
@@ -21,7 +21,7 @@
 
 本次源码更新包括初等函数、区间Newton/传播、正公式、精度策略与可复核会话；同一RootCover的连续扩展。0.3/0.4本地快照与验证摘要保留。维护者李明坤，账号LMK-ai-nb。
 
-- 本地三个执行目标各65项MoonBit测试、31项CLI、8项会话JS/CLI及23步完整检查通过；见VALIDATION.md。
+- 本地三个执行目标各65项MoonBit测试、32项CLI、8项会话JS/CLI及23步完整检查通过；见VALIDATION.md。
 - 当前源码以[main分支](https://github.com/LMK-ai-nb/RootCover/tree/main)为准；远程结果见[CI工作流](https://github.com/LMK-ai-nb/RootCover/actions/workflows/ci.yml)与[Pages工作流](https://github.com/LMK-ai-nb/RootCover/actions/workflows/pages.yml)。没有把旧版远程成功冒充新版检查。
 - Mooncakes仍只发布到0.2.0；本次推送不执行新版moon publish，源码功能不能由旧包取得。源码与包版本分别记录。
 - [完整工作台](https://lmk-ai-nb.github.io/RootCover/)与[分步工作台](https://lmk-ai-nb.github.io/RootCover/session.html)的当前可用性以实际Pages部署结果为准。

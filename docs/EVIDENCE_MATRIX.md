@@ -15,7 +15,7 @@
 | 可行域会话（保存/核验/恢复） | 仅自测 | 48 模型、548 份状态、9074 次内盒核对 | 仅自测 |
 | 浏览器与 CLI 同核 | 端到端 | 12 个场景，真实 Chromium + 下载报告比对 | 端到端 |
 
-**结论**：9 项里 4 项有跨实现、独立参考或跨语言参考，4 项仅自测，1 项为端到端。因此本仓库只声称"求根层与 IntervalRootFinding 0.7.2 做过实际对照"，**不声称传播、组合、SIVIA、会话层与 IBEX/Codac 等价**；这些层的边界见 [PARITY](PARITY.md) B 表与 [STANDARDS](STANDARDS.md)。
+**结论**：10 项里 5 项有跨实现、独立参考或跨语言参考，4 项仅自测，1 项为端到端。因此本仓库只声称"求根层与 IntervalRootFinding 0.7.2 做过实际对照"，**不声称传播、组合、SIVIA、会话层与 IBEX/Codac 等价**；这些层的边界见 [PARITY](PARITY.md) B 表与 [STANDARDS](STANDARDS.md)。
 
 复现入口：
 

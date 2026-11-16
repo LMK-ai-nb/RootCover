@@ -2,7 +2,7 @@
 
 ## 0.5.1 — unreleased
 
-- Result JSON: `status`, disjoint `counts` (inside/unknown/pending/excluded), `unresolved_count`, and echoed `options`/`contractors` for both root and feasible-set results.
+- Result JSON: `status`, disjoint `counts` (inside/unknown/pending/excluded), `unresolved_count`, for feasible-set results, plus echoed `options`/`contractors` for both root and feasible-set results.
 - Docs: ABLATION (contractors on/off across six scenarios, tolerance ladder) and ENVELOPE (volume ratios, connected components, unresolved reasons).
 - Comparison now requires one-to-one matching between Julia cells and enclosures; per-model table added.
 - CLI tests 25 → 31.

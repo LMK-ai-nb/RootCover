@@ -10,7 +10,9 @@ const descriptions={
   geometry:'圆 x² + y² = 2 与直线 y = x。在 [-1.5, 1.5]² 搜索，预期有两处交点。',
   calibration:'合成标定曲线 x³ − 3x + 1 = 0。可限制取值范围，或加入 ±0.125 的观测容差。',
   equilibrium:'合成反应模型的两个非线性平衡方程，在给定正区域包围 (1, 3)。',
-  noisy_localization:'三个测距基站位于 (0,0)、(4,0)、(0,4)，距离平方观测带为 [1.75,2.25]、[9.75,10.25]、[9.75,10.25]。绿色盒内所有坐标均符合观测。'
+  noisy_localization:'三个测距基站位于 (0,0)、(4,0)、(0,4)，距离平方观测带为 [1.75,2.25]、[9.75,10.25]、[9.75,10.25]。绿色盒内所有坐标均符合观测。',
+  bratu25:'二维 Bratu 边值问题的 5×5 内部节点离散，25 个未知量、五点耦合、exp(u) 非线性；在宽初始盒上给出唯一根证书。',
+  design_window6:'6 个参数、5 条非方约束，要求至少 4 条成立；输出是区域覆盖而不是点解，绿色为已证明可行。'
 };
 function resetWorker(){
   stopWorker();
@@ -37,7 +39,7 @@ async function load(name){
     if(!response.ok)throw new Error('无法读取示例');
     const q=await response.json();if(id!==loadId)return;
     $('#request').value=JSON.stringify(q,null,2);syncContractors(q);syncSearch(q);
-    $('#case-description').textContent=descriptions[name];
+    $('#case-description').textContent=descriptions[name] ?? '' ?? '';
     $('#branch').hidden=name!=='calibration';$('#tolerance-band').hidden=name!=='calibration';
     document.querySelectorAll('[data-case]').forEach(b=>b.classList.toggle('active',b.dataset.case===name));run();
   }catch(e){if(id===loadId)finish({error:{message:e.message}});}
