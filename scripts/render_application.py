@@ -87,7 +87,7 @@ def convert(md: str) -> str:
         cls = ' class="section"' if len(para) == 1 and re.fullmatch(r"\*\*.+\*\*", para[0].strip()) else ""
         out.append(f"<p{cls}>" + joined + "</p>")
     body = "\n".join(out)
-    return f'<!doctype html><html lang="zh-CN"><meta charset="UTF-8"><title>RootCover：MoonBit 非线性约束可行域求解库</title><style>{CSS}</style><article>{body}</article></html>'
+    return f'<!doctype html><html lang="zh-CN"><meta charset="UTF-8"><title>RootCover：非线性约束可行域求解与可复核会话</title><style>{CSS}</style><article>{body}</article></html>'
 
 
 def main() -> None:
