@@ -218,3 +218,12 @@ test('CLI can echo the request and its digest',()=>{
   assert.equal(r.request.variables.length,2);
   assert.match(r.request_sha256,/^[0-9a-f]{64}$/);
 });
+test('every demo case has a description',()=>{
+  const html=readFileSync(new URL('../web/index.html',import.meta.url),'utf8');
+  const js=readFileSync(new URL('../web/app.js',import.meta.url),'utf8');
+  const cases=[...new Set([...html.matchAll(/data-case="([^"]+)"/g)].map(m=>m[1]))].sort();
+  const start=js.indexOf('const descriptions={');
+  const block=js.slice(start,js.indexOf('};',start));
+  const keys=[...new Set([...block.matchAll(/^\s{2}([a-z0-9_]+):/gm)].map(m=>m[1]))].sort();
+  assert.deepEqual(keys,cases);
+});
