@@ -204,3 +204,11 @@ test('root results echo the effective options',()=>{
   assert.equal(r.options.max_assessments,4096);
   assert.equal(r.contractors.max_steps,256);
 });
+test('pending and unknown are disjoint categories',()=>{
+  const q=load('design_window6');
+  q.options={tolerance:0.3,max_assessments:20};
+  const r=run(q);
+  assert(r.counts.pending>0,'expected pending boxes under a tiny budget');
+  assert.equal(r.counts.unknown,r.unresolved.length-r.counts.pending);
+  assert.equal(r.unresolved_count,r.counts.unknown+r.counts.pending);
+});

@@ -84,7 +84,7 @@ node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 -
 
 ## 正确理解结果
 
-唯一性仍须严格Krawczyk证据，Newton/传播负责排除和收缩。每个可行内盒中所有点满足约束；内盒∪未决包围全部可行点。未决不是可行点，盒数不是解数。显式formula时内盒证明整个正公式成立，不要求每条原子都成立；逐原子证据会导出。complete、resolution_met和收缩固定点状态分别解释。结果 JSON 现在同时给出 status（satisfied / unsatisfiable / unknown）、counts（inside / unknown / pending / excluded）、unresolved_count，以及本次实际生效的 options 与 contractors；复现不需要猜默认值。
+唯一性仍须严格Krawczyk证据，Newton/传播负责排除和收缩。每个可行内盒中所有点满足约束；内盒∪未决包围全部可行点。未决不是可行点，盒数不是解数。显式formula时内盒证明整个正公式成立，不要求每条原子都成立；逐原子证据会导出。complete、resolution_met和收缩固定点状态分别解释。可行域结果 JSON 现在给出 status（satisfied / unsatisfiable / unknown）、互斥的 counts（inside / unknown / pending / excluded）与 unresolved_count；根结果与可行域结果都回显本次实际生效的 options 与 contractors，复现不需要猜默认值。
 
 log/sqrt/反三角定义域、除数含0、tan极点与abs非光滑区不会直接获得错误的整盒/唯一性判定。初等函数使用区间级数和余项界，不假设宿主libm误差≤1ulp；大三角参数和过宽周期逆像保守放宽。详见[NONLINEAR](docs/NONLINEAR.md)、[根语义](docs/SEMANTICS.md)、[可行域语义](docs/PAVING.md)。
 
@@ -113,7 +113,7 @@ python scripts/consumer_check.py
 
 实际运行Julia1.13.3 / IntervalRootFinding.jl0.7.2：20模型、Newton和Krawczyk共40次；16常规模型唯一根数量吻合，3奇异/边界模型均未决，极点处理有一处已披露差异。不是全API兼容或速度排名。[基准与复现](docs/BASELINE.md)。
 
-MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不折算为 195 个用例）；native 由 CI 的 verify.py --native 执行，本机无 MSVC，未本地实跑。另有 30 项 CLI、8 项会话 JS/CLI 通过。旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；高精度函数/导数、134模型在三种机制下共402次收缩保留继续通过。正公式另有54模型、284份精确内盒证据、162次配置收缩及24组搜索策略验证；会话另有48模型、548份状态、9074次精确内盒核对及44791次可行样本覆盖检查。有限测试不是形式化证明。
+MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不折算为 195 个用例）；native 由 CI 的 verify.py --native 执行，本机无 MSVC，未本地实跑。另有 31 项 CLI、8 项会话 JS/CLI 通过。旧Fraction核对继续覆盖2800组算术、182系统、513份根证据；高精度函数/导数、134模型在三种机制下共402次收缩保留继续通过。正公式另有54模型、284份精确内盒证据、162次配置收缩及24组搜索策略验证；会话另有48模型、548份状态、9074次精确内盒核对及44791次可行样本覆盖检查。有限测试不是形式化证明。
 
 ## 技术路线为什么能解决这个问题
 
@@ -121,7 +121,7 @@ MoonBit 测试在 wasm、wasm-gc、js 各 65 项通过（同一测试集，不�
 
 - 只做区间二分：能排除，但不能证明；重根与边界会无限细分。→ Krawczyk 唯一性证书，加未决覆盖，把"解"与"不能判定"分开。
 - 只做 Newton：在区间上可能收缩为空集或发散，非方约束也无法直接套用。→ 预条件区间 Gauss-Seidel / 坐标 Newton，配合前后向传播与联合收缩，先把盒压小再判定。
-- 只做盒判定：变量耦合会让盒数迅速膨胀。→ 变量依赖 agenda、传播与 SIVIA 内外包围，把"整盒可行"与"未决"分层输出。收缩器的作用是结构相关的：在机构、观测、混合模型上减少 1.7–3.8 倍评估，在 `design_window6` 的 `at_least` 外包围上中性，在 `thermal_parameters` 上是"更多内盒但更多评估"的权衡；见 [ABLATION](docs/ABLATION.md)。
+- 只做盒判定：变量耦合会让盒数迅速膨胀。→ 变量依赖 agenda、传播与 SIVIA 内外包围，把"整盒可行"与"未决"分层输出。收缩器的作用是结构相关的：6 个场景中 4 个（机构、观测、混合模型、多方案设计）减少 1.7–3.8 倍评估，1 个（`design_window6` 的 `at_least` 外包围）中性，1 个（`thermal_parameters`）是"更多内盒但更多评估"的权衡；见 [ABLATION](docs/ABLATION.md)。
 
 因此它面对的是"有界非线性约束的可行域与根包围"这一类问题，而不是某个模型的一次计算；明确不做的能力列在 [docs/PARITY.md](docs/PARITY.md)。
 

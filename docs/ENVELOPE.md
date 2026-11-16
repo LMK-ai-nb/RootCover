@@ -2,7 +2,7 @@
 
 盒数不能说明"交付的是区域还是碎片"。下表用初始盒体积归一化，给出内盒体积占比与内盒∪未决的体积上界，并按 `unresolved[].reason` 分桶。
 
-| 场景 | 内盒 | 连通分支 | 最大分支盒数 | 最大分支体积占比 | 未决 | 评估次数 | 内盒体积占比 | 上界占比 | 未决原因 |
+| 场景 | 内盒 | 连通分支 | 最大分支盒数 | 最大分支占内盒体积 | 未决 | 评估次数 | 内盒体积占比 | 上界占比 | 未决原因 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | robot_workspace | 2 | 1 | 2 | 1.0000 | 21 | 59 | 0.0000 | 0.0005 | resolution reached without whole-box classification×21 |
 | thermal_parameters | 537 | 1 | 537 | 1.0000 | 2974 | 10277 | 0.0012 | 0.0048 | resolution reached without whole-box classification×2974 |

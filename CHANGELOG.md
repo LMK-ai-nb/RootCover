@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1 — unreleased
+
+- Result JSON: `status`, disjoint `counts` (inside/unknown/pending/excluded), `unresolved_count`, and echoed `options`/`contractors` for both root and feasible-set results.
+- Docs: ABLATION (contractors on/off across six scenarios, tolerance ladder) and ENVELOPE (volume ratios, connected components, unresolved reasons).
+- Comparison now requires one-to-one matching between Julia cells and enclosures; per-model table added.
+- CLI tests 25 → 31.
+
 ## 0.5.0 — 2026-11-15 — feasible-set release
 
 - Feasible-set solving over equality, ≤, ≥ and observation bands, with all/any/at_least formulas, per-variable absolute/relative tolerances and DFS/BFS search.

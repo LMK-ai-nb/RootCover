@@ -146,7 +146,7 @@ fn predicate_json(
     "unresolved_count": Json::number(result.unresolved.length().to_double()),
     "counts": {
       "inside": Json::number(result.inside.length().to_double()),
-      "unknown": Json::number(result.unresolved.length().to_double()),
+      "unknown": Json::number((result.unresolved.length() - pending_count).to_double()),
       "pending": Json::number(pending_count.to_double()),
       "excluded": Json::number(result.excluded.to_double()),
     },

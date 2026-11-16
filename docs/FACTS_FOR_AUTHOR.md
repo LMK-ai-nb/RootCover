@@ -11,7 +11,7 @@
 - 正公式all/any/at_least允许必选规则、备选设计和至少k条观测共识；内盒证明整个公式成立，保留逐原子的区间/定义状态/真值。不是统计置信度或故障诊断认证。
 - BFS/DFS、逐变量绝对精度和跨零保守相对精度、宽度/归一化/Jacobian影响划分；pending与unknown均保留在未决中，0.5可行域会话支持分步保存/核验/恢复，累计预算、精度和深度延续；恢复有证据检查开销。求根模式仍无恢复。
 - 机构逆解与容差、指数参数估计、log/sqrt混合约束三完整场景；另有异常观测定位、多方案设计和混合量纲估计三场景。全部合成，不声称真实设备采用。
-- wasm/wasm-gc/js各65项，30项CLI与8项会话JS/CLI，真实Chromium通过；完整23步均退出0。独立验证、正公式54模型/284份精确内盒证据/162次配置收缩，以及实际Julia参考见VALIDATION.md和BASELINE.md。
+- wasm/wasm-gc/js各65项，31项CLI与8项会话JS/CLI，真实Chromium通过；完整23步均退出0。独立验证、正公式54模型/284份精确内盒证据/162次配置收缩，以及实际Julia参考见VALIDATION.md和BASELINE.md。
 - 唯一性证书仍为Krawczyk；Newton是独立/联合收缩器。不宣称全面复刻IntervalRootFinding/IBEX，不主张算法首创。
 - 未实现native本地实际执行、任意精度、复数、整数、优化、LP/ACID、任意回调/自定义Jacobian、NOT/完整separator、投影/量词、求根搜索恢复与真实工业评测。
 - 同类检索已覆盖Mooncakes索引3761份元数据及GitHub/官方文档；完整范围、相邻项目和未核实处见LANDSCAPE_2026-11-13.md。Codac/IBEX/IRF等已具备相关思想，不主张世界唯一、无竞品或算法首创。
