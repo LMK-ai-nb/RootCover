@@ -5,7 +5,7 @@
 - Result JSON: `status`, disjoint `counts` (inside/unknown/pending/excluded), `unresolved_count`, for feasible-set results, plus echoed `options`/`contractors` for both root and feasible-set results.
 - Docs: ABLATION (contractors on/off across six scenarios, tolerance ladder) and ENVELOPE (volume ratios, connected components, unresolved reasons).
 - Comparison now requires one-to-one matching between Julia cells and enclosures; per-model table added.
-- CLI tests 25 → 31.
+- CLI tests 25 → 32.
 
 ## 0.5.0 — 2026-11-15 — feasible-set release
 

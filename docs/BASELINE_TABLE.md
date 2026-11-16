@@ -25,6 +25,6 @@
 | coupled_12d | 12 | `2*x0-2` | 1/0 | 1/0 | 1/0 | 1 | 1.84e-14 | — |
 | coupled_32d | 32 | `2*x0-2` | 1/0 | 1/0 | 1/0 | 1 | 4.06e-14 | — |
 
-读法：宽度比 = 本库包围宽 ÷ 匹配到的 Julia 细胞宽；远大于 1 表示本库给的是更粗的包围，不是错误。3 个奇异/边界模型本库与 Julia 同为未决；`pole_without_root` 是语义差异：本库在定义点上代数排除 1/x=0，Julia 保留极点处的未决盒。
+读法：— 表示该行不参与匹配，或 Julia 细胞零宽导致比值不可算（coupled_12d/32d）。宽度比 = 本库包围宽 ÷ 匹配到的 Julia 细胞宽；远大于 1 表示本库给的是更粗的包围，不是错误。3 个奇异/边界模型本库与 Julia 同为未决；`pole_without_root` 是语义差异：本库在定义点上代数排除 1/x=0，Julia 保留极点处的未决盒。
 
 生成：`python scripts/compare_intervalrootfinding.py && python scripts/baseline_table.py`（数据在 `docs/evidence/intervalrootfinding-comparison.json`）。

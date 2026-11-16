@@ -45,7 +45,9 @@ def components(boxes, tol=1e-9):
     parts = []
     for idx in groups.values():
         vol = sum(volume(boxes[i]['box']) for i in idx)
-        parts.append({'boxes': len(idx), 'volume': vol})
+        dim = len(boxes[idx[0]]['box'])
+        hull = [[min(boxes[i]['box'][d][0] for i in idx), max(boxes[i]['box'][d][1] for i in idx)] for d in range(dim)]
+        parts.append({'boxes': len(idx), 'volume': vol, 'hull': hull})
     parts.sort(key=lambda x: x['volume'], reverse=True)
     total = sum(p['volume'] for p in parts) or 1.0
     return parts, total
@@ -68,6 +70,8 @@ def run(name):
         'components': len(parts),
         'largest_component_boxes': parts[0]['boxes'] if parts else 0,
         'largest_component_volume_share': round(parts[0]['volume'] / total, 4) if parts else 0.0,
+        'largest_component_hull': parts[0]['hull'] if parts else None,
+        'component_detail': parts,
         'inside_boxes': len(data.get('inside', [])),
         'unresolved_boxes': len(unresolved),
         'assessments': data.get('stats', {}).get('assessments'),
@@ -95,6 +99,16 @@ def main():
         lines.append(f"| {r['case']} | {r['inside_boxes']} | {r['components']} | {r['largest_component_boxes']} | "
                      f"{r['largest_component_volume_share']:.4f} | {r['unresolved_boxes']} | {r['assessments']} | "
                      f"{r['inside_volume_ratio']:.4f} | {r['envelope_volume_ratio']:.4f} | {reasons} |")
+    lines += ['', '## 分支明细（hull 为外包盒，两个不相交分支的 hull 仍可能重叠）', '',
+              '| 场景 | 分支 | 盒数 | 占内盒体积 | hull |', '| --- | --- | --- | --- | --- |']
+    for r in rows:
+        if r['components'] > 1 or r['case'] in ('design_window6',):
+            for n, part in enumerate(r['component_detail'], 1):
+                share = part['volume'] / max(sum(x['volume'] for x in r['component_detail']), 1e-300)
+                hull = ' × '.join(f'[{a:.4g},{b:.4g}]' for a, b in part['hull'])
+                if r['case'] == 'design_window6' and len(r['component_detail']) == 1:
+                    hull += '（hull 等于初始盒，不构成额外证据）'
+                lines.append(f"| {r['case']} | {n} | {part['boxes']} | {share:.4f} | {hull} |")
     lines += [
         '',
         '读法：内盒体积占比是"已证明可行"的下界，上界占比是"可行点必定落在这里"的外包围；两者之差即未决部分。',

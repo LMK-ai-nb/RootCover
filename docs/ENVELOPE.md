@@ -17,7 +17,7 @@
 | --- | --- | --- | --- | --- |
 | design_alternatives | 1 | 95 | 0.5059 | [1.8,2.8] × [1.265,1.746] |
 | design_alternatives | 2 | 89 | 0.4941 | [0.2,1.2] × [1.034,1.882] |
-| design_window6 | 1 | 750 | 1.0000 | [0,1] × [0,1] × [0,1] × [0,1] × [0,1] × [0,1] |
+| design_window6 | 1 | 750 | 1.0000 | [0,1] × [0,1] × [0,1] × [0,1] × [0,1] × [0,1]（hull 等于初始盒，不构成额外证据） |
 
 读法：内盒体积占比是"已证明可行"的下界，上界占比是"可行点必定落在这里"的外包围；两者之差即未决部分。
 未决原因有四类文案：`resolution reached without whole-box classification`、`assessment budget exhausted`、`depth limit reached`、`no representable interior split point`。本次六个场景只触发第一类；预算耗尽与深度上限在代码中是分开的，不由文案合并。

@@ -39,7 +39,7 @@ async function load(name){
     if(!response.ok)throw new Error('无法读取示例');
     const q=await response.json();if(id!==loadId)return;
     $('#request').value=JSON.stringify(q,null,2);syncContractors(q);syncSearch(q);
-    $('#case-description').textContent=descriptions[name] ?? '' ?? '';
+    $('#case-description').textContent=descriptions[name] ?? '';
     $('#branch').hidden=name!=='calibration';$('#tolerance-band').hidden=name!=='calibration';
     document.querySelectorAll('[data-case]').forEach(b=>b.classList.toggle('active',b.dataset.case===name));run();
   }catch(e){if(id===loadId)finish({error:{message:e.message}});}

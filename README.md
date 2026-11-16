@@ -80,6 +80,8 @@ node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 -
 
 `mode:"roots"`或省略mode求方形系统；`mode:"feasibility"`求一般约束。约束可用`{"expression":"log(x)+y","range":[0.68,0.72]}`，或`{"expression":"x^2+y^2","relation":"<=","rhs":2}`。range与relation/rhs二选一；range的下/上端点null表示下/上无界，结果区间同理，null不代表数值0。初始box仍须有限。可用formula组合全部/任一/至少k条，search选择dfs/bfs、widest/scaled/smear及逐变量精度；见SET_ALGEBRA。
 
+CLI 加 `--echo-request` 会在结果里附上原始 `request` 与 `request_sha256`；摘要按输入文件的原始字节计算，缩进或空白不同则摘要不同。
+
 可加 `"contractors":{"propagation":true,"newton":true,"max_steps":256,"max_rounds":4}`。max_steps由全查询共享；耗尽后回到区间判定/细分，不丢待处理区域。`options`中的tolerance、max_assessments、max_depth继续有效。重复键、未知字段、任意函数调用、严格不等式及越界资源拒绝。
 
 ## 正确理解结果

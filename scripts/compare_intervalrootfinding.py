@@ -48,7 +48,7 @@ for case,got in zip(baseline['cases'],answers):
                  'median_width_ratio':sorted(width_ratios)[len(width_ratios)//2] if is_regular and width_ratios else None,
                  'julia':[{'method':r['method'],'unique':r['unique'],'unknown':r['unknown']} for r in runs]})
 for row in rows:
-    if row['rootcover_complete'] is False and row['rootcover_unique']==0:
+    if row['rootcover_unique']==0 or row['rootcover_complete'] is False:
         assert row['matched_cells'] is None and row['max_root_width'] is None,row
 report={'passed':True,'julia_version':baseline['julia_version'],'intervalrootfinding_version':baseline['intervalrootfinding_version'],'models':len(rows),
         'julia_method_runs':sum(len(c['reference']) for c in baseline['cases']),'regular_models_matching_both_methods':regular,
