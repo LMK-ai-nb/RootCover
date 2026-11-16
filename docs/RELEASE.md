@@ -2,7 +2,8 @@
 
 ## 0.5.1（未发布，2026-11-16）
 
-- 内容提交 `653cadb`，CI [43894314296](https://github.com/LMK-ai-nb/RootCover/actions/runs/43894314296) 三平台 success。
+- 内容提交 `653cadb`，后续测试与文档修补至 `2ea3f19`，CI [43902336073](https://github.com/LMK-ai-nb/RootCover/actions/runs/43902336073) 三平台 success。
+- 说明：`6866127` 的 macOS 作业因浏览器测试逐场景点击超过 15 分钟被取消（ubuntu/windows 通过）；`2ea3f19` 改为静态键匹配后三平台通过。
 - 结果契约：可行域结果新增 `status`、互斥的 `counts`、`unresolved_count`；根与可行域结果都回显 `options`/`contractors`。
 - 证据：ABLATION（收缩开关 × 6 场景、精度阶梯）、ENVELOPE（体积覆盖率、连通分支）、BASELINE_TABLE（逐模型一一匹配）、SIVIA_CROSSCHECK（与手写 Julia SIVIA 的体积比对照）。
 
