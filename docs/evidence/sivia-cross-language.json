@@ -1,0 +1,26 @@
+{
+    "cases": [
+        {
+            "variables": 2,
+            "elapsed_seconds": 0.69,
+            "inside_volume_ratio": 3.1e-5,
+            "name": "robot_workspace",
+            "inside_boxes": 1,
+            "boundary_boxes": 24,
+            "envelope_volume_ratio": 0.000763,
+            "tolerance": 0.02
+        },
+        {
+            "variables": 3,
+            "elapsed_seconds": 0.72,
+            "inside_volume_ratio": 0,
+            "name": "thermal_parameters",
+            "inside_boxes": 0,
+            "boundary_boxes": 74,
+            "envelope_volume_ratio": 0.018066,
+            "tolerance": 0.0625
+        }
+    ],
+    "scope": "two pure-conjunction scenarios; volume ratios only, box counts not comparable",
+    "implementation": "hand-written SIVIA in Julia 1.13.3 + IntervalArithmetic (via IntervalRootFinding 0.7.2)"
+}
