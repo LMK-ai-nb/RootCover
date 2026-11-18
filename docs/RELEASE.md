@@ -1,6 +1,11 @@
 # RootCover 实际发布记录
 
-## 0.5.1（未发布，2026-11-16）
+## 0.5.0 公开基线（2026-11-18 核对）
+
+- [Mooncakes 0.5.0](https://mooncakes.io/docs/LMK-ai-nb/rootcover@0.5.0) 下载包与[公开 main 的 63b0fe8](https://github.com/LMK-ai-nb/RootCover/commit/63b0fe8f7f5e5223a5b82ac4d00dfa615867537d) 的 16 个根目录核心实现文件比较一致（忽略 CRLF/LF 差异）。真实下载包已在独立消费工程的 wasm、wasm-gc 和 js 目标各通过 5 项接口测试。SVG 导出属于后续源码功能。
+- [同一公开提交的三平台 CI](https://github.com/LMK-ai-nb/RootCover/actions/runs/43920593614) 和 [Pages 部署](https://github.com/LMK-ai-nb/RootCover/actions/runs/43920593411) 都已通过。后续候选版的验收证据应引用其对应提交及运行。
+
+## 2026-11-16 后续源码维护（其中结果字段已随 0.5.0 打包）
 
 - 最终提交 `cee3722`，CI [43909492122](https://github.com/LMK-ai-nb/RootCover/actions/runs/43909492122) 三平台 success；此前 `2ea3f19` 的 CI 为 [43902336073](https://github.com/LMK-ai-nb/RootCover/actions/runs/43902336073)。
 - 说明：`6866127` 的 macOS 作业因浏览器测试逐场景点击超过 15 分钟被取消（ubuntu/windows 通过）；`2ea3f19` 改为静态键匹配后三平台通过。
@@ -10,7 +15,7 @@
 
 ## 0.5.0（2026-11-15）
 
-- 0.5.0 源码提交为 `8d28028`；内容提交 `7c01833`，其后为文档、测试与浏览器用例提交。相对 `baf8f20` 的改动包括版本号、README/文档定位、PARITY A/B 拆分、浏览器产物表述改正（--target js），以及 `coupled32` / `nonlinear8` / `bratu25` / `design_window6` 四个新算例；数值内核未改（65 项测试原样通过）。
+- `8d28028` 和 `7c01833` 是 0.5.0 的早期开发提交。相对 `baf8f20` 的改动包括版本号、README/文档定位、PARITY A/B 拆分、浏览器产物表述（--target js），以及 `coupled32` / `nonlinear8` / `bratu25` / `design_window6` 四个算例。下载包在 `format.mbt`、`paving_format.mbt`、`predicate_format.mbt` 上与早期快照有差异，送审比对使用上方公开提交。
 - CI 记录：[43732000096](https://github.com/LMK-ai-nb/RootCover/actions/runs/43732000096)（对应 `8d28028`，verify ubuntu/macos/windows 全 success）；Pages 部署是另一个 workflow（[43732000103](https://github.com/LMK-ai-nb/RootCover/actions/runs/43732000103)），不充当测试证据。
 - 工作区另有一组未提交改动（浏览器会话与测试相关），不属于本次送审范围，由作者处理。
 - Mooncakes 0.5.0 已于 2026-11-17 发布（`moon publish` 返回 200 OK）；`moon add LMK-ai-nb/rootcover@0.5.0` 实测可下载。

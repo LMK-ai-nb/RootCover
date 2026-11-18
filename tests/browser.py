@@ -134,27 +134,34 @@ with sync_playwright() as p:
     expect(session_page.locator('#session-status')).to_have_text('已暂停，可继续')
     expect(session_page.locator('#session-assessments')).to_have_text('10')
     tampered=json.loads(json.dumps(checkpoint));tampered['events'][0]={'kind':'inside'}
+    original_request=session_page.locator('#session-request').input_value()
+    tampered['request']=json.dumps(json.loads(original_request),separators=(',',':'))
+    assert tampered['request']!=original_request
     tampered_path=ROOT/'artifacts/browser-tampered-checkpoint.json';tampered_path.write_text(json.dumps(tampered),encoding='utf-8')
     session_page.locator('#session-file').set_input_files(str(tampered_path))
-    expect(session_page.locator('#session-continue')).to_be_disabled()
-    expect(session_page.locator('#session-assessments')).to_have_text('—')
     expect(session_page.locator('#session-status')).to_contain_text('checkpoint')
-    session_page.locator('#session-file').set_input_files(str(checkpoint_path))
+    expect(session_page.locator('#session-status')).to_contain_text('原进度仍保留')
     expect(session_page.locator('#session-assessments')).to_have_text('10')
+    expect(session_page.locator('#session-request')).to_have_value(original_request)
+    expect(session_page.locator('#session-save')).to_be_enabled()
+    session_page.locator('#session-steps').fill('7')
+    session_page.locator('#session-continue').click()
+    expect(session_page.locator('#session-assessments')).to_have_text('17')
+    session_page.locator('#session-steps').fill('100')
     # Hold the next worker message so stopping cannot race a fast computation.
     session_page.evaluate("""()=>{window.__sessionPost=Worker.prototype.postMessage;Worker.prototype.postMessage=function(data){window.__heldSession={worker:this,data}};document.querySelector('#session-continue').click();}""")
     expect(session_page.locator('#session-status')).to_have_text('正在计算')
     session_page.locator('#session-cancel').click()
     session_page.evaluate('()=>{Worker.prototype.postMessage=window.__sessionPost;}')
     expect(session_page.locator('#session-status')).to_have_text('已停止，本步前的进度仍保留')
-    expect(session_page.locator('#session-assessments')).to_have_text('10')
+    expect(session_page.locator('#session-assessments')).to_have_text('17')
     session_page.locator('#session-continue').click()
-    expect(session_page.locator('#session-assessments')).to_have_text('110')
+    expect(session_page.locator('#session-assessments')).to_have_text('117')
     with session_page.expect_download() as event:session_page.locator('#session-report').click()
     event.value.save_as(ROOT/'artifacts/browser-session-result.json')
     saved=json.loads((ROOT/'artifacts/browser-session-result.json').read_text())
     assert saved['result']['session']['coverage']=='verified_from_initial_box'
-    assert saved['result']['stats']['assessments']==110
+    assert saved['result']['stats']['assessments']==117
     session_page.screenshot(path=str(SHOTS/'session.png'),full_page=True)
     session_page.set_viewport_size({'width':390,'height':844})
     assert session_page.evaluate('document.documentElement.scrollWidth<=innerWidth')
@@ -173,6 +180,6 @@ with sync_playwright() as p:
     expect(retry_page.locator('#root-count')).to_have_text('15')
     expect(retry_page.locator('#download')).to_be_enabled()
     assert not errors,errors
-    (ROOT/'artifacts/browser-check.json').write_text(json.dumps({'passed':True,'base_url':base,'workbenches':2,'worker_load_failure_retry':True,'checkpoint_save_load_continue_cancel_export':True,'viewport_widths':[1440,390],'uncaught_errors':errors,'documentation_screenshots_updated':SHOTS==ROOT/'docs/assets'},indent=2)+'\n',encoding='utf-8')
+    (ROOT/'artifacts/browser-check.json').write_text(json.dumps({'passed':True,'base_url':base,'workbenches':2,'worker_load_failure_retry':True,'checkpoint_save_load_continue_cancel_export':True,'checkpoint_rejection_preserves_progress':True,'viewport_widths':[1440,390],'uncaught_errors':errors,'documentation_screenshots_updated':SHOTS==ROOT/'docs/assets'},indent=2)+'\n',encoding='utf-8')
     browser.close()
 print('Chromium: both workbenches passed, including worker-load failure and retry, nonlinear/formula examples, checkpoint save/reload/verification/cancellation/export, duplicate JSON, injection, load races and390px layouts.')

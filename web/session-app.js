@@ -1,6 +1,11 @@
 const $=id=>document.getElementById(id);
-let worker=null,generation=0,busy=false,current=null;
+let worker=null,generation=0,busy=false,current=null,runningAction=null;
 const status=(text,error=false)=>{$('session-status').textContent=text;$('session-status').classList.toggle('error',error);};
+function reportError(message){status(current?`${message}；原进度仍保留。`:message,true);}
+function failStep(message){
+  busy=false;if(worker)worker.terminate();worker=null;runningAction=null;
+  reportError(message);controls();
+}
 function controls(){
   for(const id of ['session-start','session-load','session-example','session-steps','session-request','session-file'])$(id).disabled=busy;
   $('session-cancel').disabled=!busy;
@@ -17,6 +22,8 @@ function discard(){
 }
 function show(envelope){
   current=envelope;const {result:r}=envelope,s=r.session;
+  $('session-request').value=envelope.checkpoint.request;
+  if(runningAction==='load')$('session-example').value='custom';
   $('session-inside').textContent=r.inner_box_count;
   $('session-pending').textContent=s.pending_boxes;$('session-unknown').textContent=s.terminal_unknown_boxes;
   $('session-assessments').textContent=r.stats.assessments;
@@ -33,14 +40,13 @@ function startWorker(){
   const instance=worker;
   worker.onmessage=({data})=>{
     if(worker!==instance||data.id!==generation)return;
-    busy=false;
-    if(data.envelope.error){status(data.envelope.error.message,true);worker.terminate();worker=null;}
-    else show(data.envelope);
+    if(data.envelope.error){failStep(data.envelope.error.message||'无法处理这一步。');return;}
+    busy=false;show(data.envelope);runningAction=null;
     controls();
   };
   worker.onerror=event=>{
     event.preventDefault();if(worker!==instance||!busy)return;
-    busy=false;status('计算未完成，请从最近保存的进度继续。',true);worker.terminate();worker=null;controls();
+    failStep('计算未完成，请重试。');
   };
 }
 function execute(action,source=''){
@@ -48,8 +54,10 @@ function execute(action,source=''){
   if(action!=='load'&&(!Number.isInteger(steps)||steps<1||steps>20000)){status('每步工作量须为 1 至 20000 的整数。',true);return;}
   if(action==='start'){discard();}
   if(action==='advance'&&!worker){action='restore';source=JSON.stringify(current.checkpoint);}
-  busy=true;generation++;status(action==='load'||action==='restore'?'正在核验进度':'正在计算');controls();startWorker();
-  worker.postMessage({id:generation,source,steps:action==='load'?0:steps,action});
+  busy=true;generation++;runningAction=action;status(action==='load'||action==='restore'?'正在核验进度':'正在计算');controls();
+  try{
+    startWorker();worker.postMessage({id:generation,source,steps:action==='load'?0:steps,action});
+  }catch(error){failStep(error.message||'无法创建计算线程。');}
 }
 function download(value,name){
   const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)+'\n'],{type:'application/json'}));
@@ -69,26 +77,27 @@ async function example(){
 $('session-start').onclick=()=>execute('start',$('session-request').value);
 $('session-continue').onclick=()=>execute('advance');
 $('session-cancel').onclick=()=>{
-  generation++;if(worker)worker.terminate();worker=null;busy=false;
+  generation++;if(worker)worker.terminate();worker=null;busy=false;runningAction=null;
   status(current?'已停止，本步前的进度仍保留':'已停止');controls();
 };
-$('session-request').addEventListener('input',()=>{discard();status('问题已修改，请重新开始。');});
+$('session-request').addEventListener('input',()=>{discard();$('session-example').value='custom';status('问题已修改，请重新开始。');});
 $('session-example').onchange=example;
 $('session-save').onclick=()=>download(current.checkpoint,'RootCover.rootcover-checkpoint.json');
 $('session-report').onclick=()=>download({request:JSON.parse(current.checkpoint.request),result:current.result},'RootCover-session-result.json');
 $('session-load').onclick=()=>$('session-file').click();
 $('session-file').onchange=async()=>{
   const file=$('session-file').files[0];if(!file)return;
-  if(file.size>8*1024*1024){status('进度文件过大。',true);return;}
+  $('session-file').value='';
+  if(file.size>8*1024*1024){reportError('进度文件过大。');return;}
   busy=true;const id=++generation;controls();status('正在读取进度');
   try{
     const source=await file.text();if(id!==generation)return;
     const checkpoint=JSON.parse(source);
     if(typeof checkpoint.request!=='string')throw new Error('进度文件缺少原问题。');
-    $('session-request').value=checkpoint.request;
-    discard();
+    // Keep the last verified snapshot and displayed model until a replacement
+    // has passed the MoonBit verifier. A rejected file must not erase work.
+    if(worker)worker.terminate();worker=null;
     execute('load',source);
-  }catch(error){if(id===generation){busy=false;status(error.message,true);controls();}}
-  finally{$('session-file').value='';}
+  }catch(error){if(id===generation){busy=false;reportError(error.message);controls();}}
 };
 example();
