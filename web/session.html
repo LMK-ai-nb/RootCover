@@ -7,7 +7,7 @@
 <section class="intro"><div><p class="eyebrow">ROOTCOVER · CONTINUOUS WORK</p><h1>算到一半，<br>也能接着算。</h1><p class="lead">把非线性可行域搜索分成多步。保存当前进度，稍后载入继续；已确认可行区域、待处理区域和边界未决分别保留。</p></div><aside><span class="live-dot"></span> 计算与文件均留在本机<p>继续同一条搜索<br>沿用精度与累计预算<br>载入时复核已有判定</p><small>李明坤 / LMK-ai-nb</small></aside></section>
 <section class="session-layout">
 <div class="panel"><div class="panel-title"><h2>问题与每步工作量</h2><span>FEASIBILITY / v1</span></div>
-<label for="session-example">使用场景</label><select id="session-example"><option value="design_alternatives">两个非线性设计方案</option><option value="thermal_parameters">指数响应参数估计</option><option value="robust_localization">允许一条异常测距</option><option value="scaled_parameters">混合量纲参数估计</option><option value="custom" disabled>载入的或自定义模型</option></select>
+<label for="session-example">使用场景</label><select id="session-example"><option value="design_alternatives">两个非线性设计方案</option><option value="thermal_parameters">指数响应参数估计</option><option value="robust_localization">允许一条异常测距</option><option value="scaled_parameters">混合量纲参数估计</option><option value="design_window6">六变量设计约束（五选四）</option><option value="custom" disabled>载入或自定义的模型</option></select>
 <label for="session-request">约束请求 JSON</label><textarea id="session-request" spellcheck="false"></textarea>
 <label for="session-steps">每步最多评估的区域数</label><input id="session-steps" type="number" min="1" max="20000" step="1" value="100">
 <div class="actions"><button id="session-start" class="primary" disabled>开始分步求解 <span>→</span></button><button id="session-cancel" disabled>停止</button></div>

@@ -78,6 +78,36 @@ test('CLI checkpoints survive a fresh process and support atomic in-place replac
   assert.equal(JSON.parse(readFileSync(state,'utf8')).events.length,result.stats.assessments);
 });
 
+test('six-variable design resumes after 700 evaluations and matches a single CLI run', () => {
+  const folder = new URL('../work/', import.meta.url);
+  mkdirSync(folder, { recursive: true });
+  const directory = mkdtempSync(new URL('../work/design-window-', import.meta.url));
+  const checkpoint = resolve(directory, 'design-window.rootcover-checkpoint.json');
+  const model = 'examples/design_window6.json';
+  const run = (...args) => {
+    const output = spawnSync(process.execPath, ['bin/rootcover.mjs', ...args], {
+      encoding: 'utf8',
+      maxBuffer: 8 * 1024 * 1024,
+    });
+    assert.ifError(output.error);
+    assert.equal(output.status, 1, output.stderr);
+    return JSON.parse(output.stdout);
+  };
+
+  const partial = run(model, '--steps', '700', '--checkpoint', checkpoint);
+  assert.equal(partial.stats.assessments, 700);
+  assert(partial.session.pending_boxes > 0);
+
+  const resumed = run('--resume', checkpoint, '--steps', '20000', '--checkpoint', checkpoint);
+  assert.equal(resumed.stats.assessments, 5191);
+  assert.equal(resumed.inner_box_count, 750);
+  assert.equal(resumed.session.terminal_unknown_boxes, 1798);
+  assert.equal(resumed.session.pending_boxes, 0);
+  assert.equal(resumed.resolution_met, true);
+  assert.equal(resumed.complete, false);
+  assert.deepEqual(plain(resumed), run(model));
+});
+
 test('CLI refuses to overwrite the model or an unrelated document',()=>{
   const folder=new URL('../work/',import.meta.url);mkdirSync(folder,{recursive:true});
   const directory=mkdtempSync(new URL('../work/session-write-',import.meta.url));const input=resolve(directory,'model.json');

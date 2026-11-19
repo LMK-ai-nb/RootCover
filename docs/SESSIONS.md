@@ -4,10 +4,9 @@
 
 ## 运行
 
-PavingSession把同一次搜索拆成多步；在内存中继续不重建队列，文件载入则先核验轨迹，再继续未处理部分。
+`PavingSession` 把同一次搜索拆成多步。在内存中直接推进当前队列。载入文件时先核验轨迹，再处理剩余区域。以下命令在源码根目录运行。
 
-```powershell
-Set-Location D:\CodexProjects\RootCover
+```text
 node scripts/build.mjs
 node bin/rootcover.mjs examples/robust_localization.json --steps 10 --checkpoint robust.rootcover-checkpoint.json
 node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 --checkpoint robust.rootcover-checkpoint.json
@@ -17,9 +16,27 @@ node bin/rootcover.mjs --resume robust.rootcover-checkpoint.json --steps 20000 -
 
 CLI会原子替换已有进度文件；拒绝把原模型文件或不相关文档覆盖为检查点。示例将进度保存在当前项目目录；其他位置请先建立父目录。进度文件含用户自己的完整模型；默认`*.rootcover-checkpoint.json`被Git忽略。
 
-浏览器：`node scripts/serve.mjs`，打开 http://127.0.0.1:4188/session.html 。支持分步工作量、保存、载入、继续、停止、结果导出。载入只核验，不额外花费一次评估；取消进行中的一步会保留最近完整一步，下次从它继续。
+运行 `node scripts/serve.mjs` 后打开本地分步工作台。载入会核验轨迹，累计评估数保持原记录。载入失败或取消时，会保留当前模型和最近一次成功完成的进度。可以继续搜索、保存进度或导出结果。[本地工作台](http://127.0.0.1:4188/session.html) · [在线工作台](https://lmk-ai-nb.github.io/RootCover/session.html)
 
 ![分步工作台](assets/session.png)
+
+## 六变量设计约束复现
+
+合成模型把六个归一化设计参数限制在 `[0,1]`，要求五条约束中至少四条同时成立。模型包含乘积、平方和指数约束，分辨率要求为 `0.3`。[输入 JSON](../examples/design_window6.json)
+
+1. 在分步工作台选择「六变量设计约束（五选四）」，设置每步 `700` 次评估并开始求解。首次暂停时累计评估 `700` 次。
+2. 保存进度、刷新页面并载入保存的 JSON。核验完成后累计评估仍是 `700` 次。此时也可试载入任意缺失检查点字段的 JSON，查看当前模型与进度是否保留。
+3. 把每步评估数改为 `20000`，继续并导出结果。预期总评估 `5191` 次、整盒可行 `750` 个、边界未决 `1798` 个、待处理 `0` 个。报告中 `resolution_met=true` 表示未决盒宽度达到给定分辨率，这些盒保留供后续分析。[分步工作台](https://lmk-ai-nb.github.io/RootCover/session.html)
+
+从源码目录运行以下命令也能复现。前三次求解退出码均为 `1`，表示仍有未决。最后一条命令自动比对跨进程恢复与单次求解的 JSON，比较时仅移除会话附加信息。
+
+```text
+node scripts/build.mjs
+node bin/rootcover.mjs examples/design_window6.json --steps 700 --checkpoint design-window.rootcover-checkpoint.json
+node bin/rootcover.mjs --resume design-window.rootcover-checkpoint.json --steps 20000 --checkpoint design-window.rootcover-checkpoint.json
+node bin/rootcover.mjs examples/design_window6.json
+node --test --test-name-pattern="six-variable design" tests/session.test.mjs
+```
 
 ## 类型化接口
 
@@ -59,12 +76,12 @@ JS桥接的start/advance使用同一内存会话；load只核验载入，restore
 | 使用者与问题 | 输入及操作 | 输出及验证 |
 | --- | --- | --- |
 | 测量开发者保留观测共识搜索进度 | robust_localization先10步写入文件，另一个CLI进程载入继续 | 最终15内盒/38未决，与单次相同；跨进程与同文件原子替换测试通过 |
-| 设计开发者关闭页面后继续比较方案 | design_alternatives先10步保存，刷新载入，再100步 | 累计10→载入后仍10→110；Chromium保存/载入/取消/导出通过 |
+| 设计开发者关闭页面后继续比较方案 | design_alternatives先10步保存，刷新载入，再100步 | 载入后仍为 10，拒绝无效记录后可继续；Chromium 另核对取消和结果导出 |
 | 参数反演库调用者按交互预算推进 | thermal_parameters内存分块，间隔保存恢复 | 六个非线性场景分别在DFS/BFS下与单次输出逐字段相同，共12组对照 |
 
 ## 验证与来源
 
-6项实现测试、1项公开API文档测试、8项会话JS/CLI测试。独立Fraction参考48模型、548份结果状态、9074次内盒证据复核、44791次可行样本覆盖检查。240个轨迹修改中190拒绝，其余50份继续通过独立覆盖/证据检查。状态与内盒会跨暂停重复核对，不当作不同数学问题。
+会话验证覆盖 MoonBit 实现、公开 API 文档和 9 项 JS/CLI 测试。独立Fraction参考48模型、548份结果状态、9074次内盒证据复核、44791次可行样本覆盖检查。240个轨迹修改中190拒绝，其余50份继续通过独立覆盖/证据检查。状态与内盒会跨暂停重复核对，不当作不同数学问题。
 
 有限回归不是形式化证明、任意篡改检测或工业可靠性保证。完整命令见VALIDATION.md。
 

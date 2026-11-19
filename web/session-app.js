@@ -67,7 +67,7 @@ async function example(){
   discard();busy=true;const id=++generation;controls();status('正在载入场景');
   try{
     const name=$('session-example').value;
-    if(!['design_alternatives','thermal_parameters','robust_localization','scaled_parameters'].includes(name))throw new Error('未知场景');
+    if(!['design_alternatives','thermal_parameters','robust_localization','scaled_parameters','design_window6'].includes(name))throw new Error('未知场景');
     const response=await fetch(`data/${name}.json`);if(!response.ok)throw new Error('场景载入失败');
     const request=await response.text();if(id!==generation)return;
     $('session-request').value=JSON.stringify(JSON.parse(request),null,2);status('准备就绪');
