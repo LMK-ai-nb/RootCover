@@ -56,5 +56,5 @@ report={'passed':True,'julia_version':baseline['julia_version'],'intervalrootfin
         'scope':'finite functional regression, no full-API parity, performance or formal-correctness claim'}
 payload=json.dumps(report,indent=2)
 (ROOT/'artifacts/intervalrootfinding-comparison.json').write_text(payload,encoding='utf-8')
-(ROOT/'docs/evidence/intervalrootfinding-comparison.json').write_text(payload+'\n',encoding='utf-8')
+(ROOT/'docs/evidence/intervalrootfinding-comparison.json').write_text(payload+'\n',encoding='utf-8',newline='\n')
 print(json.dumps({k:v for k,v in report.items() if k!='cases'}))
